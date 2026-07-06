@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<!-- saved from url=(0253)https://874db85b-1d3b-4656-8275-6a40e8bc9f1b.frame.claudeusercontent.com/_f/1783289431-80a9/?__frame_t=7D_p4uVEMvsmcLg-WJC8Wi5T.74f09080-168e-42cc-b4ee-670f3a3a30b7.88674bbc-0a95-4ccc-b675-b549afddf4cb.1783315894&__frame_v=manifest.bda96bdb5ebc99bf.json -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><!-- frame-runtime --><!--<base href="/_f/1783289431-80a9/">--><base href="."><script>window.__FRAME_PREAMBLE={"capabilities":{"mcp":"mcp.BQqQVVN_.js"},"transforms":"_transforms.DYk1Ltlh.js"}</script><script>(function(){"use strict";const J="modulepreload",K=function(e){return"/"+e},V={},N=function(t,n,u){let o=Promise.resolve();function i(f){const a=new Event("vite:preloadError",{cancelable:!0});if(a.payload=f,window.dispatchEvent(a),!a.defaultPrevented)throw f}return o.then(f=>{for(const a of f||[])a.status==="rejected"&&i(a.reason);return t().catch(i)})},$=["light","dark","system"];function q(e){if(e==null||typeof e!="object")return!1;const t=e.__frame_init;return t!=null&&typeof t=="object"}function I(e){if(e==null||typeof e!="object")return!1;const t=e.__frame_theme;if(t==null||typeof t!="object")return!1;const n=t.theme;return typeof n=="string"&&$.includes(n)}function S(e){if(window===top||e.type==="auxclick"&&e.button!==1)return;const t=e.composedPath?e.composedPath():[e.target];let n=null;for(let f=0;f<t.length;f++){const a=t[f];if(a&&a.matches&&a.matches("a[href],area[href]")){n=a;break}}if(!n&&e.target&&e.target.closest&&(n=e.target.closest("a[href],area[href]")),!n)return;const u=n.getAttribute("href");if(!u)return;let o,i;try{o=new URL(u,document.baseURI),i=new URL(document.baseURI).origin}catch{return}(o.protocol==="http:"||o.protocol==="https:")&&o.origin!==i&&(e.preventDefault(),parent.postMessage({__frame_nav:!0,url:o.href},"*"))}const L={};function v(e){if(window===top)return;const t=Date.now();t-(L[e]||0)<500||(L[e]=t,parent.postMessage({__frame_engaged:!0,kind:e},"*"))}function U(){addEventListener("click",S,!0),addEventListener("auxclick",S,!0)}function D(){addEventListener("scroll",()=>v("scroll"),{capture:!0,passive:!0}),addEventListener("pointermove",()=>v("pointer"),{capture:!0,passive:!0}),addEventListener("click",()=>v("click"),{capture:!0,passive:!0})}function F(e,t,n){const u=[...t.values()].filter(o=>o.targets.some(i=>i.startsWith(e+".")));return{wrap(o,i){const f=`${e}.${o}`,a=u.filter(s=>s.targets.includes(f));return a.length===0?(...s)=>{try{return i(...s)}catch(d){return Promise.reject(d)}}:(...s)=>{let d=s;for(const c of a){const l=c.module.parameters;if(l)try{d=l(d)}catch{return Promise.reject({code:"transform_error",id:c.id,scope:e,message:"parameters transform failed"})}}let m;try{m=i(...d)}catch(c){m=Promise.reject(c)}return m.then(c=>{for(let l=a.length-1;l>=0;l--){const g=a[l],p=g.module.returns;if(p)try{c=p(c)}catch{return n({id:g.id,scope:e,leg:"returns"}),c}}return c},c=>{for(let l=a.length-1;l>=0;l--){const g=a[l],p=g.module.throws;if(p)try{c=p(c)}catch{return n({id:g.id,scope:e,leg:"throws"}),Promise.reject(c)}}return Promise.reject(c)})}}}}function B(e,t,n,u=()=>{}){const o=new Set(e.changes??[]),i=new Map;for(const f of o){const a=t[f];a&&i.set(f,a)}return{contract:e.contract,changes:o,flags:new Set(e.flags??[]),capabilities:e.capabilities??{},transforms:i,shellOrigin:n.shellOrigin,mount:n.mount,pipe:f=>F(f,i,u)}}(function(){const e=Object.defineProperty,t=globalThis,n=["RTCPeerConnection","webkitRTCPeerConnection","RTCDataChannel","RTCIceCandidate","RTCSessionDescription","RTCRtpSender","RTCRtpReceiver"];let u=0;for(let o=0;o<n.length;o++){const i=n[o];try{e(t,i,{value:void 0,writable:!1,configurable:!1})}catch{try{delete t[i]}catch{}try{e(t,i,{value:void 0,writable:!1,configurable:!0})}catch{}}typeof t[i]=="function"&&u++}if(u&&window!==top)try{parent.postMessage({__frame_rtc_lockdown_failed:u},"*")}catch{}})();const z=1e4,x=Object.freeze([...window.__FRAME_PREAMBLE?.origins??["https://claude.ai","https://preview.claude.ai"]]);function W(e){for(const t of x)if(t.endsWith(":*"))try{const n=new URL(e);if(`${n.protocol}//${n.hostname}:*`===t)return!0}catch{}else if(e===t)return!0;return!1}const b=Object.freeze({...window.__FRAME_PREAMBLE?.capabilities??{}}),E=window.__FRAME_PREAMBLE?.transforms,k=/^[\w.-]+\.js$/,H=/^[a-z][a-z0-9_-]{0,63}$/;let C=null,h=null;function P(e,t,n){try{Object.defineProperty(e,t,{value:n,writable:!1,configurable:!1,enumerable:!0})}catch{try{Object.defineProperty(e,t,{value:n,writable:!1,configurable:!0,enumerable:!0})}catch{}}}let R=!1;function A(e){const t=document.documentElement;e==="light"||e==="dark"?(t.dataset.theme=e,t.style.colorScheme=e,R=!0):R&&(delete t.dataset.theme,t.style.colorScheme="",R=!1)}const _=new Map;function G(e,t){const n=_.get(e);if(!n)return;Object.assign(n.impl,t),n.impl.__settled=()=>Promise.reject({code:"capability_removed",message:`${e}: method not in this runtime`});const u=n.queue;n.queue=[];for(const o of u){const i=t[o.method];i?i(...o.args).then(o.resolve,o.reject):o.reject({code:"capability_removed",message:`${e}.${o.method} is not in this runtime`})}}function j(e,t){const n=_.get(e);if(!n)return;n.impl.__settled=()=>Promise.reject(t);const u=n.queue;n.queue=[];for(const o of u)o.reject(t)}const O=Object.getOwnPropertyDescriptor(window,"claude");if(window!==top&&!(O&&O.writable===!1)){U(),D();const e=O?.value??{};P(window,"claude",e);const t=s=>{const d={impl:Object.create(null),queue:[]};_.set(s,d);const m=new Proxy(d.impl,{get:(c,l)=>{if(typeof l=="string"&&!(l==="then"||l==="toJSON"||l==="valueOf"))return l==="toString"?Object.prototype.toString:(...g)=>{const p=c[l]??c.__settled;return p?p(...g):new Promise((w,M)=>{d.queue.push({method:l,args:g,resolve:w,reject:M})})}},set:()=>!1});P(e,s,m)};for(const s of Object.keys(b)){if(e[s]!==void 0){P(e,s,e[s]);continue}t(s)}let n=null,u=null,o=0;const i=s=>{s.source!==parent||!W(s.origin)||q(s.data)&&(n=s.data.__frame_init,h=s.origin,removeEventListener("message",i),clearTimeout(o),u?.())};addEventListener("message",i),parent.postMessage({__frame_connect:!0},"*");const f=new Promise(s=>{u=s,o=setTimeout(()=>{removeEventListener("message",i),s()},z)}),a=document.readyState==="loading"?new Promise(s=>document.addEventListener("DOMContentLoaded",()=>s(),{once:!0})):Promise.resolve();f.then(async()=>{if(!n||!h){for(const r of _.keys())j(r,{code:"not_granted",message:"frame initialization did not arrive - capability unavailable"});return}A(n.theme);const s=h;addEventListener("message",r=>{r.source!==parent||r.origin!==s||I(r.data)&&A(r.data.__frame_theme.theme)});const d=r=>N(()=>import("/_runtime/"+r),void 0),m=Object.keys(n.capabilities??{});for(const r of m)Object.hasOwn(b,r)||H.test(r)&&e[r]===void 0&&(t(r),j(r,{code:"capability_disabled",message:"capability not in this runtime generation"}));const c=m.filter(r=>Object.hasOwn(b,r)).map(r=>[r,b[r]]).filter(r=>typeof r[1]=="string"&&k.test(r[1])),[l,...g]=await Promise.allSettled([E&&k.test(E)?d(E):Promise.resolve({}),...c.map(([,r])=>d(r))]),p=h;C=B(n,l.status==="fulfilled"&&l.value?.TRANSFORMS||{},{shellOrigin:p,mount:G},r=>parent.postMessage({__frame_cap_telemetry:r},p));const w=r=>parent.postMessage({__frame_cap_telemetry:{kind:"cap-load-error",cap:r}},p),M=C;g.forEach((r,y)=>{const T=c[y][0];if(r.status!=="fulfilled"){w(T);return}try{r.value?.install?.(M)}catch{w(T)}});for(const[r,y]of _)y.queue.length===0&&Object.keys(y.impl).length>0||j(r,{code:m.includes(r)?"capability_disabled":"not_granted",message:"capability not available in this session"});await a,parent.postMessage({__frame_ready:!0},h)})}})();</script><!-- /frame-runtime --><meta name="viewport" content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}</style></head><body>
+<title>How a Codex Turn Actually Runs — a plain-English trace</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --ground:#f6f8f7; --panel:#ffffff; --panel-2:#eef2f1; --ink:#16211f; --ink-soft:#47605c; --ink-faint:#7c928e;
+    --line:#dbe4e1; --line-strong:#c2d0cc; --teal:#0b7d70; --teal-bright:#10a394; --amber:#b96a12; --amber-soft:#f3ede1;
+    --violet:#5a5ba8; --violet-soft:#ecebf6; --rose:#b1476a; --rose-soft:#f7e9ee; --code-bg:#f0f4f2;
+    --shadow:0 1px 2px rgba(20,40,36,.05),0 8px 28px rgba(20,40,36,.06);
+    --mono:ui-monospace,"SF Mono","JetBrains Mono","Menlo","Cascadia Code",monospace;
+    --sans:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,system-ui,sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground:#0d1413; --panel:#141d1b; --panel-2:#1a2523; --ink:#e6efec; --ink-soft:#a6bab5; --ink-faint:#6f857f;
+      --line:#24322f; --line-strong:#33453f; --teal:#37c3b1; --teal-bright:#4fdac8; --amber:#e0a15b; --amber-soft:#2a2114;
+      --violet:#9a9be0; --violet-soft:#1c1d2e; --rose:#e08aa5; --rose-soft:#2b1a20; --code-bg:#101816;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="light"]{color-scheme:light;--ground:#f6f8f7;--panel:#fff;--panel-2:#eef2f1;--ink:#16211f;--ink-soft:#47605c;--ink-faint:#7c928e;--line:#dbe4e1;--line-strong:#c2d0cc;--teal:#0b7d70;--teal-bright:#10a394;--amber:#b96a12;--amber-soft:#f3ede1;--violet:#5a5ba8;--violet-soft:#ecebf6;--rose:#b1476a;--rose-soft:#f7e9ee;--code-bg:#f0f4f2;--shadow:0 1px 2px rgba(20,40,36,.05),0 8px 28px rgba(20,40,36,.06);}
+  :root[data-theme="dark"]{color-scheme:dark;--ground:#0d1413;--panel:#141d1b;--panel-2:#1a2523;--ink:#e6efec;--ink-soft:#a6bab5;--ink-faint:#6f857f;--line:#24322f;--line-strong:#33453f;--teal:#37c3b1;--teal-bright:#4fdac8;--amber:#e0a15b;--amber-soft:#2a2114;--violet:#9a9be0;--violet-soft:#1c1d2e;--rose:#e08aa5;--rose-soft:#2b1a20;--code-bg:#101816;--shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);}
+
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--ground); color:var(--ink); font-family:var(--sans); line-height:1.62; -webkit-font-smoothing:antialiased; }
+  .wrap { max-width:1000px; margin:0 auto; padding:0 24px 120px; }
+
+  header.masthead { max-width:1000px; margin:0 auto; padding:60px 24px 34px; border-bottom:1px solid var(--line); }
+  .eyebrow { font-family:var(--mono); font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:var(--teal); font-weight:600; margin:0 0 18px; display:flex; align-items:center; gap:10px; }
+  .eyebrow::before { content:""; width:26px; height:2px; background:var(--teal); display:inline-block; }
+  h1 { font-family:var(--mono); font-size:clamp(27px,4.4vw,42px); line-height:1.07; letter-spacing:-.02em; font-weight:680; margin:0 0 18px; text-wrap:balance; }
+  h1 .dim { color:var(--ink-faint); font-weight:500; }
+  .lede { font-size:17.5px; color:var(--ink-soft); max-width:70ch; margin:0; }
+  .lede b { color:var(--ink); font-weight:600; }
+
+  /* scene box */
+  .scene { margin-top:26px; background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:22px 24px; box-shadow:var(--shadow); }
+  .scene .lbl { font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--teal); font-weight:700; margin-bottom:10px; }
+  .scene p { margin:0; color:var(--ink-soft); font-size:15px; }
+  .scene .prompt { margin-top:14px; font-family:var(--mono); font-size:15.5px; color:var(--ink); background:var(--code-bg); border:1px solid var(--line); border-left:3px solid var(--teal); border-radius:8px; padding:12px 16px; }
+  .scene .facts { margin-top:14px; display:flex; flex-wrap:wrap; gap:7px; }
+  .scene .facts span { font-family:var(--mono); font-size:12px; background:var(--panel-2); border:1px solid var(--line); border-radius:999px; padding:4px 11px; color:var(--ink-soft); }
+  .scene .facts b { color:var(--ink); font-weight:600; }
+
+  section { margin-top:50px; }
+  h2 { font-family:var(--mono); font-size:13px; letter-spacing:.13em; text-transform:uppercase; color:var(--ink-faint); font-weight:600; margin:0 0 6px; display:flex; align-items:baseline; gap:12px; }
+  h2 .act { color:var(--teal); }
+  h2::after { content:""; flex:1; height:1px; background:var(--line); align-self:center; }
+  .sub { font-size:22px; letter-spacing:-.01em; margin:0 0 6px; font-weight:640; }
+  p.note { color:var(--ink-soft); max-width:74ch; margin:6px 0 22px; }
+  p.note b { color:var(--ink); font-weight:600; }
+
+  code { font-family:var(--mono); }
+  p code, li code, .step p code { font-family:var(--mono); font-size:.88em; background:var(--code-bg); border:1px solid var(--line); padding:.5px 5px; border-radius:4px; color:var(--ink); }
+  .fn { color:var(--teal); }
+
+  /* numbered step rail */
+  .steps { display:grid; gap:0; }
+  .step { display:grid; grid-template-columns:34px 1fr; gap:16px; }
+  .step .rail { display:flex; flex-direction:column; align-items:center; }
+  .step .rail .dot { width:34px; height:34px; border-radius:10px; background:color-mix(in srgb,var(--teal) 13%, var(--panel)); border:1px solid color-mix(in srgb,var(--teal) 36%, var(--line)); color:var(--teal); display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-weight:700; font-size:15px; flex:none; }
+  .step .rail .line { width:2px; flex:1; background:linear-gradient(var(--line-strong), color-mix(in srgb,var(--line-strong) 30%, transparent)); margin:5px 0; min-height:12px; }
+  .step:last-child .rail .line { display:none; }
+  .step .sbody { padding-bottom:18px; min-width:0; }
+  .step h3 { margin:5px 0 5px; font-size:16px; }
+  .step p { margin:0; font-size:14.5px; color:var(--ink-soft); }
+  .step p b { color:var(--ink); font-weight:600; }
+  .step ul { margin:9px 0 0; padding:0; list-style:none; display:grid; gap:7px; }
+  .step li { font-size:14px; color:var(--ink-soft); padding-left:15px; position:relative; }
+  .step li::before { content:"▸"; position:absolute; left:0; color:var(--teal); font-size:10px; top:3px; }
+  .step li b { color:var(--ink); font-weight:600; }
+
+  /* callouts */
+  .callout { border-radius:12px; padding:15px 18px; margin-top:18px; border:1px solid; font-size:14.5px; }
+  .callout .tag { font-family:var(--mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase; font-weight:700; display:block; margin-bottom:6px; }
+  .callout p { margin:0; color:var(--ink-soft); }
+  .callout p b { color:var(--ink); font-weight:600; }
+  .co-key { background:var(--amber-soft); border-color:color-mix(in srgb,var(--amber) 40%, var(--line)); }
+  .co-key .tag { color:var(--amber); }
+  .co-mem { background:var(--violet-soft); border-color:color-mix(in srgb,var(--violet) 40%, var(--line)); }
+  .co-mem .tag { color:var(--violet); }
+  .co-real { background:var(--rose-soft); border-color:color-mix(in srgb,var(--rose) 42%, var(--line)); }
+  .co-real .tag { color:var(--rose); }
+  .co-real p b { color:var(--ink); }
+  .realbadge { margin-top:16px; display:inline-flex; align-items:center; gap:9px; font-family:var(--mono); font-size:12.5px; color:var(--ink-soft); background:var(--rose-soft); border:1px solid color-mix(in srgb,var(--rose) 40%, var(--line)); border-radius:999px; padding:7px 14px; }
+  .realbadge b { color:var(--rose); font-weight:700; }
+  .realbadge a { color:var(--ink); text-decoration:underline; text-underline-offset:2px; }
+
+  /* the loop steps (act 3) — teal chips as "steps of the loop" */
+  .loopsteps { display:grid; gap:12px; }
+  .lstep { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:16px 18px; box-shadow:var(--shadow); display:grid; grid-template-columns:auto 1fr; gap:16px; align-items:start; }
+  .lstep .tick { font-family:var(--mono); font-size:12px; font-weight:700; color:var(--teal); background:var(--code-bg); border:1px solid var(--line); border-radius:7px; padding:6px 10px; white-space:nowrap; align-self:start; }
+  .lstep .lbody h4 { margin:2px 0 4px; font-size:15px; }
+  .lstep .lbody p { margin:0; font-size:14px; color:var(--ink-soft); }
+  .lstep .lbody p b { color:var(--ink); font-weight:600; }
+  .lstep .endturn { font-family:var(--mono); font-size:11.5px; margin-top:8px; display:inline-block; padding:2px 8px; border-radius:5px; }
+  .et-loop { color:var(--amber); background:var(--amber-soft); border:1px solid color-mix(in srgb,var(--amber) 35%, var(--line)); }
+  .et-stop { color:var(--teal); background:color-mix(in srgb,var(--teal) 12%, var(--panel)); border:1px solid color-mix(in srgb,var(--teal) 35%, var(--line)); }
+
+  /* security split */
+  .split { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .splitcard { background:var(--panel); border:1px solid var(--rose); border-radius:12px; padding:18px 20px; box-shadow:var(--shadow); }
+  .splitcard.rose { border-color:color-mix(in srgb,var(--rose) 45%, var(--line)); }
+  .splitcard .h { font-family:var(--mono); font-size:12.5px; font-weight:650; color:var(--rose); margin-bottom:10px; }
+  .splitcard ol { margin:0; padding-left:18px; display:grid; gap:6px; }
+  .splitcard li { font-size:13.5px; color:var(--ink-soft); }
+  .splitcard li b { color:var(--ink); font-weight:600; }
+
+  /* timeline code */
+  pre { margin:0; background:var(--code-bg); border:1px solid var(--line); border-radius:12px; padding:18px 20px; overflow-x:auto; box-shadow:var(--shadow); }
+  pre code { font-family:var(--mono); font-size:12.5px; line-height:1.75; color:var(--ink); white-space:pre; }
+  .cmt { color:var(--ink-faint); }
+  .kw { color:var(--teal); }
+  .amb { color:var(--amber); }
+  .ros { color:var(--rose); }
+
+  /* takeaways */
+  .takeaways { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:8px; }
+  .take { background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--teal); border-radius:10px; padding:16px 18px; box-shadow:var(--shadow); }
+  .take h4 { margin:0 0 6px; font-size:15px; }
+  .take p { margin:0; font-size:14px; color:var(--ink-soft); }
+
+  .foot { margin-top:54px; padding-top:22px; border-top:1px solid var(--line); color:var(--ink-faint); font-size:13px; font-family:var(--mono); }
+  a { color:var(--teal); }
+
+  @media (max-width:640px) {
+    .split, .takeaways { grid-template-columns:1fr; }
+    .lstep { grid-template-columns:1fr; gap:10px; }
+  }
+</style>
+
+<header class="masthead">
+  <p class="eyebrow">Codex-rs · how a turn runs · plain english</p>
+  <h1>How a Codex turn actually runs <span class="dim">— one message, traced call by call</span></h1>
+  <p class="lede">The big idea up front: <b>a "turn" is a loop, not a single model call.</b> You send one message; the model drives itself forward — read, run, edit, re-run, answer — and Codex keeps looping until the model says it's done. Here's that loop, followed through one concrete example.</p>
+  <div class="realbadge">⚠ <b>Illustrative example.</b>&nbsp;We later ran a real prompt and captured the trace — see the <a href="https://claude.ai/code/artifact/efb675c4-9a45-412f-8271-30607b0c8687">Real Trace</a>. Where reality differed, it's flagged below.</div>
+
+  <div class="scene">
+    <div class="lbl">The example we'll trace</div>
+    <p>A fresh session, in a git repo with an <code>AGENTS.md</code> and a couple of saved memories. You type:</p>
+    <div class="prompt">"Fix the failing test in tests/parse_test.rs."</div>
+    <div class="facts">
+      <span>cwd <b>~/myproject</b></span>
+      <span>approval <b>OnRequest</b> (default)</span>
+      <span>sandbox <b>workspace-write</b></span>
+      <span>has <b>AGENTS.md</b></span>
+      <span>has <b>memories</b></span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- ACT 1 -->
+  <section>
+    <h2><span class="act">Act 1</span> From your keystroke to the turn engine</h2>
+    <p class="note">Before <code>run_turn</code> is even reached, your text takes a short trip through the queue.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="rail"><div class="dot">1</div><div class="line"></div></div>
+        <div class="sbody">
+          <h3>Your text becomes a command</h3>
+          <p>The TUI wraps your message as an <code>Op::UserInput</code> and calls <code class="fn">CodexThread::submit(op)</code>. An <code>Op</code> is "a command for the core." Submitting just drops it on a queue and returns an ID — it doesn't block.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="rail"><div class="dot">2</div><div class="line"></div></div>
+        <div class="sbody">
+          <h3>The queue turns it into a task</h3>
+          <p>A submission loop (<code>session/handlers.rs</code>) picks it off the queue, sees it's user input, and calls <code class="fn">Session::spawn_task</code> with a <b>RegularTask</b>. (Compaction and review are other task types.)</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="rail"><div class="dot">3</div><div class="line"></div></div>
+        <div class="sbody">
+          <h3>The task calls run_turn</h3>
+          <p><code class="fn">RegularTask::run</code> (<code>tasks/regular.rs:37</code>) emits <code>TurnStarted</code> to the UI, then calls <code class="fn">run_turn</code>. It only re-calls it if you queued <em>more</em> input while it worked; normally it runs once.</p>
+        </div>
+      </div>
+    </div>
+    <div class="callout co-key">
+      <span class="tag">Plain english</span>
+      <p>Your message becomes a queued command, the core turns that command into a "task," and the task calls <code>run_turn</code>. <b>One user message = one run_turn.</b></p>
+    </div>
+  </section>
+
+  <!-- ACT 2 -->
+  <section>
+    <h2><span class="act">Act 2</span> run_turn sets the table</h2>
+    <p class="note">Everything below happens <b>once</b>, before the model is ever called (<code>turn.rs:142</code>).</p>
+    <div class="steps">
+      <div class="step">
+        <div class="rail"><div class="dot">1</div><div class="line"></div></div>
+        <div class="sbody">
+          <h3>Get a model connection</h3>
+          <p><code class="fn">model_client.new_session()</code> — a turn-scoped client that caches the WebSocket / routing so retries within this turn reuse it.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="rail"><div class="dot">2</div><div class="line"></div></div>
+        <div class="sbody">
+          <h3>Compact if we're already too full</h3>
+          <p><code class="fn">run_pre_sampling_compact</code> (<code>:797</code>). On a fresh session this does nothing — but it's where Codex would summarize old history if you were near the context limit, or if you'd just switched models. This step can itself call the model.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="rail"><div class="dot">3</div><div class="line"></div></div>
+        <div class="sbody">
+          <h3>Inject the base context <span style="font-weight:400;color:var(--ink-faint);font-size:13px">← the big one</span></h3>
+          <p><code class="fn">record_context_updates_and_set_reference_context_item</code> (<code>mod.rs:3549</code>) → on a fresh session runs <code class="fn">build_initial_context…</code>, assembling one big bundle:</p>
+          <ul>
+            <li>the <b>permissions block</b> (tells the model it's in workspace-write / OnRequest),</li>
+            <li>your <b>AGENTS.md</b> instructions,</li>
+            <li>the <b>skills</b> catalog and plugin list,</li>
+            <li>your <b>memories</b> — the <em>summary</em> file, read off disk and injected here,</li>
+            <li>the <b>environment</b> — cwd, sandbox mode, workspace roots, git status.</li>
+          </ul>
+          <div class="callout co-mem" style="margin-top:12px">
+            <span class="tag">About that memory step</span>
+            <p>Only the memory <b>summary</b> is injected, and <b>only once for the whole session</b> — not the full memory files, and not every step. The model pulls deeper memory files later with memory tools if it needs them. Later turns append only <em>changes</em> to this bundle.</p>
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="rail"><div class="dot">4</div><div class="line"></div></div>
+        <div class="sbody">
+          <h3>Inject anything your message specifically triggered</h3>
+          <p><code class="fn">build_skills_and_plugins</code> (<code>:510</code>) scans <em>your text</em> for explicit <code>@skill</code> or <code>plugin://</code> mentions and injects only those. Your message has none, so nothing extra.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="rail"><div class="dot">5</div><div class="line"></div></div>
+        <div class="sbody">
+          <h3>Run input hooks and record your message</h3>
+          <p><code class="fn">run_hooks_and_record_inputs</code> (<code>:481</code>). Any hooks you configured can inspect or block your input; then your message is recorded as pending input.</p>
+        </div>
+      </div>
+    </div>
+    <p class="note" style="margin-top:20px">History now holds: <code>[ big context bundle ]</code> → <code>[ your user message ]</code>. Enter the loop.</p>
+  </section>
+
+  <!-- ACT 3 -->
+  <section>
+    <h2><span class="act">Act 3</span> The loop — one step at a time</h2>
+    <p class="sub">Each loop iteration = one request to the model.</p>
+    <div class="callout co-real" style="margin-bottom:20px">
+      <span class="tag">In the real trace, this was different</span>
+      <p>The 5 clean steps below are illustrative. When we ran an actual prompt and captured it (<a href="https://claude.ai/code/artifact/efb675c4-9a45-412f-8271-30607b0c8687" style="color:var(--rose)">Real Trace</a>), the same machinery held but the <em>behavior</em> was richer: the loop made <b>11 model round-trips, not 5</b>; it <b>opened with a recon phase</b> (<code>pwd</code>, <code>find</code>, <code>git status</code>, <code>rustc --version</code>) before writing anything; the shell tool was actually <b><code>exec_command</code></b> (the <code>unified_exec</code> runtime), not <code>shell</code>; the model <b>adapted to the sandbox</b> (it went dependency-free rather than fetch a crate); and a <b>second thread ran in parallel</b> doing memory-maintenance work in <code>~/.codex/memories/</code>. The control flow was exactly as described — the step count and specific commands are illustrative.</p>
+    </div>
+    <p class="note">One iteration of <code>run_turn</code>'s loop (<code>:225</code>) does four things: <b>drain pending input</b> → <b>add reminders</b> → <b>build the model input</b> (<code>for_prompt</code> — mechanical cleanup only, no paraphrasing) → <b>call <code>run_sampling_request</code></b>, which assembles the tools, builds the prompt, opens the stream, and reacts to what the model emits. Watch the <code>end_turn</code> flag — that's what decides whether we loop again.</p>
+
+    <div class="loopsteps">
+      <div class="lstep">
+        <div class="tick">step 1</div>
+        <div class="lbody">
+          <h4>The model reads the test file</h4>
+          <p>Stream opens. The model emits a <b>shell</b> tool call: <code>cat tests/parse_test.rs</code>. Codex <b>spawns it immediately</b> as a background task and keeps reading the stream. When the response completes, <code class="fn">drain_in_flight</code> waits for the read and records the file contents into history.</p>
+          <span class="endturn et-loop">end_turn = false → loop again ↻</span>
+        </div>
+      </div>
+      <div class="lstep">
+        <div class="tick">step 2</div>
+        <div class="lbody">
+          <h4>The model runs the test</h4>
+          <p>Same machinery, now with the file in context. The model emits <b>shell</b> → <code>cargo test parse</code>. <b>This is where security fires</b> (see Act 4). The test runs, fails, output goes back into history.</p>
+          <span class="endturn et-loop">end_turn = false → loop again ↻</span>
+        </div>
+      </div>
+      <div class="lstep">
+        <div class="tick">step 3</div>
+        <div class="lbody">
+          <h4>The model edits the code</h4>
+          <p>The model emits an <b>apply_patch</b> call to fix <code>src/parse.rs</code>. apply_patch is safety-checked its own way (Act 4). The patch applies.</p>
+          <span class="endturn et-loop">end_turn = false → loop again ↻</span>
+        </div>
+      </div>
+      <div class="lstep">
+        <div class="tick">step 4</div>
+        <div class="lbody">
+          <h4>The model re-runs the test</h4>
+          <p>Another <b>shell</b> → <code>cargo test parse</code>. Passes this time.</p>
+          <span class="endturn et-loop">end_turn = false → loop again ↻</span>
+        </div>
+      </div>
+      <div class="lstep">
+        <div class="tick">step 5</div>
+        <div class="lbody">
+          <h4>The model answers</h4>
+          <p>A final assistant message — <em>"Fixed it — the parser wasn't handling empty input; I added a guard."</em> No tool call.</p>
+          <span class="endturn et-stop">end_turn = TRUE → stop, return the answer ■</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout co-key">
+      <span class="tag">Five model requests, one user turn <span style="color:var(--rose)">· 11 in the real run</span></span>
+      <p>If the model had emitted <b>two independent reads in one response</b>, they'd run <b>concurrently</b> — parallel-safe tools take a shared read-lock; a mutating tool like <code>apply_patch</code> takes an exclusive write-lock. All results are collected after the stream finishes, then fed back on the next loop.</p>
+    </div>
+  </section>
+
+  <!-- ACT 4 -->
+  <section>
+    <h2><span class="act">Act 4</span> The instant a tool call fires — the security gate</h2>
+    <p class="note">Every tool call, the moment it's spawned, goes through the <b>ToolOrchestrator</b> (<code>orchestrator.rs:134</code>) — "approval → sandbox → run → maybe retry." The two tools in our trace check safety differently.</p>
+    <div class="split">
+      <div class="splitcard rose">
+        <div class="h">cargo test parse — a shell command</div>
+        <ol>
+          <li><b>Needs approval?</b> Checked against the <b>execpolicy</b> rules → <code>Allow / Prompt / Forbidden</code>. Running tests is allowed under OnRequest → no prompt.</li>
+          <li><b>Pick a sandbox.</b> workspace-write + this OS → macOS <b>Seatbelt</b> (Landlock on Linux). Confined to the workspace, network off.</li>
+          <li><b>Run it</b> inside that sandbox.</li>
+          <li><b>If denied</b> (e.g. it tried the network): under OnRequest, Codex <b>asks you</b>; if you approve, it <b>retries with the sandbox relaxed</b>. Under <code>Never</code> it wouldn't ask — it hands the error back to the model.</li>
+        </ol>
+      </div>
+      <div class="splitcard rose">
+        <div class="h">editing src/parse.rs — apply_patch</div>
+        <ol>
+          <li>apply_patch skips execpolicy and calls <b>assess_patch_safety</b> (<code>safety.rs:32</code>).</li>
+          <li><b>Every edited path inside a writable root?</b> <code>src/parse.rs</code> is in the workspace → yes.</li>
+          <li><b>Can we enforce a sandbox here?</b> Yes → <b>AutoApprove inside a sandbox</b>, no prompt. (Sandbox guards against tricks like symlinks pointing outside the workspace.)</li>
+          <li><b>If the file were outside</b> the workspace (say <code>~/.ssh/config</code>) → <b>AskUser</b>, or <b>Reject</b> outright under a Never policy.</li>
+        </ol>
+      </div>
+    </div>
+    <div class="callout co-key">
+      <span class="tag">The one-line rule</span>
+      <p>Nothing is security-checked when the prompt is built. <b>Everything is checked at the moment each tool call executes — tool by tool.</b></p>
+    </div>
+  </section>
+
+  <!-- TIMELINE -->
+  <section>
+    <h2><span class="act">Recap</span> the whole thing as a timeline</h2>
+    <pre><code>your message
+  → <span class="kw">submit(Op::UserInput)</span> → queue → RegularTask::run → <span class="kw">run_turn</span>
+
+      <span class="cmt">SET THE TABLE (once):</span>
+        new model session
+        pre-turn compaction?  <span class="cmt">(no, fresh session)</span>
+        inject base context:  permissions + AGENTS.md + <span class="amb">MEMORY summary</span> + skills + environment
+        inject @mentions from your text  <span class="cmt">(none)</span>
+        run input hooks, record your message
+
+      <span class="cmt">THE LOOP (once per model request):</span>
+        step 1: prompt → stream → shell <span class="cmt">`cat test`</span> → run (sandbox, read-only) → <span class="amb">end_turn=false ↻</span>
+        step 2: stream → shell <span class="cmt">`cargo test`</span> → <span class="ros">approval? → sandbox</span> → fails    → <span class="amb">end_turn=false ↻</span>
+        step 3: stream → <span class="ros">apply_patch → assess_patch_safety</span> → auto-approve → edit → <span class="amb">end_turn=false ↻</span>
+        step 4: stream → shell <span class="cmt">`cargo test`</span> → passes                     → <span class="amb">end_turn=false ↻</span>
+        step 5: stream → final answer                                    → <span class="kw">end_turn=TRUE ■</span>
+
+  → <span class="kw">TurnComplete</span></code></pre>
+  </section>
+
+  <!-- TAKEAWAYS -->
+  <section>
+    <h2><span class="act">Burn in</span> two things</h2>
+    <div class="takeaways">
+      <div class="take">
+        <h4>A turn is a loop, not a call</h4>
+        <p>The model drives itself — read, run, edit, re-run, answer — and Codex keeps looping until it sets <code>end_turn = true</code>. Each loop is one <code>run_sampling_request</code>.</p>
+      </div>
+      <div class="take">
+        <h4>Context once, security every time</h4>
+        <p>The memory summary, AGENTS.md, and environment are assembled once at the top of the session. But <em>every single tool call</em> re-runs the approval + sandbox gauntlet.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="foot">
+    Traced from codex-rs/ · session/turn.rs · orchestrator.rs · safety.rs · one companion to the architecture map &amp; turn-internals deep dive · line anchors current as of this checkout.
+  </div>
+
+</div>
+
+</body></html>

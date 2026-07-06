@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<!-- saved from url=(0253)https://479429a7-9afc-4d31-9062-7852419e5892.frame.claudeusercontent.com/_f/1783294884-5e1e/?__frame_t=2xSMmwdbRErLe2Dg2CxBDvii.74f09080-168e-42cc-b4ee-670f3a3a30b7.88674bbc-0a95-4ccc-b675-b549afddf4cb.1783314977&__frame_v=manifest.bda96bdb5ebc99bf.json -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><!-- frame-runtime --><!--<base href="/_f/1783294884-5e1e/">--><base href="."><script>window.__FRAME_PREAMBLE={"capabilities":{"mcp":"mcp.BQqQVVN_.js"},"transforms":"_transforms.DYk1Ltlh.js"}</script><script>(function(){"use strict";const J="modulepreload",K=function(e){return"/"+e},V={},N=function(t,n,u){let o=Promise.resolve();function i(f){const a=new Event("vite:preloadError",{cancelable:!0});if(a.payload=f,window.dispatchEvent(a),!a.defaultPrevented)throw f}return o.then(f=>{for(const a of f||[])a.status==="rejected"&&i(a.reason);return t().catch(i)})},$=["light","dark","system"];function q(e){if(e==null||typeof e!="object")return!1;const t=e.__frame_init;return t!=null&&typeof t=="object"}function I(e){if(e==null||typeof e!="object")return!1;const t=e.__frame_theme;if(t==null||typeof t!="object")return!1;const n=t.theme;return typeof n=="string"&&$.includes(n)}function S(e){if(window===top||e.type==="auxclick"&&e.button!==1)return;const t=e.composedPath?e.composedPath():[e.target];let n=null;for(let f=0;f<t.length;f++){const a=t[f];if(a&&a.matches&&a.matches("a[href],area[href]")){n=a;break}}if(!n&&e.target&&e.target.closest&&(n=e.target.closest("a[href],area[href]")),!n)return;const u=n.getAttribute("href");if(!u)return;let o,i;try{o=new URL(u,document.baseURI),i=new URL(document.baseURI).origin}catch{return}(o.protocol==="http:"||o.protocol==="https:")&&o.origin!==i&&(e.preventDefault(),parent.postMessage({__frame_nav:!0,url:o.href},"*"))}const L={};function v(e){if(window===top)return;const t=Date.now();t-(L[e]||0)<500||(L[e]=t,parent.postMessage({__frame_engaged:!0,kind:e},"*"))}function U(){addEventListener("click",S,!0),addEventListener("auxclick",S,!0)}function D(){addEventListener("scroll",()=>v("scroll"),{capture:!0,passive:!0}),addEventListener("pointermove",()=>v("pointer"),{capture:!0,passive:!0}),addEventListener("click",()=>v("click"),{capture:!0,passive:!0})}function F(e,t,n){const u=[...t.values()].filter(o=>o.targets.some(i=>i.startsWith(e+".")));return{wrap(o,i){const f=`${e}.${o}`,a=u.filter(s=>s.targets.includes(f));return a.length===0?(...s)=>{try{return i(...s)}catch(d){return Promise.reject(d)}}:(...s)=>{let d=s;for(const c of a){const l=c.module.parameters;if(l)try{d=l(d)}catch{return Promise.reject({code:"transform_error",id:c.id,scope:e,message:"parameters transform failed"})}}let m;try{m=i(...d)}catch(c){m=Promise.reject(c)}return m.then(c=>{for(let l=a.length-1;l>=0;l--){const g=a[l],p=g.module.returns;if(p)try{c=p(c)}catch{return n({id:g.id,scope:e,leg:"returns"}),c}}return c},c=>{for(let l=a.length-1;l>=0;l--){const g=a[l],p=g.module.throws;if(p)try{c=p(c)}catch{return n({id:g.id,scope:e,leg:"throws"}),Promise.reject(c)}}return Promise.reject(c)})}}}}function B(e,t,n,u=()=>{}){const o=new Set(e.changes??[]),i=new Map;for(const f of o){const a=t[f];a&&i.set(f,a)}return{contract:e.contract,changes:o,flags:new Set(e.flags??[]),capabilities:e.capabilities??{},transforms:i,shellOrigin:n.shellOrigin,mount:n.mount,pipe:f=>F(f,i,u)}}(function(){const e=Object.defineProperty,t=globalThis,n=["RTCPeerConnection","webkitRTCPeerConnection","RTCDataChannel","RTCIceCandidate","RTCSessionDescription","RTCRtpSender","RTCRtpReceiver"];let u=0;for(let o=0;o<n.length;o++){const i=n[o];try{e(t,i,{value:void 0,writable:!1,configurable:!1})}catch{try{delete t[i]}catch{}try{e(t,i,{value:void 0,writable:!1,configurable:!0})}catch{}}typeof t[i]=="function"&&u++}if(u&&window!==top)try{parent.postMessage({__frame_rtc_lockdown_failed:u},"*")}catch{}})();const z=1e4,x=Object.freeze([...window.__FRAME_PREAMBLE?.origins??["https://claude.ai","https://preview.claude.ai"]]);function W(e){for(const t of x)if(t.endsWith(":*"))try{const n=new URL(e);if(`${n.protocol}//${n.hostname}:*`===t)return!0}catch{}else if(e===t)return!0;return!1}const b=Object.freeze({...window.__FRAME_PREAMBLE?.capabilities??{}}),E=window.__FRAME_PREAMBLE?.transforms,k=/^[\w.-]+\.js$/,H=/^[a-z][a-z0-9_-]{0,63}$/;let C=null,h=null;function P(e,t,n){try{Object.defineProperty(e,t,{value:n,writable:!1,configurable:!1,enumerable:!0})}catch{try{Object.defineProperty(e,t,{value:n,writable:!1,configurable:!0,enumerable:!0})}catch{}}}let R=!1;function A(e){const t=document.documentElement;e==="light"||e==="dark"?(t.dataset.theme=e,t.style.colorScheme=e,R=!0):R&&(delete t.dataset.theme,t.style.colorScheme="",R=!1)}const _=new Map;function G(e,t){const n=_.get(e);if(!n)return;Object.assign(n.impl,t),n.impl.__settled=()=>Promise.reject({code:"capability_removed",message:`${e}: method not in this runtime`});const u=n.queue;n.queue=[];for(const o of u){const i=t[o.method];i?i(...o.args).then(o.resolve,o.reject):o.reject({code:"capability_removed",message:`${e}.${o.method} is not in this runtime`})}}function j(e,t){const n=_.get(e);if(!n)return;n.impl.__settled=()=>Promise.reject(t);const u=n.queue;n.queue=[];for(const o of u)o.reject(t)}const O=Object.getOwnPropertyDescriptor(window,"claude");if(window!==top&&!(O&&O.writable===!1)){U(),D();const e=O?.value??{};P(window,"claude",e);const t=s=>{const d={impl:Object.create(null),queue:[]};_.set(s,d);const m=new Proxy(d.impl,{get:(c,l)=>{if(typeof l=="string"&&!(l==="then"||l==="toJSON"||l==="valueOf"))return l==="toString"?Object.prototype.toString:(...g)=>{const p=c[l]??c.__settled;return p?p(...g):new Promise((w,M)=>{d.queue.push({method:l,args:g,resolve:w,reject:M})})}},set:()=>!1});P(e,s,m)};for(const s of Object.keys(b)){if(e[s]!==void 0){P(e,s,e[s]);continue}t(s)}let n=null,u=null,o=0;const i=s=>{s.source!==parent||!W(s.origin)||q(s.data)&&(n=s.data.__frame_init,h=s.origin,removeEventListener("message",i),clearTimeout(o),u?.())};addEventListener("message",i),parent.postMessage({__frame_connect:!0},"*");const f=new Promise(s=>{u=s,o=setTimeout(()=>{removeEventListener("message",i),s()},z)}),a=document.readyState==="loading"?new Promise(s=>document.addEventListener("DOMContentLoaded",()=>s(),{once:!0})):Promise.resolve();f.then(async()=>{if(!n||!h){for(const r of _.keys())j(r,{code:"not_granted",message:"frame initialization did not arrive - capability unavailable"});return}A(n.theme);const s=h;addEventListener("message",r=>{r.source!==parent||r.origin!==s||I(r.data)&&A(r.data.__frame_theme.theme)});const d=r=>N(()=>import("/_runtime/"+r),void 0),m=Object.keys(n.capabilities??{});for(const r of m)Object.hasOwn(b,r)||H.test(r)&&e[r]===void 0&&(t(r),j(r,{code:"capability_disabled",message:"capability not in this runtime generation"}));const c=m.filter(r=>Object.hasOwn(b,r)).map(r=>[r,b[r]]).filter(r=>typeof r[1]=="string"&&k.test(r[1])),[l,...g]=await Promise.allSettled([E&&k.test(E)?d(E):Promise.resolve({}),...c.map(([,r])=>d(r))]),p=h;C=B(n,l.status==="fulfilled"&&l.value?.TRANSFORMS||{},{shellOrigin:p,mount:G},r=>parent.postMessage({__frame_cap_telemetry:r},p));const w=r=>parent.postMessage({__frame_cap_telemetry:{kind:"cap-load-error",cap:r}},p),M=C;g.forEach((r,y)=>{const T=c[y][0];if(r.status!=="fulfilled"){w(T);return}try{r.value?.install?.(M)}catch{w(T)}});for(const[r,y]of _)y.queue.length===0&&Object.keys(y.impl).length>0||j(r,{code:m.includes(r)?"capability_disabled":"not_granted",message:"capability not available in this session"});await a,parent.postMessage({__frame_ready:!0},h)})}})();</script><!-- /frame-runtime --><meta name="viewport" content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}</style></head><body>
+<title>The Codex Harness, Explained — a guided index</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --ground:#f6f8f7; --panel:#ffffff; --panel-2:#eef2f1; --ink:#16211f; --ink-soft:#47605c; --ink-faint:#7c928e;
+    --line:#dbe4e1; --line-strong:#c2d0cc; --teal:#0b7d70; --teal-bright:#10a394; --amber:#b96a12; --amber-soft:#f3ede1;
+    --violet:#5a5ba8; --violet-soft:#ecebf6; --rose:#b1476a; --rose-soft:#f7e9ee; --code-bg:#f0f4f2;
+    --shadow:0 1px 2px rgba(20,40,36,.05),0 8px 28px rgba(20,40,36,.06);
+    --shadow-lift:0 2px 6px rgba(20,40,36,.08), 0 18px 44px rgba(20,40,36,.10);
+    --mono:ui-monospace,"SF Mono","JetBrains Mono","Menlo","Cascadia Code",monospace;
+    --sans:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,system-ui,sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground:#0d1413; --panel:#141d1b; --panel-2:#1a2523; --ink:#e6efec; --ink-soft:#a6bab5; --ink-faint:#6f857f;
+      --line:#24322f; --line-strong:#33453f; --teal:#37c3b1; --teal-bright:#4fdac8; --amber:#e0a15b; --amber-soft:#2a2114;
+      --violet:#9a9be0; --violet-soft:#1c1d2e; --rose:#e08aa5; --rose-soft:#2b1a20; --code-bg:#101816;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
+      --shadow-lift:0 2px 8px rgba(0,0,0,.4), 0 20px 50px rgba(0,0,0,.5);
+    }
+  }
+  :root[data-theme="light"]{color-scheme:light;--ground:#f6f8f7;--panel:#fff;--panel-2:#eef2f1;--ink:#16211f;--ink-soft:#47605c;--ink-faint:#7c928e;--line:#dbe4e1;--line-strong:#c2d0cc;--teal:#0b7d70;--teal-bright:#10a394;--amber:#b96a12;--amber-soft:#f3ede1;--violet:#5a5ba8;--violet-soft:#ecebf6;--rose:#b1476a;--rose-soft:#f7e9ee;--code-bg:#f0f4f2;--shadow:0 1px 2px rgba(20,40,36,.05),0 8px 28px rgba(20,40,36,.06);--shadow-lift:0 2px 6px rgba(20,40,36,.08),0 18px 44px rgba(20,40,36,.10);}
+  :root[data-theme="dark"]{color-scheme:dark;--ground:#0d1413;--panel:#141d1b;--panel-2:#1a2523;--ink:#e6efec;--ink-soft:#a6bab5;--ink-faint:#6f857f;--line:#24322f;--line-strong:#33453f;--teal:#37c3b1;--teal-bright:#4fdac8;--amber:#e0a15b;--amber-soft:#2a2114;--violet:#9a9be0;--violet-soft:#1c1d2e;--rose:#e08aa5;--rose-soft:#2b1a20;--code-bg:#101816;--shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);--shadow-lift:0 2px 8px rgba(0,0,0,.4),0 20px 50px rgba(0,0,0,.5);}
+
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--ground); color:var(--ink); font-family:var(--sans); line-height:1.6; -webkit-font-smoothing:antialiased; }
+  .wrap { max-width:940px; margin:0 auto; padding:0 24px 120px; }
+
+  header.masthead { max-width:940px; margin:0 auto; padding:66px 24px 40px; }
+  .eyebrow { font-family:var(--mono); font-size:12px; letter-spacing:.18em; text-transform:uppercase; color:var(--teal); font-weight:600; margin:0 0 20px; display:flex; align-items:center; gap:10px; }
+  .eyebrow::before { content:""; width:28px; height:2px; background:var(--teal); display:inline-block; }
+  h1 { font-family:var(--mono); font-size:clamp(30px,5vw,50px); line-height:1.04; letter-spacing:-.022em; font-weight:680; margin:0 0 20px; text-wrap:balance; }
+  h1 .dim { color:var(--ink-faint); font-weight:500; }
+  .lede { font-size:18px; color:var(--ink-soft); max-width:66ch; margin:0; }
+  .lede b { color:var(--ink); font-weight:600; }
+  .arc { margin-top:26px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; font-family:var(--mono); font-size:12.5px; color:var(--ink-faint); }
+  .arc span { color:var(--ink-soft); }
+  .arc b { color:var(--teal); font-weight:600; }
+  .arc .sep { color:var(--line-strong); }
+
+  .group { margin-top:48px; }
+  .grouphead { display:flex; align-items:baseline; gap:12px; margin:0 0 20px; }
+  .grouphead .gt { font-family:var(--mono); font-size:13px; letter-spacing:.13em; text-transform:uppercase; color:var(--ink-faint); font-weight:600; }
+  .grouphead .gd { font-size:13.5px; color:var(--ink-faint); }
+  .grouphead::after { content:""; flex:1; height:1px; background:var(--line); align-self:center; }
+
+  .cards { display:grid; gap:14px; }
+  a.card {
+    display:grid; grid-template-columns:56px 1fr auto; gap:20px; align-items:center;
+    text-decoration:none; color:inherit;
+    background:var(--panel); border:1px solid var(--line); border-radius:14px;
+    padding:20px 22px; box-shadow:var(--shadow);
+    transition:transform .14s ease, box-shadow .14s ease, border-color .14s ease;
+  }
+  a.card:hover { transform:translateY(-2px); box-shadow:var(--shadow-lift); border-color:var(--line-strong); }
+  a.card:focus-visible { outline:2px solid var(--teal); outline-offset:3px; }
+  .card .icon {
+    width:56px; height:56px; border-radius:13px; display:flex; align-items:center; justify-content:center;
+    font-size:27px; background:var(--panel-2); border:1px solid var(--line); flex:none;
+  }
+  .card .body { min-width:0; }
+  .card .titlerow { display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:4px; }
+  .card .num { font-family:var(--mono); font-size:12px; font-weight:700; color:var(--teal); }
+  .card h3 { margin:0; font-size:17.5px; letter-spacing:-.01em; }
+  .card p { margin:0; font-size:14px; color:var(--ink-soft); max-width:60ch; }
+  .card .tags { margin-top:9px; display:flex; gap:6px; flex-wrap:wrap; }
+  .card .tag { font-family:var(--mono); font-size:10.5px; letter-spacing:.03em; padding:2px 8px; border-radius:5px; color:var(--ink-soft); background:var(--panel-2); border:1px solid var(--line); }
+  .card .go { font-family:var(--mono); font-size:13px; color:var(--ink-faint); white-space:nowrap; display:flex; align-items:center; gap:6px; transition:color .14s, transform .14s; }
+  a.card:hover .go { color:var(--teal); transform:translateX(2px); }
+  /* accent-per-group via left rail */
+  a.card.real { border-left:3px solid var(--rose); }
+  a.card.real .num { color:var(--rose); }
+  a.card.real:hover .go { color:var(--rose); }
+
+  .note { margin-top:44px; background:var(--panel-2); border:1px solid var(--line); border-radius:12px; padding:16px 20px; font-size:13.5px; color:var(--ink-soft); }
+  .note b { color:var(--ink); font-weight:600; }
+  .foot { margin-top:34px; padding-top:22px; border-top:1px solid var(--line); color:var(--ink-faint); font-size:12.5px; font-family:var(--mono); }
+
+  @media (max-width:600px) {
+    a.card { grid-template-columns:46px 1fr; gap:14px; }
+    .card .icon { width:46px; height:46px; font-size:22px; }
+    .card .go { grid-column:1 / -1; justify-content:flex-start; margin-top:4px; }
+  }
+</style>
+
+<header class="masthead">
+  <p class="eyebrow">OpenAI Codex · the agent harness</p>
+  <h1>The Codex harness, explained <span class="dim">— from the map to the live wire</span></h1>
+  <p class="lede">Six pages that walk the Rust agent harness (<code>codex-rs</code>) end to end: first the <b>architecture and theory</b>, then <b>real traces captured from the running binary</b> — including the model writing code, a hidden memory agent, and the security gate approving a blocked command. Read top to bottom, or jump to whatever you need.</p>
+  <div class="arc">
+    <b>map</b> <span class="sep">→</span> <span>internals</span> <span class="sep">→</span> <span>walkthrough</span> <span class="sep">→</span> <span>follow-up</span> <span class="sep">→</span> <b>real traces</b> <span class="sep">→</span> <b>live security gate</b>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="group">
+    <div class="grouphead"><span class="gt">The map &amp; the theory</span><span class="gd">how it's built, and how a turn works</span></div>
+    <div class="cards">
+
+      <a class="card" href="https://claude.ai/code/artifact/315c85c7-9b8b-4a0b-bcfd-b4fb1d20446b">
+        <div class="icon">🧭</div>
+        <div class="body">
+          <div class="titlerow"><span class="num">01</span><h3>Architecture Map</h3></div>
+          <p>The whole system in one view: the four frontends, the two protocol enums they speak, the layered crate map, and a ranked list of the files to open first. Start here for the lay of the land.</p>
+          <div class="tags"><span class="tag">overview</span><span class="tag">crate map</span><span class="tag">read-first files</span></div>
+        </div>
+        <div class="go">Open →</div>
+      </a>
+
+      <a class="card" href="https://claude.ai/code/artifact/a3df0e42-bf54-4d95-bbd1-64c560d11483">
+        <div class="icon">🔬</div>
+        <div class="body">
+          <div class="titlerow"><span class="num">02</span><h3>Turn Internals</h3></div>
+          <p>A deep, line-referenced dive into <code>run_turn</code> and <code>run_sampling_request</code>: when memories are injected, whether prompts are rewritten, and exactly where &amp; when every command is security-checked.</p>
+          <div class="tags"><span class="tag">deep dive</span><span class="tag">file:line</span><span class="tag">context · memory · security</span></div>
+        </div>
+        <div class="go">Open →</div>
+      </a>
+
+      <a class="card" href="https://claude.ai/code/artifact/874db85b-1d3b-4656-8275-6a40e8bc9f1b">
+        <div class="icon">🎬</div>
+        <div class="body">
+          <div class="titlerow"><span class="num">03</span><h3>Turn Walkthrough</h3></div>
+          <p>The same machinery in plain English, traced call-by-call through a worked example. The gentlest way in — and now annotated with how a real captured run actually differed.</p>
+          <div class="tags"><span class="tag">plain english</span><span class="tag">worked example</span><span class="tag">reality notes</span></div>
+        </div>
+        <div class="go">Open →</div>
+      </a>
+
+      <a class="card" href="https://claude.ai/code/artifact/f481a82b-17e0-4c89-932e-4e1de322faac">
+        <div class="icon">🔁</div>
+        <div class="body">
+          <div class="titlerow"><span class="num">04</span><h3>Follow-up Turn</h3></div>
+          <p>Why the second message in a session barely re-injects anything: the diff-only context path, and the subtle reason the model still remembers everything. Verified against a real turn-2 capture.</p>
+          <div class="tags"><span class="tag">diff-only context</span><span class="tag">resume</span><span class="tag">verified</span></div>
+        </div>
+        <div class="go">Open →</div>
+      </a>
+
+    </div>
+  </div>
+
+  <div class="group">
+    <div class="grouphead"><span class="gt">Seen in the wild</span><span class="gd">captured from the running binary, not narrated</span></div>
+    <div class="cards">
+
+      <a class="card real" href="https://claude.ai/code/artifact/efb675c4-9a45-412f-8271-30607b0c8687">
+        <div class="icon">📡</div>
+        <div class="body">
+          <div class="titlerow"><span class="num">05</span><h3>Real Trace</h3></div>
+          <p>An actual headless run captured end to end: turn 1's 11-round-trip loop, the dependency-free program the model wrote, the surprise memory-consolidation agent running in parallel, and the resumed turn 2 (diff-only, 4 round-trips).</p>
+          <div class="tags"><span class="tag">captured run</span><span class="tag">event stream + spans</span><span class="tag">turn 1 + turn 2</span></div>
+        </div>
+        <div class="go">Open →</div>
+      </a>
+
+      <a class="card real" href="https://claude.ai/code/artifact/505ae5ca-9e50-4b2f-9531-7f90bc122f0b">
+        <div class="icon">🛡️</div>
+        <div class="body">
+          <div class="titlerow"><span class="num">06</span><h3>Security Gate, Live</h3></div>
+          <p>A real command blocked by the sandbox, escalated, and approved by the Guardian LLM reviewer — no human in the loop — then retried to success. With the literal <code>decision=approved · source=AutomatedReviewer</code> token captured verbatim.</p>
+          <div class="tags"><span class="tag">sandbox denial</span><span class="tag">guardian</span><span class="tag">decision token</span></div>
+        </div>
+        <div class="go">Open →</div>
+      </a>
+
+    </div>
+  </div>
+
+  <div class="note">
+    <b>A note on access:</b> each page is private to its owner by default — share a link explicitly for teammates to view it. The URLs are stable, so any future edits redeploy to these same addresses.
+  </div>
+
+  <div class="foot">
+    A six-part tour of codex-rs · theory grounded in the source, behavior captured from a real gpt-5.5 run · 2026-07-05.
+  </div>
+
+</div>
+
+</body></html>
