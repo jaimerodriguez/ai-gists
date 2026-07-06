@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<!-- saved from url=(0253)https://5cb33759-b5c3-492f-a023-8694b32a2d92.frame.claudeusercontent.com/_f/1783375556-f1e8/?__frame_t=EY8lXFi8py5TILGhWmogap_4.74f09080-168e-42cc-b4ee-670f3a3a30b7.88674bbc-0a95-4ccc-b675-b549afddf4cb.1783379158&__frame_v=manifest.bd9446110d1c7761.json -->
+<html data-theme="dark"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><!-- frame-runtime --><!--<base href="/_f/1783375556-f1e8/">--><base href="."><script>window.__FRAME_PREAMBLE={"capabilities":{"mcp":"mcp.BQqQVVN_.js"},"transforms":"_transforms.DYk1Ltlh.js"}</script><script>(function(){"use strict";const X="modulepreload",Y=function(e){return"/"+e},Z={},U=function(t,n,u){let o=Promise.resolve();function i(f){const a=new Event("vite:preloadError",{cancelable:!0});if(a.payload=f,window.dispatchEvent(a),!a.defaultPrevented)throw f}return o.then(f=>{for(const a of f||[])a.status==="rejected"&&i(a.reason);return t().catch(i)})},D=["light","dark","system"];function $(e){if(e==null||typeof e!="object")return!1;const t=e.__frame_init;return t!=null&&typeof t=="object"}function q(e){if(e==null||typeof e!="object")return!1;const t=e.__frame_theme;if(t==null||typeof t!="object")return!1;const n=t.theme;return typeof n=="string"&&D.includes(n)}function M(e){if(window===top||e.type==="auxclick"&&e.button!==1)return;const t=e.composedPath?e.composedPath():[e.target];let n=null;for(let f=0;f<t.length;f++){const a=t[f];if(a&&a.matches&&a.matches("a[href],area[href]")){n=a;break}}if(!n&&e.target&&e.target.closest&&(n=e.target.closest("a[href],area[href]")),!n)return;const u=n.getAttribute("href");if(!u)return;let o,i;try{o=new URL(u,document.baseURI),i=new URL(document.baseURI).origin}catch{return}(o.protocol==="http:"||o.protocol==="https:")&&o.origin!==i&&(e.preventDefault(),parent.postMessage({__frame_nav:!0,url:o.href},"*"))}const L={};function y(e){if(window===top)return;const t=Date.now();t-(L[e]||0)<500||(L[e]=t,parent.postMessage({__frame_engaged:!0,kind:e},"*"))}const F=2e3,T=["wheel","touchstart","touchmove","keydown","pointerdown"];let k=0;function B(e){e.isTrusted&&(k=Date.now())}function z(){addEventListener("click",M,!0),addEventListener("auxclick",M,!0)}function W(){for(let e=0;e<T.length;e++)addEventListener(T[e],B,{capture:!0,passive:!0});addEventListener("scroll",e=>{e.isTrusted&&Date.now()-k<F&&y("scroll")},{capture:!0,passive:!0}),addEventListener("pointermove",e=>{e.isTrusted&&y("pointer")},{capture:!0,passive:!0}),addEventListener("click",e=>{e.isTrusted&&y("click")},{capture:!0,passive:!0})}function x(e,t,n){const u=[...t.values()].filter(o=>o.targets.some(i=>i.startsWith(e+".")));return{wrap(o,i){const f=`${e}.${o}`,a=u.filter(s=>s.targets.includes(f));return a.length===0?(...s)=>{try{return i(...s)}catch(d){return Promise.reject(d)}}:(...s)=>{let d=s;for(const c of a){const l=c.module.parameters;if(l)try{d=l(d)}catch{return Promise.reject({code:"transform_error",id:c.id,scope:e,message:"parameters transform failed"})}}let m;try{m=i(...d)}catch(c){m=Promise.reject(c)}return m.then(c=>{for(let l=a.length-1;l>=0;l--){const h=a[l],p=h.module.returns;if(p)try{c=p(c)}catch{return n({id:h.id,scope:e,leg:"returns"}),c}}return c},c=>{for(let l=a.length-1;l>=0;l--){const h=a[l],p=h.module.throws;if(p)try{c=p(c)}catch{return n({id:h.id,scope:e,leg:"throws"}),Promise.reject(c)}}return Promise.reject(c)})}}}}function H(e,t,n,u=()=>{}){const o=new Set(e.changes??[]),i=new Map;for(const f of o){const a=t[f];a&&i.set(f,a)}return{contract:e.contract,changes:o,flags:new Set(e.flags??[]),capabilities:e.capabilities??{},transforms:i,shellOrigin:n.shellOrigin,mount:n.mount,pipe:f=>x(f,i,u)}}(function(){const e=Object.defineProperty,t=globalThis,n=["RTCPeerConnection","webkitRTCPeerConnection","RTCDataChannel","RTCIceCandidate","RTCSessionDescription","RTCRtpSender","RTCRtpReceiver"];let u=0;for(let o=0;o<n.length;o++){const i=n[o];try{e(t,i,{value:void 0,writable:!1,configurable:!1})}catch{try{delete t[i]}catch{}try{e(t,i,{value:void 0,writable:!1,configurable:!0})}catch{}}typeof t[i]=="function"&&u++}if(u&&window!==top)try{parent.postMessage({__frame_rtc_lockdown_failed:u},"*")}catch{}})();const K=1e4,G=Object.freeze([...window.__FRAME_PREAMBLE?.origins??["https://claude.ai","https://preview.claude.ai"]]);function J(e){for(const t of G)if(t.endsWith(":*"))try{const n=new URL(e);if(`${n.protocol}//${n.hostname}:*`===t)return!0}catch{}else if(e===t)return!0;return!1}const w=Object.freeze({...window.__FRAME_PREAMBLE?.capabilities??{}}),E=window.__FRAME_PREAMBLE?.transforms,C=/^[\w.-]+\.js$/,V=/^[a-z][a-z0-9_-]{0,63}$/;let A=null,g=null;function P(e,t,n){try{Object.defineProperty(e,t,{value:n,writable:!1,configurable:!1,enumerable:!0})}catch{try{Object.defineProperty(e,t,{value:n,writable:!1,configurable:!0,enumerable:!0})}catch{}}}let R=!1;function N(e){const t=document.documentElement;e==="light"||e==="dark"?(t.dataset.theme=e,t.style.colorScheme=e,R=!0):R&&(delete t.dataset.theme,t.style.colorScheme="",R=!1)}const _=new Map;function Q(e,t){const n=_.get(e);if(!n)return;Object.assign(n.impl,t),n.impl.__settled=()=>Promise.reject({code:"capability_removed",message:`${e}: method not in this runtime`});const u=n.queue;n.queue=[];for(const o of u){const i=t[o.method];i?i(...o.args).then(o.resolve,o.reject):o.reject({code:"capability_removed",message:`${e}.${o.method} is not in this runtime`})}}function O(e,t){const n=_.get(e);if(!n)return;n.impl.__settled=()=>Promise.reject(t);const u=n.queue;n.queue=[];for(const o of u)o.reject(t)}const j=Object.getOwnPropertyDescriptor(window,"claude");if(window!==top&&!(j&&j.writable===!1)){z(),W();const e=j?.value??{};P(window,"claude",e);const t=s=>{const d={impl:Object.create(null),queue:[]};_.set(s,d);const m=new Proxy(d.impl,{get:(c,l)=>{if(typeof l=="string"&&!(l==="then"||l==="toJSON"||l==="valueOf"))return l==="toString"?Object.prototype.toString:(...h)=>{const p=c[l]??c.__settled;return p?p(...h):new Promise((b,S)=>{d.queue.push({method:l,args:h,resolve:b,reject:S})})}},set:()=>!1});P(e,s,m)};for(const s of Object.keys(w)){if(e[s]!==void 0){P(e,s,e[s]);continue}t(s)}let n=null,u=null,o=0;const i=s=>{s.source!==parent||!J(s.origin)||$(s.data)&&(n=s.data.__frame_init,g=s.origin,removeEventListener("message",i),clearTimeout(o),u?.())};addEventListener("message",i),parent.postMessage({__frame_connect:!0},"*");const f=new Promise(s=>{u=s,o=setTimeout(()=>{removeEventListener("message",i),s()},K)}),a=document.readyState==="loading"?new Promise(s=>document.addEventListener("DOMContentLoaded",()=>s(),{once:!0})):Promise.resolve();f.then(async()=>{if(!n||!g){for(const r of _.keys())O(r,{code:"not_granted",message:"frame initialization did not arrive - capability unavailable"});return}N(n.theme);const s=g;addEventListener("message",r=>{r.source!==parent||r.origin!==s||q(r.data)&&N(r.data.__frame_theme.theme)});const d=r=>U(()=>import("/_runtime/"+r),void 0),m=Object.keys(n.capabilities??{});for(const r of m)Object.hasOwn(w,r)||V.test(r)&&e[r]===void 0&&(t(r),O(r,{code:"capability_disabled",message:"capability not in this runtime generation"}));const c=m.filter(r=>Object.hasOwn(w,r)).map(r=>[r,w[r]]).filter(r=>typeof r[1]=="string"&&C.test(r[1])),[l,...h]=await Promise.allSettled([E&&C.test(E)?d(E):Promise.resolve({}),...c.map(([,r])=>d(r))]),p=g;A=H(n,l.status==="fulfilled"&&l.value?.TRANSFORMS||{},{shellOrigin:p,mount:Q},r=>parent.postMessage({__frame_cap_telemetry:r},p));const b=r=>parent.postMessage({__frame_cap_telemetry:{kind:"cap-load-error",cap:r}},p),S=A;h.forEach((r,v)=>{const I=c[v][0];if(r.status!=="fulfilled"){b(I);return}try{r.value?.install?.(S)}catch{b(I)}});for(const[r,v]of _)v.queue.length===0&&Object.keys(v.impl).length>0||O(r,{code:m.includes(r)?"capability_disabled":"not_granted",message:"capability not available in this session"});await a,parent.postMessage({__frame_ready:!0},g)})}})();</script><!-- /frame-runtime --><meta name="viewport" content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}</style></head><body>
+<title>The Codex CLI Harness — How Requests Are Built and the Loop Runs</title>
+<style>
+  :root {
+    --ink: #0a0f16;
+    --ink-2: #10161f;
+    --panel: #ffffff;
+    --panel-2: #f4f6f9;
+    --paper: #eceff3;
+    --line: #d5dbe3;
+    --line-soft: #e4e8ee;
+    --text: #182028;
+    --text-2: #4a5663;
+    --text-3: #74808d;
+    --phosphor: #159e90;
+    --phosphor-tint: #e4f4f1;
+    --signal: #b4741a;
+    --signal-tint: #f8efdd;
+    --good: #2f8f52;
+    --crit: #c0433c;
+    --code-bg: #f3f5f8;
+
+    --mono: ui-monospace, "SF Mono", "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+    --maxw: 1240px;
+    --col: 74ch;
+    --r: 9px;
+    --r-sm: 6px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --panel: #10161f;
+      --panel-2: #0d131b;
+      --paper: #0a0f16;
+      --line: #232d39;
+      --line-soft: #1a2129;
+      --text: #dbe2ea;
+      --text-2: #97a3b1;
+      --text-3: #6c7885;
+      --phosphor: #46c7b8;
+      --phosphor-tint: #10201e;
+      --signal: #e0a13a;
+      --signal-tint: #211a0c;
+      --good: #57b26b;
+      --crit: #e06a63;
+      --code-bg: #0c1219;
+    }
+  }
+  :root[data-theme="light"] {
+    --panel: #ffffff; --panel-2: #f4f6f9; --paper: #eceff3;
+    --line: #d5dbe3; --line-soft: #e4e8ee;
+    --text: #182028; --text-2: #4a5663; --text-3: #74808d;
+    --phosphor: #159e90; --phosphor-tint: #e4f4f1;
+    --signal: #b4741a; --signal-tint: #f8efdd;
+    --good: #2f8f52; --crit: #c0433c; --code-bg: #f3f5f8;
+  }
+  :root[data-theme="dark"] {
+    --panel: #10161f; --panel-2: #0d131b; --paper: #0a0f16;
+    --line: #232d39; --line-soft: #1a2129;
+    --text: #dbe2ea; --text-2: #97a3b1; --text-3: #6c7885;
+    --phosphor: #46c7b8; --phosphor-tint: #10201e; --signal: #e0a13a; --signal-tint: #211a0c;
+    --good: #57b26b; --crit: #e06a63; --code-bg: #0c1219;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 16.5px;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 clamp(16px, 4vw, 40px); }
+
+  /* ---------- layout shell ---------- */
+  .shell { display: grid; grid-template-columns: 1fr; gap: 0; }
+  @media (min-width: 1000px) {
+    .shell { grid-template-columns: 250px minmax(0, 1fr); gap: clamp(32px, 5vw, 72px); align-items: start; }
+  }
+
+  /* ---------- sidebar / TOC ---------- */
+  .toc { display: none; }
+  @media (min-width: 1000px) {
+    .toc {
+      display: block; position: sticky; top: 0; align-self: start;
+      max-height: 100vh; overflow-y: auto; padding: 40px 0 40px;
+      border-right: 1px solid var(--line-soft);
+    }
+  }
+  .toc-brand { font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--phosphor); margin-bottom: 22px; font-weight: 600; }
+  .toc ol { list-style: none; margin: 0; padding: 0; counter-reset: toc -1; }
+  .toc li { margin: 0; }
+  .toc a {
+    display: grid; grid-template-columns: 2.1em 1fr; gap: .3em;
+    padding: 5px 0; color: var(--text-2); text-decoration: none;
+    font-size: 13.5px; line-height: 1.35; border-left: 2px solid transparent; padding-left: 10px;
+    transition: color .15s, border-color .15s;
+  }
+  .toc a::before { counter-increment: toc; content: counter(toc, decimal-leading-zero); font-family: var(--mono); font-size: 11px; color: var(--text-3); padding-top: 2px; }
+  .toc a:hover { color: var(--text); }
+  .toc a.active { color: var(--phosphor); border-left-color: var(--phosphor); }
+  .toc a.active::before { color: var(--phosphor); }
+
+  /* ---------- main ---------- */
+  main { padding: 0 0 120px; min-width: 0; }
+
+  /* ---------- hero ---------- */
+  .hero { padding: clamp(48px, 8vw, 96px) 0 40px; border-bottom: 1px solid var(--line); }
+  .eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--phosphor); font-weight: 600; margin: 0 0 18px; }
+  h1 { font-size: clamp(30px, 5vw, 50px); line-height: 1.05; letter-spacing: -.02em; font-weight: 800; margin: 0 0 20px; text-wrap: balance; max-width: 20ch; }
+  .lede { font-size: clamp(17px, 2.2vw, 20px); color: var(--text-2); max-width: 62ch; margin: 0 0 8px; line-height: 1.5; }
+  .lede strong { color: var(--text); font-weight: 650; }
+  .hero-meta { margin-top: 26px; display: flex; flex-wrap: wrap; gap: 8px 10px; font-family: var(--mono); font-size: 11.5px; }
+  .hero-meta span { border: 1px solid var(--line); border-radius: 100px; padding: 4px 11px; color: var(--text-2); }
+  .hero-meta span b { color: var(--text); font-weight: 600; }
+
+  /* ---------- telemetry strip ---------- */
+  .telemetry {
+    margin-top: 34px; border: 1px solid var(--line);
+    border-radius: var(--r); overflow: hidden; background: var(--panel);
+  }
+  .telemetry-head {
+    display: flex; align-items: center; gap: 9px; padding: 9px 16px;
+    background: var(--signal-tint); border-bottom: 1px solid var(--line);
+    font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--signal); font-weight: 600;
+  }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--signal); box-shadow: 0 0 0 3px color-mix(in srgb, var(--signal) 22%, transparent); }
+  .telemetry-grid { display: grid; grid-template-columns: repeat(2, 1fr); }
+  @media (min-width: 620px) { .telemetry-grid { grid-template-columns: repeat(4, 1fr); } }
+  .stat { padding: 16px 18px; border-right: 1px solid var(--line-soft); border-top: 1px solid var(--line-soft); }
+  .stat:nth-child(-n+4) { border-top: none; }
+  .stat .num { font-family: var(--mono); font-size: 26px; font-weight: 600; letter-spacing: -.02em; color: var(--text); font-variant-numeric: tabular-nums; line-height: 1; }
+  .stat .num small { font-size: 14px; color: var(--text-3); font-weight: 500; }
+  .stat .lbl { font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-3); margin-top: 8px; }
+
+  /* ---------- sections ---------- */
+  section { padding: 54px 0 8px; scroll-margin-top: 20px; border-bottom: 1px solid var(--line-soft); }
+  section:last-of-type { border-bottom: none; }
+  .sec-num { font-family: var(--mono); font-size: 12px; color: var(--phosphor); letter-spacing: .1em; font-weight: 600; }
+  h2 { font-size: clamp(23px, 3.4vw, 31px); line-height: 1.12; letter-spacing: -.015em; font-weight: 750; margin: 6px 0 6px; text-wrap: balance; }
+  .sec-sub { color: var(--text-2); font-size: 16px; margin: 0 0 26px; max-width: var(--col); }
+  h3 { font-size: 18.5px; font-weight: 700; letter-spacing: -.01em; margin: 34px 0 10px; }
+  h4 { font-size: 14px; font-weight: 700; margin: 24px 0 8px; font-family: var(--mono); letter-spacing: .02em; color: var(--text); }
+  p { max-width: var(--col); margin: 0 0 15px; }
+  main a { color: var(--phosphor); text-decoration: none; border-bottom: 1px solid color-mix(in srgb, var(--phosphor) 40%, transparent); }
+  main a:hover { border-bottom-color: var(--phosphor); }
+  ul, ol.body-list { max-width: var(--col); padding-left: 1.2em; margin: 0 0 16px; }
+  li { margin: 0 0 7px; }
+  strong { font-weight: 650; color: var(--text); }
+  em { color: var(--text-2); }
+
+  /* ---------- code / citations ---------- */
+  code {
+    font-family: var(--mono); font-size: .86em;
+    background: var(--code-bg); border: 1px solid var(--line-soft);
+    padding: 1px 5px; border-radius: 4px; color: var(--text);
+    word-break: break-word;
+  }
+  .cite {
+    font-family: var(--mono); font-size: .8em; white-space: nowrap;
+    background: transparent; border: 1px solid var(--line);
+    color: var(--text-2); padding: 1px 6px; border-radius: 100px;
+  }
+  .cite b { color: var(--phosphor); font-weight: 600; }
+  pre {
+    background: var(--code-bg); border: 1px solid var(--line);
+    border-radius: var(--r); padding: 16px 18px; overflow-x: auto;
+    margin: 0 0 18px; font-size: 13px; line-height: 1.6;
+    max-width: 100%;
+  }
+  pre code { background: none; border: none; padding: 0; font-size: inherit; color: var(--text); }
+  .tok-key { color: var(--phosphor); }
+  .tok-str { color: var(--signal); }
+  .tok-com { color: var(--text-3); font-style: italic; }
+  .tok-fn { color: var(--text); font-weight: 600; }
+
+  /* ---------- callouts ---------- */
+  .note {
+    max-width: var(--col); border: 1px solid var(--line); border-left: 3px solid var(--phosphor);
+    background: var(--panel); border-radius: var(--r-sm); padding: 14px 16px; margin: 0 0 20px; font-size: 15px; color: var(--text-2);
+  }
+  .note.trace { border-left-color: var(--signal); }
+  .note .tag { font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; font-weight: 600; color: var(--phosphor); display: block; margin-bottom: 5px; }
+  .note.trace .tag { color: var(--signal); }
+  .note strong { color: var(--text); }
+
+  /* ---------- tables ---------- */
+  .table-scroll { overflow-x: auto; margin: 0 0 20px; border: 1px solid var(--line); border-radius: var(--r); max-width: 100%; }
+  table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+  th, td { text-align: left; padding: 9px 13px; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+  th { font-family: var(--mono); font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--text-3); font-weight: 600; background: var(--panel-2); position: sticky; top: 0; }
+  tr:last-child td { border-bottom: none; }
+  td code { font-size: 12px; white-space: nowrap; }
+  td.wrap-cell code { white-space: normal; }
+  tbody tr:hover { background: color-mix(in srgb, var(--phosphor) 5%, transparent); }
+
+  /* ---------- request anatomy diagram ---------- */
+  .req {
+    border: 1px solid var(--line); border-radius: var(--r); overflow: hidden;
+    background: var(--panel); margin: 0 0 22px; font-family: var(--mono); font-size: 13px;
+  }
+  .req-head { background: var(--ink-2); color: #cdd7e2; padding: 10px 16px; display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; border-bottom: 1px solid var(--line); }
+  :root[data-theme="light"] .req-head { background: #12181f; }
+  @media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) .req-head { background: #12181f; } }
+  .req-head .method { color: var(--signal); font-weight: 600; }
+  .req-head .url { color: #9fd8d0; }
+  .req-body { padding: 4px 0; }
+  .req-row { display: grid; grid-template-columns: 200px 1fr; gap: 14px; padding: 7px 16px; border-bottom: 1px solid var(--line-soft); }
+  .req-row:last-child { border-bottom: none; }
+  .req-row .k { color: var(--phosphor); }
+  .req-row .v { color: var(--text-2); word-break: break-word; }
+  .req-row .v b { color: var(--text); font-weight: 600; }
+  @media (max-width: 560px) { .req-row { grid-template-columns: 1fr; gap: 2px; } }
+
+  /* ---------- loop sequence ---------- */
+  .loop { margin: 6px 0 22px; border-left: 2px solid var(--line); padding-left: 0; }
+  .rt { position: relative; padding: 0 0 8px 30px; margin-left: 12px; border-left: 2px solid var(--line); }
+  .rt:last-child { border-left-color: transparent; }
+  .rt::before {
+    content: ""; position: absolute; left: -8px; top: 3px; width: 14px; height: 14px; border-radius: 50%;
+    background: var(--panel); border: 2px solid var(--phosphor);
+  }
+  .rt.tool::before { border-color: var(--signal); }
+  .rt.final::before { background: var(--phosphor); }
+  .rt-head { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: baseline; margin: -4px 0 6px; }
+  .rt-id { font-family: var(--mono); font-size: 11px; font-weight: 600; color: var(--phosphor); letter-spacing: .04em; }
+  .rt.tool .rt-id { color: var(--signal); }
+  .rt-title { font-weight: 650; font-size: 15.5px; }
+  .rt-meta { font-family: var(--mono); font-size: 11px; color: var(--text-3); }
+  .rt p { font-size: 14.5px; margin: 0 0 6px; color: var(--text-2); max-width: 64ch; }
+
+  /* ---------- pattern cards ---------- */
+  .patterns { display: grid; grid-template-columns: 1fr; gap: 12px; margin: 8px 0 20px; }
+  @media (min-width: 680px) { .patterns { grid-template-columns: 1fr 1fr; } }
+  .pat { border: 1px solid var(--line); border-radius: var(--r); padding: 16px 17px; background: var(--panel); }
+  .pat .n { font-family: var(--mono); font-size: 11px; color: var(--phosphor); font-weight: 600; }
+  .pat h4 { margin: 6px 0 6px; font-family: var(--sans); font-size: 15.5px; letter-spacing: -.01em; }
+  .pat p { font-size: 13.8px; margin: 0; color: var(--text-2); max-width: none; }
+
+  /* ---------- life-of-a-turn flow ---------- */
+  .flow-intro { color: var(--text-2); font-size: 16px; max-width: var(--col); margin: 0 0 26px; }
+  .flow { display: flex; flex-direction: column; margin: 6px 0 8px; }
+  .step { display: grid; grid-template-columns: 44px 1fr; gap: 18px; position: relative; }
+  .step-rail { display: flex; flex-direction: column; align-items: center; }
+  .step-n {
+    width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; flex: none;
+    font-family: var(--mono); font-weight: 600; font-size: 14px; font-variant-numeric: tabular-nums;
+    color: var(--phosphor); border: 1.5px solid var(--phosphor); background: var(--panel);
+  }
+  .step.gate .step-n { color: var(--signal); border-color: var(--signal); }
+  .step.terminal .step-n { background: var(--phosphor); border-color: var(--phosphor); color: #06110f; }
+  .step-line { width: 2px; flex: 1 1 auto; background: var(--line); margin: 5px 0 0; min-height: 14px; }
+  .step:last-child .step-line { display: none; }
+  .step-body { padding: 6px 0 24px; min-width: 0; }
+  .step:last-child .step-body { padding-bottom: 2px; }
+  .step-title { font-size: 17px; font-weight: 720; letter-spacing: -.01em; margin: 0 0 4px; }
+  .step-title .anchor { font-family: var(--mono); font-size: 11px; font-weight: 500; color: var(--text-3); margin-left: 8px; letter-spacing: 0; }
+  .step-what { color: var(--text-2); font-size: 15px; margin: 0; max-width: 60ch; }
+  .step-what b { color: var(--text); font-weight: 650; }
+  .substeps { display: flex; flex-direction: column; gap: 8px; margin: 12px 0 2px; border-left: 1px solid var(--line-soft); padding-left: 16px; }
+  .sub { display: grid; grid-template-columns: 2.6em 1fr; gap: 10px; font-size: 14px; align-items: baseline; }
+  .sub .sn { font-family: var(--mono); font-size: 12px; color: var(--phosphor); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .step.gate .substeps .sn { color: var(--signal); }
+  .sub .st { color: var(--text-2); max-width: 58ch; }
+  .sub .st b { color: var(--text); font-weight: 650; }
+  .flow-tail { max-width: var(--col); margin: 18px 0 4px; font-size: 15px; color: var(--text-2); border-top: 1px solid var(--line-soft); padding-top: 18px; }
+
+  /* ---------- misc ---------- */
+  .kicker { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-3); margin: 30px 0 12px; font-weight: 600; }
+  hr.soft { border: none; border-top: 1px solid var(--line-soft); margin: 26px 0; max-width: var(--col); }
+  .footer { padding: 40px 0 0; color: var(--text-3); font-size: 13.5px; max-width: var(--col); }
+  .footer code { font-size: 12px; }
+
+  /* theme toggle */
+  .toggle {
+    position: fixed; bottom: 18px; right: 18px; z-index: 20;
+    font-family: var(--mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase;
+    background: var(--panel); color: var(--text-2); border: 1px solid var(--line);
+    border-radius: 100px; padding: 8px 14px; cursor: pointer; display: flex; align-items: center; gap: 7px;
+    box-shadow: 0 4px 18px rgba(0,0,0,.12);
+  }
+  .toggle:hover { color: var(--text); border-color: var(--phosphor); }
+  .toggle:focus-visible, a:focus-visible, .toc a:focus-visible { outline: 2px solid var(--phosphor); outline-offset: 3px; border-radius: 3px; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; margin: 0 0 24px; font-family: var(--mono); font-size: 12px; color: var(--text-2); }
+  .legend span { display: inline-flex; align-items: center; gap: 7px; }
+  .swatch { width: 11px; height: 11px; border-radius: 3px; }
+  .sw-p { background: var(--phosphor); }
+  .sw-s { background: var(--signal); }
+</style>
+
+<button class="toggle" id="themeToggle" aria-label="Toggle color theme">
+  <span id="themeIcon">○</span><span id="themeLabel">Theme</span>
+</button>
+
+<div class="wrap">
+  <div class="shell">
+
+    <!-- ================= SIDEBAR ================= -->
+    <nav class="toc" aria-label="Contents">
+      <div class="toc-brand">Codex Harness ▎Map</div>
+      <ol>
+        <li><a href="https://5cb33759-b5c3-492f-a023-8694b32a2d92.frame.claudeusercontent.com/_f/1783375556-f1e8/#flow" class="">The life of a turn</a></li>
+        <li><a href="https://5cb33759-b5c3-492f-a023-8694b32a2d92.frame.claudeusercontent.com/_f/1783375556-f1e8/#arch" class="active">Architecture &amp; the two protocols</a></li>
+        <li><a href="https://5cb33759-b5c3-492f-a023-8694b32a2d92.frame.claudeusercontent.com/_f/1783375556-f1e8/#anatomy">Anatomy of one request</a></li>
+        <li><a href="https://5cb33759-b5c3-492f-a023-8694b32a2d92.frame.claudeusercontent.com/_f/1783375556-f1e8/#loop">The agent loop, traced live</a></li>
+        <li><a href="https://5cb33759-b5c3-492f-a023-8694b32a2d92.frame.claudeusercontent.com/_f/1783375556-f1e8/#stream">The streaming state machine</a></li>
+        <li><a href="https://5cb33759-b5c3-492f-a023-8694b32a2d92.frame.claudeusercontent.com/_f/1783375556-f1e8/#tools">The tool system</a></li>
+        <li><a href="https://5cb33759-b5c3-492f-a023-8694b32a2d92.frame.claudeusercontent.com/_f/1783375556-f1e8/#safety">The safety &amp; execution gate</a></li>
+        <li><a href="https://5cb33759-b5c3-492f-a023-8694b32a2d92.frame.claudeusercontent.com/_f/1783375556-f1e8/#context">Context-window management</a></li>
+        <li><a href="https://5cb33759-b5c3-492f-a023-8694b32a2d92.frame.claudeusercontent.com/_f/1783375556-f1e8/#transport">Transport &amp; resilience</a></li>
+        <li><a href="https://5cb33759-b5c3-492f-a023-8694b32a2d92.frame.claudeusercontent.com/_f/1783375556-f1e8/#persist">Persistence &amp; sub-agents</a></li>
+        <li><a href="https://5cb33759-b5c3-492f-a023-8694b32a2d92.frame.claudeusercontent.com/_f/1783375556-f1e8/#patterns">Transferable patterns</a></li>
+        <li><a href="https://5cb33759-b5c3-492f-a023-8694b32a2d92.frame.claudeusercontent.com/_f/1783375556-f1e8/#refmap">File &amp; line reference map</a></li>
+        <li><a href="https://5cb33759-b5c3-492f-a023-8694b32a2d92.frame.claudeusercontent.com/_f/1783375556-f1e8/#method">How this was captured</a></li>
+      </ol>
+    </nav>
+
+    <!-- ================= MAIN ================= -->
+    <main>
+      <header class="hero">
+        <p class="eyebrow">Reverse-engineering guide ▎codex-rs</p>
+        <h1>How the Codex CLI builds a request and runs its loop</h1>
+        <p class="lede">A source-grounded walkthrough of OpenAI's Rust agent harness — <strong>submission → task → turn → sampling request → SSE stream → tool dispatch</strong> — cross-checked against a real, byte-for-byte capture of the CLI talking to the backend. <strong>New here? Start with <a href="https://5cb33759-b5c3-492f-a023-8694b32a2d92.frame.claudeusercontent.com/_f/1783375556-f1e8/#flow">The life of a turn</a></strong> — the whole flow in twelve plain-language steps. Everything else is that story in depth, each claim carrying a <code>file.rs:line</code> citation.</p>
+        <div class="hero-meta">
+          <span>commit <b>be33f80b</b></span>
+          <span>crate <b>codex-core</b></span>
+          <span>model observed <b>gpt-5.5</b></span>
+          <span>wire <b>Responses API</b></span>
+          <span>audience <b>harness builders</b></span>
+        </div>
+
+        <div class="telemetry" role="group" aria-label="Live trace summary">
+          <div class="telemetry-head"><span class="dot"></span> Captured from the wire · one 2-turn session</div>
+          <div class="telemetry-grid">
+            <div class="stat"><div class="num">5</div><div class="lbl">sampling round-trips / turn 1</div></div>
+            <div class="stat"><div class="num">17</div><div class="lbl">tools advertised per request</div></div>
+            <div class="stat"><div class="num">21.3<small>KB</small></div><div class="lbl">base instructions, byte-stable</div></div>
+            <div class="stat"><div class="num">97.6<small>%</small></div><div class="lbl">prompt-cache hit, final call</div></div>
+          </div>
+        </div>
+      </header>
+
+      <!-- ============ 0. THE LIFE OF A TURN ============ -->
+      <section id="flow">
+        <div class="sec-num">§ 00 · start here</div>
+        <h2>The life of a turn</h2>
+        <p class="sec-sub">One trip around the loop, in plain language — from the moment you hit Enter to the moment Codex answers. Everything after this section is the same story told in depth.</p>
+
+        <div class="flow">
+
+          <div class="step">
+            <div class="step-rail"><div class="step-n">1</div><div class="step-line"></div></div>
+            <div class="step-body">
+              <div class="step-title">A message arrives<span class="anchor">Op::UserInput</span></div>
+              <p class="step-what">You type and hit Enter. The frontend drops your message onto the <b>submission queue</b>; the session picks it up and starts a turn. From here on, everything the model, the tools, and the UI say travels back out on the <b>event queue</b>.</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-rail"><div class="step-n">2</div><div class="step-line"></div></div>
+            <div class="step-body">
+              <div class="step-title">The system prompt is chosen<span class="anchor">base_instructions</span></div>
+              <p class="step-what">Not rebuilt from scratch — <b>chosen by priority</b>: your config override, else the prompt this thread was started with, else the model's own built-in instructions (with the personality block spliced in). This ~21 KB of text becomes the request's top-level <code>instructions</code> and is deliberately kept out of the conversation so it stays a stable, cacheable header.</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-rail"><div class="step-n">3</div><div class="step-line"></div></div>
+            <div class="step-body">
+              <div class="step-title">The context is assembled</div>
+              <p class="step-what">Everything that <em>isn't</em> the system prompt becomes ordered messages in front of your request. In this exact order:</p>
+              <div class="substeps">
+                <div class="sub"><span class="sn">3.1</span><span class="st"><b>Permissions &amp; sandbox</b> are written out — twice: prose for the model to read, and precise XML for the machine.</span></div>
+                <div class="sub"><span class="sn">3.2</span><span class="st"><b>The environment</b> is captured: working directory, shell, date, timezone, and which folders are writable.</span></div>
+                <div class="sub"><span class="sn">3.3</span><span class="st"><b>Project instructions (AGENTS.md)</b> are found by walking up to the repo root and stitched together, root → cwd.</span></div>
+                <div class="sub"><span class="sn">3.4</span><span class="st"><b>Skills &amp; memories</b> are appended — the skill catalog, plus anything a mentioned skill or a memory provider injects for this turn.</span></div>
+                <div class="sub"><span class="sn">3.5</span><span class="st"><b>Connected apps</b> (MCP servers / connectors) are described, if they're enabled.</span></div>
+                <div class="sub"><span class="sn">3.6</span><span class="st"><b>Your actual message</b> is placed on the end.</span></div>
+                <div class="sub"><span class="sn">3.7</span><span class="st"><b>A timestamp</b> is slipped in right before sending, so the model always knows "now."</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-rail"><div class="step-n">4</div><div class="step-line"></div></div>
+            <div class="step-body">
+              <div class="step-title">The toolbox is laid out<span class="anchor">built_tools</span></div>
+              <p class="step-what">The harness works out which tools <b>this</b> model and config are allowed to see — shell, file-patching, web search, plan updates, MCP tools — and writes them as JSON specs. In the traced run that was <b>17 tools</b>. Big tool catalogs are hidden behind a searchable index so the prompt stays lean.</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-rail"><div class="step-n">5</div><div class="step-line"></div></div>
+            <div class="step-body">
+              <div class="step-title">The request is sealed and sent<span class="anchor">ResponsesApiRequest</span></div>
+              <p class="step-what">All of the above is packed into one request, stamped with identity headers and a <b>thread-stable cache key</b>, and streamed to the backend — over a WebSocket when possible, falling back to plain HTTP if not.</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-rail"><div class="step-n">6</div><div class="step-line"></div></div>
+            <div class="step-body">
+              <div class="step-title">The answer streams back</div>
+              <p class="step-what">Tokens arrive live and the assistant's text appears as it's written. As each piece of the reply <em>finalizes</em>, the harness asks one question: <b>is this a tool call, or just a message?</b></p>
+            </div>
+          </div>
+
+          <div class="step terminal">
+            <div class="step-rail"><div class="step-n">7</div><div class="step-line"></div></div>
+            <div class="step-body">
+              <div class="step-title">If it's just a message → the turn is done</div>
+              <p class="step-what">A bare reply with no tool call ends the turn. <b>Stop-hooks get a veto</b> (they can force a continuation); if none object, the loop breaks and the answer is handed back to you.</p>
+            </div>
+          </div>
+
+          <div class="step gate">
+            <div class="step-rail"><div class="step-n">8</div><div class="step-line"></div></div>
+            <div class="step-body">
+              <div class="step-title">If it's a tool call → it runs, carefully</div>
+              <p class="step-what">Every tool the model asks for goes through the same gauntlet before anything touches your machine:</p>
+              <div class="substeps">
+                <div class="sub"><span class="sn">8.1</span><span class="st">The call is parsed into a typed request and <b>recorded to history immediately</b>.</span></div>
+                <div class="sub"><span class="sn">8.2</span><span class="st"><b>Pre-tool hooks</b> get a chance to rewrite or block it.</span></div>
+                <div class="sub"><span class="sn">8.3</span><span class="st">The command is <b>classified</b>: auto-approve, ask first, or outright forbidden.</span></div>
+                <div class="sub"><span class="sn">8.4</span><span class="st"><b>Permission is checked</b> when needed — either an automated <b>guardian LLM</b> reviews it, or you're asked. The tool <b>pauses</b>, parked on a channel, until the decision comes back.</span></div>
+                <div class="sub"><span class="sn">8.5</span><span class="st">The <b>sandbox is applied</b> (Seatbelt, landlock, or a restricted token) and the command runs inside it.</span></div>
+                <div class="sub"><span class="sn">8.6</span><span class="st">If the sandbox <b>blocks</b> it, the harness may ask to retry with less confinement — never silently.</span></div>
+                <div class="sub"><span class="sn">8.7</span><span class="st"><b>Post-tool hooks</b> run, the output is truncated to fit, and the result is written back to history.</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-rail"><div class="step-n">9</div><div class="step-line"></div></div>
+            <div class="step-body">
+              <div class="step-title">The loop turns</div>
+              <p class="step-what">The tool's output becomes the <b>next request's input</b>, and we go back to step 5 — the model sees what happened and picks its next move. Several tools in one reply run <b>in parallel</b> but report back in the order they were asked.</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-rail"><div class="step-n">10</div><div class="step-line"></div></div>
+            <div class="step-body">
+              <div class="step-title">Context is watched the whole time</div>
+              <p class="step-what">After each round the harness checks how full the context window is. If it's filling up, the thread is <b>compacted</b> — summarized down to a checkpoint — before the loop continues, so a long task never simply runs out of room.</p>
+            </div>
+          </div>
+
+          <div class="step terminal">
+            <div class="step-rail"><div class="step-n">11</div><div class="step-line"></div></div>
+            <div class="step-body">
+              <div class="step-title">The turn closes and is saved</div>
+              <p class="step-what">When the model finally answers with no tool call, the turn ends, the reply is surfaced, and the entire exchange is appended to the session's <b>rollout file</b> on disk — the durable record that makes resume possible.</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-rail"><div class="step-n">12</div></div>
+            <div class="step-body">
+              <div class="step-title">Next time, it resumes</div>
+              <p class="step-what">Your follow-up message replays the whole transcript as input — but because the cache key is unchanged, <b>almost all of it is served from cache</b> (92–98% in the trace). You pay for the long history essentially once.</p>
+            </div>
+          </div>
+
+        </div>
+
+        <p class="flow-tail">That's the spine. Steps 2–5 are the <b>request build</b> (§02); steps 6–9 are the <b>loop and stream</b> (§03–§04); step 8 is the <b>safety gate</b> (§06); step 10 is <b>compaction</b> (§07); steps 11–12 are <b>persistence</b> (§09). Read on for any one of them in full.</p>
+      </section>
+
+      <!-- ============ 1. ARCHITECTURE ============ -->
+      <section id="arch">
+        <div class="sec-num">§ 01</div>
+        <h2>Architecture: four frontends, one core, two protocol enums</h2>
+        <p class="sec-sub">Everything the harness does hangs off a single mental model: a <em>Session</em> that consumes a queue of <code>Op</code> submissions and emits a queue of <code>EventMsg</code> events. Every frontend and every sub-agent speaks that same two-queue protocol.</p>
+
+        <p>The workspace splits along clean seams. The networking layer was lifted out of <code>core</code> into two dedicated crates, leaving <code>core</code> to own orchestration:</p>
+
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>Layer</th><th>Crate / dir</th><th>Owns</th></tr></thead>
+            <tbody>
+              <tr><td>Raw transport</td><td class="wrap-cell"><code>codex-client</code></td><td>HTTP/SSE primitives, reqwest builder, retry policy, proxy &amp; CA handling</td></tr>
+              <tr><td>Typed API</td><td class="wrap-cell"><code>codex-api</code></td><td><code>ResponsesApiRequest</code>, SSE→<code>ResponseEvent</code> mapping, rate-limit parsing, <code>Provider</code> URLs</td></tr>
+              <tr><td>Orchestration</td><td class="wrap-cell"><code>codex-core</code></td><td>Session, turn loop, tool router, sandbox, compaction, auth &amp; header wiring</td></tr>
+              <tr><td>Protocol</td><td class="wrap-cell"><code>codex-protocol</code></td><td><code>Op</code>, <code>EventMsg</code>, <code>ResponseItem</code>, policy enums, base prompt files</td></tr>
+              <tr><td>Frontends</td><td class="wrap-cell"><code>tui</code> · <code>exec</code> · <code>app-server</code> · <code>mcp</code></td><td>Attach to a Session's submission/event queues</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>The two queues</h3>
+        <p>A <code>Session</code> owns two channels <span class="cite">session/mod.rs:<b>539</b></span>. The <strong>submission queue (SQ)</strong> is bounded at 512 and carries <code>Op</code> commands inward; the <strong>event queue (EQ)</strong> is unbounded and carries <code>EventMsg</code> events outward. A <code>submission_loop</code> <span class="cite">session/handlers.rs:<b>703</b></span> matches on <code>sub.op</code> and dispatches. This is the entire external contract — and the reason delegation composes: a sub-agent is just a parent consuming a child's EQ and producing into its SQ (see §9).</p>
+
+        <pre><code><span class="tok-com"># the whole harness, in five hops</span>
+Op::UserInput ──▶ submission_loop ──▶ Session::spawn_task(RegularTask)
+                                          │
+                                          ▼
+                              RegularTask::run ──▶ run_turn ──loop──▶ run_sampling_request
+                                          │                                 │
+                              EventMsg ◀──┴── stream events ◀── SSE ◀───────┘</code></pre>
+
+        <p>The path from a user message to a running task is short: <code>user_input_or_turn</code> resolves the active turn context and calls <code>spawn_task(…, RegularTask::new())</code> <span class="cite">session/handlers.rs:<b>260</b></span>. <code>RegularTask::run</code> emits <code>TurnStarted</code> inline, then calls <code>run_turn</code> in a loop that re-fires while pending input remains <span class="cite">tasks/regular.rs:<b>73</b></span>.</p>
+      </section>
+
+      <!-- ============ 2. REQUEST ANATOMY ============ -->
+      <section id="anatomy">
+        <div class="sec-num">§ 02</div>
+        <h2>Anatomy of one request</h2>
+        <p class="sec-sub">Here is the very first sampling request of the traced session, exactly as it went over the wire — a <code>POST</code> to the Responses API. Every field below is reconstructed from the captured JSON and cross-referenced to the code that writes it.</p>
+
+        <div class="note trace"><span class="tag">Captured · request #030</span> This is the opening request of turn 1. <code>store:false</code>, <code>stream:true</code>, <code>tool_choice:"auto"</code>. The model is asked to solve a fresh task with three input items and seventeen tools.</div>
+
+        <div class="req">
+          <div class="req-head"><span class="method">POST</span> <span class="url">/backend-api/codex/responses</span> <span style="color:#8b97a4">HTTP/1.1</span></div>
+          <div class="req-body">
+            <div class="req-row"><span class="k">model</span><span class="v"><b>gpt-5.5</b></span></div>
+            <div class="req-row"><span class="k">instructions</span><span class="v"><b>21,335 chars</b> — the base prompt, sent as the top-level <code>instructions</code> field (not in <code>input</code>). Byte-identical across all 9 requests of both turns.</span></div>
+            <div class="req-row"><span class="k">input</span><span class="v"><b>3 items</b> → grows each round-trip (see §3)</span></div>
+            <div class="req-row"><span class="k">tools</span><span class="v"><b>17</b> specs · <code>exec_command</code>, <code>apply_patch</code>, <code>update_plan</code>, <code>web_search</code>, … </span></div>
+            <div class="req-row"><span class="k">reasoning</span><span class="v"><code>{ effort: "medium" }</code></span></div>
+            <div class="req-row"><span class="k">include</span><span class="v"><code>["reasoning.encrypted_content"]</code> — encrypted reasoning is round-tripped, not server-stored</span></div>
+            <div class="req-row"><span class="k">text</span><span class="v"><code>{ verbosity: "low" }</code></span></div>
+            <div class="req-row"><span class="k">prompt_cache_key</span><span class="v"><b>019f3649-…-286a</b> = the thread id. Stable across <em>both</em> turns.</span></div>
+            <div class="req-row"><span class="k">parallel_tool_calls</span><span class="v"><code>true</code></span></div>
+          </div>
+        </div>
+
+        <p>The struct that produces this is <code>ResponsesApiRequest</code> <span class="cite">codex-api/common.rs:<b>198</b></span>, assembled by <code>build_responses_request</code> <span class="cite">client.rs:<b>812</b></span>. Note the deliberate design choice visible in the payload: the <strong>base prompt lives in its own <code>Prompt.base_instructions</code> field</strong> <span class="cite">client_common.rs:<b>29</b></span> and maps to the API <code>instructions</code> slot — it is kept out of the mutable transcript so it stays a stable, cacheable prefix.</p>
+
+        <h3>What the base prompt is</h3>
+        <p>The 21 KB of instructions resolves through a strict priority chain <span class="cite">session/mod.rs:<b>598</b></span>: config override → the base instructions stored in conversation history → the current model's instructions. History wins over the live model, so a resumed thread keeps the prompt it started with. The per-model text lives in <code>models-manager/models.json</code>, and a <code>{{ personality }}</code> placeholder <span class="cite">openai_models.rs:<b>34</b></span> is substituted at assembly time. The captured prompt opens with a "deeply pragmatic, effective software engineer" personality block — proof the template substitution happened before the request left the machine.</p>
+
+        <h3>The <code>input</code> array — ordered for cache stability</h3>
+        <p>Everything that is <em>not</em> the base prompt becomes ordered items in <code>input</code>. The opening three, verbatim from the capture:</p>
+
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>#</th><th>Role</th><th>Content (captured)</th></tr></thead>
+            <tbody>
+              <tr><td>0</td><td><code>developer</code></td><td class="wrap-cell"><code>&lt;permissions instructions&gt;</code> (sandbox = workspace-write, approval = never, writable roots) + <code>&lt;skills_instructions&gt;</code></td></tr>
+              <tr><td>1</td><td><code>user</code></td><td class="wrap-cell"><code>&lt;environment_context&gt;</code>: cwd, shell, date, timezone, and a nested <code>&lt;permission_profile&gt;</code> with per-path <code>&lt;entry access="…"&gt;</code> elements</td></tr>
+              <tr><td>2</td><td><code>user</code></td><td class="wrap-cell">The actual task prompt</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>This whole bundle is built by <code>build_initial_context_with_world_state_and_mcp</code> <span class="cite">session/mod.rs:<b>3145</b></span>, which accumulates developer, contextual-user, and separate-developer sections and materializes them as <code>ResponseItem::Message</code>s. The ordering is deliberately <strong>prefix-stable</strong>: model-switch guidance goes first "so model-specific guidance is read before any other context diffs" <span class="cite">context_manager/updates.rs:<b>243</b></span>, and full context metadata is emitted once with only diffs afterward. Combined with a thread-stable <code>prompt_cache_key</code>, this maximizes server-side prefix-cache hits.</p>
+
+        <div class="note trace"><span class="tag">Captured · dual representation</span> Sandbox &amp; approval policy appear <strong>twice</strong> in the same request: as prose in the developer <code>&lt;permissions instructions&gt;</code> message, and as machine-readable XML in the user <code>&lt;environment_context&gt;</code> block — hedging against model interpretation gaps.</div>
+
+        <h3>The headers &amp; the metadata triple-projection</h3>
+        <p>One object, <code>CodexResponsesMetadata</code> <span class="cite">responses_metadata.rs:<b>137</b></span>, is projected three ways: into a canonical <code>x-codex-turn-metadata</code> JSON blob, into flat <code>client_metadata</code> keys inside the body, and into direct HTTP headers. The capture shows all three carrying the same identifiers:</p>
+        <pre><code><span class="tok-key">x-codex-turn-metadata</span>: {<span class="tok-str">"session_id"</span>:"019f3649…", <span class="tok-str">"turn_id"</span>:"019f3649…",
+   <span class="tok-str">"window_id"</span>:"…:0", <span class="tok-str">"request_kind"</span>:"turn", <span class="tok-str">"sandbox"</span>:"seatbelt",
+   <span class="tok-str">"workspaces"</span>:{"…/workspace":{<span class="tok-str">"latest_git_commit_hash"</span>:"86c80f0b…",
+                                 <span class="tok-str">"has_changes"</span>:false}}}
+<span class="tok-key">originator</span>: codex_exec        <span class="tok-com"># only sent when non-default</span>
+<span class="tok-key">session-id / thread-id / x-client-request-id</span>: 019f3649…286a
+<span class="tok-key">authorization</span> + <span class="tok-key">chatgpt-account-id</span>          <span class="tok-com"># ChatGPT-auth mode</span></code></pre>
+        <p>The response comes back stamped with rate-limit telemetry (<code>x-codex-primary-used-percent</code>, reset timers), an <code>x-models-etag</code> for the model catalog, and <code>x-oai-request-id</code> — all parsed into synthetic stream events before the body is even read (§4).</p>
+      </section>
+
+      <!-- ============ 3. THE LOOP ============ -->
+      <section id="loop">
+        <div class="sec-num">§ 03</div>
+        <h2>The agent loop, traced live</h2>
+        <p class="sec-sub">The docstring on <code>run_turn</code> states the contract plainly: each sampling request, the model replies with either function calls or an assistant message; a bare message ends the turn <span class="cite">session/turn.rs:<b>128</b></span>. Below is turn 1 of the capture — five real round-trips — annotated with what grew in <code>input</code> each time.</p>
+
+        <div class="legend">
+          <span><span class="swatch sw-p"></span> model reasoning / message</span>
+          <span><span class="swatch sw-s"></span> tool execution feeds next request</span>
+        </div>
+
+        <div class="loop">
+          <div class="rt">
+            <div class="rt-head"><span class="rt-id">RT-1 · req #030</span><span class="rt-title">Plan &amp; first probe</span><span class="rt-meta">input: 3 items</span></div>
+            <p>Model streams an assistant message ("I'll add the two files, then run the tests") and one <code>exec_command</code> call: <code>pwd &amp;&amp; rg --files …</code>. The turn loop records the call, spawns its tool future, sets <code>needs_follow_up</code>.</p>
+          </div>
+          <div class="rt tool">
+            <div class="rt-head"><span class="rt-id">RT-2 · req #032</span><span class="rt-title">Tool output returns</span><span class="rt-meta">input: 6 items (+3)</span></div>
+            <p>The <code>function_call</code> and its <code>function_call_output</code> (exit code 127 — <code>rg</code> absent) are appended. Model reasons about the failure and pivots.</p>
+          </div>
+          <div class="rt tool">
+            <div class="rt-head"><span class="rt-id">RT-3 · req #035</span><span class="rt-title">Parallel fallback probes</span><span class="rt-meta">input: 12 items (+6)</span></div>
+            <p>Now visible: an <strong>encrypted reasoning item</strong> (996 bytes, round-tripped) plus <em>two</em> parallel <code>exec_command</code> calls (<code>find …</code> and <code>ls</code>), whose two outputs both land in this request — <code>FuturesOrdered</code> preserved emission order.</p>
+          </div>
+          <div class="rt tool">
+            <div class="rt-head"><span class="rt-id">RT-4 · req #039</span><span class="rt-title">apply_patch (custom tool)</span><span class="rt-meta">input: 15 items (+3)</span></div>
+            <p>Model emits a <code>custom_tool_call</code> named <code>apply_patch</code> — a freeform grammar payload, not JSON — creating <code>fib.py</code>. Its <code>custom_tool_call_output</code> reports <code>Exit code: 0 … Success</code>.</p>
+          </div>
+          <div class="rt tool">
+            <div class="rt-head"><span class="rt-id">RT-5 · req #042</span><span class="rt-title">Run tests</span><span class="rt-meta">input: 18 items (+3)</span></div>
+            <p><code>exec_command: python3 test_fib.py</code> → exit 0. Output returns.</p>
+          </div>
+          <div class="rt final">
+            <div class="rt-head"><span class="rt-id">END · resp #042</span><span class="rt-title">Bare assistant message → turn complete</span><span class="rt-meta">14,037 in / 13,696 cached</span></div>
+            <p>The final response contains only an assistant message (no tool call). <code>needs_follow_up</code> stays false, stop-hooks pass, the loop breaks. Usage: <strong>97.6% of input tokens served from cache</strong>.</p>
+          </div>
+        </div>
+
+        <h3>Where the decisions live</h3>
+        <p>Inside <code>run_turn</code>'s loop <span class="cite">session/turn.rs:<b>225</b></span>, one iteration does: drain pending input → maybe inject a current-time reminder → build the sampling input from history via <code>clone_history().for_prompt(...)</code> <span class="cite">session/turn.rs:<b>271</b></span> → call <code>run_sampling_request</code>. On return it recomputes token status and branches:</p>
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>Condition</th><th>Action</th><th>Site</th></tr></thead>
+            <tbody>
+              <tr><td><code>needs_follow_up</code> &amp;&amp; token limit reached</td><td>run auto-compaction, then <code>continue</code></td><td><span class="cite">turn.rs:<b>346</b></span></td></tr>
+              <tr><td>!<code>needs_follow_up</code></td><td>run stop-hooks; if none block, break — turn done</td><td><span class="cite">turn.rs:<b>371</b></span></td></tr>
+              <tr><td><code>needs_follow_up</code> (tool ran)</td><td><code>continue</code> — next round-trip</td><td><span class="cite">turn.rs:<b>416</b></span></td></tr>
+              <tr><td><code>InvalidImageRequest</code></td><td>sanitize last-turn images, retry once</td><td><span class="cite">turn.rs:<b>421</b></span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p><code>run_sampling_request</code> itself wraps the streaming call in a retry loop bounded by <code>stream_max_retries()</code>, rebuilding the prompt from history each attempt <span class="cite">session/turn.rs:<b>1103</b></span>. Two errors abort immediately rather than retry: <code>ContextWindowExceeded</code> and <code>UsageLimitReached</code>.</p>
+
+        <div class="note trace"><span class="tag">Captured · cross-turn resume</span> Turn 2 (<code>codex exec resume --last</code>) opened with a <strong>20-item <code>input</code></strong>: the entire turn-1 transcript replayed, with the new user message appended at index 19. The <code>prompt_cache_key</code> was <em>unchanged</em> (same thread id), so 13,184 of 14,210 input tokens (92.8%) hit cache on the very first request of the new turn.</div>
+      </section>
+
+      <!-- ============ 4. STREAMING ============ -->
+      <section id="stream">
+        <div class="sec-num">§ 04</div>
+        <h2>The streaming state machine</h2>
+        <p class="sec-sub">A single <code>match</code> inside <code>try_run_sampling_request</code> <span class="cite">session/turn.rs:<b>1986</b></span> consumes the SSE stream event by event, turning wire events into internal <code>ResponseEvent</code>s and firing tool futures the instant a call completes.</p>
+
+        <p>Two mapping layers sit between the socket and the loop. First, <code>process_responses_event</code> <span class="cite">codex-api/sse/responses.rs:<b>325</b></span> maps wire event <code>type</code>s to <code>codex_api::ResponseEvent</code>; response <em>headers</em> are drained into synthetic events (<code>ServerModel</code>, <code>RateLimits</code>, <code>ModelsEtag</code>) before the body loop begins. Second, <code>map_response_events</code> <span class="cite">client.rs:<b>1898</b></span> buffers <code>OutputItemDone</code> items so the next WebSocket request can send only a delta (§8).</p>
+
+        <div class="note trace"><span class="tag">Captured · SSE sequence, request #030</span> 39 events, in this order:</div>
+        <pre><code>response.created
+response.in_progress
+response.output_item.added        <span class="tok-com"># assistant message begins</span>
+response.content_part.added
+response.output_text.delta   ×27   <span class="tok-com"># streamed tokens</span>
+response.output_text.done
+response.content_part.done
+response.output_item.done          <span class="tok-com"># message finalized → recorded to history</span>
+response.output_item.added         <span class="tok-com"># function_call begins</span>
+response.function_call_arguments.delta
+response.function_call_arguments.done
+response.output_item.done          <span class="tok-com"># tool call finalized → tool future spawned</span>
+response.completed                  <span class="tok-com"># token_usage, end_turn → loop decision</span></code></pre>
+
+        <h3>The critical move: dispatch on <code>output_item.done</code></h3>
+        <p>When an item finalizes, <code>handle_output_item_done</code> <span class="cite">stream_events_utils.rs:<b>405</b></span> runs <code>ToolRouter::build_tool_call</code>. If it's a tool call, the item is recorded to history <em>immediately</em>, and a boxed future is pushed onto an in-flight <code>FuturesOrdered</code>:</p>
+        <pre><code><span class="tok-com">// stream_events_utils.rs:436</span>
+<span class="tok-key">let</span> tool_future = Box::pin(
+    ctx.tool_runtime.clone().<span class="tok-fn">handle_tool_call</span>(call, cancellation_token));
+output.needs_follow_up = <span class="tok-key">true</span>;
+output.tool_future = Some(tool_future);</code></pre>
+        <p>Because the stream keeps flowing while tools run, a model can emit several calls in one response and they execute concurrently — but <code>FuturesOrdered</code> <span class="cite">session/turn.rs:<b>1926</b></span> yields results in emission order, so the <code>function_call_output</code> items appended to history preserve the order the model asked for. On <code>response.completed</code>, remaining in-flight tools are drained <span class="cite">session/turn.rs:<b>2364</b></span> before the loop returns.</p>
+
+        <p>The stream terminates on <code>response.completed</code> (returns immediately) or errors: a byte-stream ending early yields <code>"stream closed before response.completed"</code>, and a stall past the idle timeout (default <strong>300,000 ms</strong>) yields <code>"idle timeout waiting for SSE"</code> <span class="cite">codex-api/sse/responses.rs:<b>502</b></span>.</p>
+      </section>
+
+      <!-- ============ 5. TOOLS ============ -->
+      <section id="tools">
+        <div class="sec-num">§ 05</div>
+        <h2>The tool system</h2>
+        <p class="sec-sub">Four concerns kept separate: the <strong>spec</strong> the model sees, the <strong>runtime</strong> that executes, the <strong>registry</strong> that maps names, and the <strong>router</strong> that schedules. A single dispatch funnel unifies them.</p>
+
+        <p>The 17 tools in the captured request are computed per-request by <code>build_tool_specs_and_registry</code> <span class="cite">tools/spec_plan.rs:<b>171</b></span>, gated by model family and feature flags. Visibility is a first-class enum, not a boolean <span class="cite">tools/tool_executor.rs:<b>15</b></span>:</p>
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>Exposure</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><code>Direct</code></td><td>In the initial model-visible list (and code-mode nested surface)</td></tr>
+              <tr><td><code>Deferred</code></td><td>Registered but hidden; discoverable via <code>tool_search</code> — keeps huge MCP catalogs out of the prompt</td></tr>
+              <tr><td><code>DirectModelOnly</code></td><td>Model-visible but excluded from code-mode</td></tr>
+              <tr><td><code>Hidden</code></td><td>Dispatchable, never advertised (e.g. legacy <code>shell_command</code> under unified_exec)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Two tool shapes in the capture</h3>
+        <p><strong><code>exec_command</code></strong> is the unified-exec shell tool — a <code>function</code> spec with a rich schema (<code>cmd</code>, <code>workdir</code>, <code>yield_time_ms</code>, <code>sandbox_permissions</code>, …). It returns a session id so a follow-up <code>write_stdin</code> can resume the same live PTY; up to 64 processes persist across calls <span class="cite">unified_exec/mod.rs:<b>1</b></span>.</p>
+        <p><strong><code>apply_patch</code></strong> is the instructive one — a <code>custom</code> (freeform) tool constrained by a <strong>Lark grammar</strong> sent inline in the spec:</p>
+        <pre><code><span class="tok-com">// captured apply_patch.format</span>
+{ <span class="tok-key">type</span>: <span class="tok-str">"grammar"</span>, <span class="tok-key">syntax</span>: <span class="tok-str">"lark"</span>, <span class="tok-key">definition</span>:
+  <span class="tok-str">"start: begin_patch hunk+ end_patch
+   add_hunk: \"*** Add File: \" filename LF add_line+
+   update_hunk: \"*** Update File: \" filename LF change_move? change? …"</span> }</code></pre>
+        <p>Its payload arrives as a <code>custom_tool_call</code> with an <code>input</code> string, parsed by <code>codex_apply_patch::parse_patch</code>. The parser is deliberately lenient (<code>PARSE_IN_STRICT_MODE = false</code>) to tolerate model whitespace quirks <span class="cite">apply-patch/parser.rs:<b>53</b></span>.</p>
+
+        <h3>Routing, dispatch, parallelism</h3>
+        <p><code>build_tool_call</code> <span class="cite">tools/router.rs:<b>112</b></span> parses a finalized <code>ResponseItem</code> into a typed <code>ToolPayload</code> (<code>Function</code>, <code>Custom</code>, or <code>ToolSearch</code>). Every call then passes through one funnel — <code>dispatch_any_with_terminal_outcome</code> <span class="cite">tools/registry.rs:<b>405</b></span> — which centralizes telemetry, payload-kind validation, <strong>PreToolUse / PostToolUse hooks</strong>, and error shaping, so handlers stay tiny.</p>
+        <p>Parallelism is governed by a single shared <code>RwLock</code> <span class="cite">tools/parallel.rs:<b>133</b></span>: parallel-safe tools take a <em>read</em> lock (concurrent); anything else takes a <em>write</em> lock (globally exclusive). A tool opts in via <code>supports_parallel_tool_calls()</code> — true for unified-exec and read-only MCP tools. That is exactly the RT-3 behavior seen in the trace: two <code>exec_command</code> probes ran concurrently.</p>
+      </section>
+
+      <!-- ============ 6. SAFETY ============ -->
+      <section id="safety">
+        <div class="sec-num">§ 06</div>
+        <h2>The safety &amp; execution gate</h2>
+        <p class="sec-sub">Between "model asked to run a command" and "the command runs" sits a pipeline: classify → approve → sandbox → execute → escalate-on-failure. Its cleanest idea is keeping two policy axes orthogonal.</p>
+
+        <h3>Two axes, one cross-product</h3>
+        <p><strong>Approval policy</strong> (when to ask a human) is independent of <strong>sandbox policy</strong> (what a process may touch). <code>AskForApproval</code> <span class="cite">protocol.rs:<b>901</b></span> is <code>UnlessTrusted | OnRequest | Granular | Never</code>; <code>SandboxPolicy</code> <span class="cite">protocol.rs:<b>988</b></span> is <code>ReadOnly | WorkspaceWrite | ExternalSandbox | DangerFullAccess</code>, lowered to a runtime <code>PermissionProfile</code> <span class="cite">models.rs:<b>408</b></span>. The captured session ran <code>workspace-write</code> + <code>never</code> — auto-approve but always sandboxed (the metadata confirmed <code>sandbox:"seatbelt"</code>).</p>
+
+        <p>Every command collapses to one closed enum via <code>create_exec_approval_requirement_for_command</code> <span class="cite">exec_policy.rs:<b>269</b></span>: <code>Skip | NeedsApproval | Forbidden</code>. Commands are canonicalized first <span class="cite">command_canonicalization.rs:<b>14</b></span> so <code>/bin/bash -lc</code> and <code>bash -lc</code> share one approval key — but exact script text is preserved when it can't be safely tokenized.</p>
+
+        <h3>Sandbox-first, escalate on failure</h3>
+        <p>Commands run sandboxed by default (Seatbelt on macOS, bubblewrap+seccomp on Linux, restricted-token on Windows). Only when execution is <em>detected</em> as a sandbox denial <span class="cite">sandboxing/denial.rs:<b>6</b></span> does <code>ToolOrchestrator::run</code> <span class="cite">tools/orchestrator.rs:<b>134</b></span> consider a reduced-sandbox retry — and it refuses that retry when it would silently drop denied-read restrictions.</p>
+
+        <h3>The guardian: an optional, fail-closed LLM reviewer</h3>
+        <p>When approval policy is <code>OnRequest</code>/<code>Granular</code> and the reviewer is set to auto <span class="cite">guardian/review.rs:<b>168</b></span>, a would-be human prompt is instead routed to a locked-down <strong>read-only, <code>approval=never</code> review session</strong>. It returns strict JSON <code>{ outcome: allow|deny, … }</code>, treats the parent transcript as <em>untrusted evidence</em>, and <strong>fails closed to Deny</strong> on any timeout/parse error <span class="cite">guardian/mod.rs:<b>1</b></span>. A circuit breaker interrupts the turn after repeated denials. Crucially, the guardian replaces the prompt — never the sandbox.</p>
+
+        <h3>The suspend/resume primitive</h3>
+        <p>An approval parks the tool future on a registered <code>oneshot</code>: insert <code>tx</code> into <code>pending_approvals[id]</code>, emit <code>ExecApprovalRequest</code>, then <code>rx.await.unwrap_or(Abort)</code> <span class="cite">session/mod.rs:<b>2194</b></span>. The frontend's <code>Op::ExecApproval{id, decision}</code> calls <code>notify_approval</code>, which sends on the channel and unparks the future. A dropped channel defaults to <code>Abort</code> — the safe default.</p>
+      </section>
+
+      <!-- ============ 7. CONTEXT ============ -->
+      <section id="context">
+        <div class="sec-num">§ 07</div>
+        <h2>Context-window management</h2>
+        <p class="sec-sub">Token accounting, auto-compaction, and truncation — the machinery that keeps a long thread inside the window without a client-side tokenizer.</p>
+
+        <h3>Accounting: trust the server, estimate the delta</h3>
+        <p>The "current context size" the harness reasons about is the server's last-turn <code>total_tokens</code> plus a coarse byte-based estimate of items appended locally since <span class="cite">context_manager/history.rs:<b>328</b></span> (≈4 bytes/token). Two ceilings gate compaction <span class="cite">session/context_window.rs:<b>65</b></span>: an auto-compact limit at <code>min(config, 90% of window)</code> <span class="cite">openai_models.rs:<b>444</b></span>, and a full-window backstop at ~95% effective.</p>
+
+        <h3>Compaction: three implementations behind one dispatcher</h3>
+        <p><code>run_auto_compact</code> <span class="cite">session/turn.rs:<b>917</b></span> picks a strategy:</p>
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>Variant</th><th>Mechanism</th><th>Site</th></tr></thead>
+            <tbody>
+              <tr><td>Token-budget</td><td>No summary — just installs a fresh window &amp; re-injects context</td><td class="wrap-cell"><code>compact_token_budget.rs</code></td></tr>
+              <tr><td>Remote v2</td><td>Streams a normal request with a <code>CompactionTrigger</code> sentinel; expects exactly one <code>Compaction</code> output item</td><td class="wrap-cell"><code>compact_remote_v2.rs</code></td></tr>
+              <tr><td>Remote v1</td><td>Dedicated <code>/responses/compact</code> endpoint returns new history</td><td class="wrap-cell"><code>compact_remote.rs</code></td></tr>
+              <tr><td>Local</td><td>Client appends a summarization prompt, drains to completion, rebuilds history</td><td class="wrap-cell"><code>compact.rs</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="note trace"><span class="tag">Captured · beta header</span> The session advertised <code>x-codex-beta-features: remote_compaction_v2</code> on every request — the remote-v2 path was armed (though the short task never hit the limit to trigger it).</div>
+
+        <p>Compaction is modeled as a <strong>replayable checkpoint, not a mutation</strong>: history replacement is persisted as a <code>Compacted</code> rollout item carrying the full <code>replacement_history</code> plus monotonic window ids <span class="cite">session/mod.rs:<b>3007</b></span>. Resume/fork reconstructs exact state by scanning newest-first to the last checkpoint and replaying only the suffix <span class="cite">session/rollout_reconstruction.rs:<b>113</b></span> — O(suffix), not O(history).</p>
+
+        <h3>Truncation: middle-out, at ingest</h3>
+        <p>Large tool outputs are truncated <em>when recorded</em>, not at prompt-build time <span class="cite">context_manager/history.rs:<b>370</b></span>, using the model's <code>TruncationPolicy</code> scaled ×1.2 for serialization overhead. The truncator keeps head <em>and</em> tail, cutting the middle with a visible marker — so both the command echo and the final error/result survive <span class="cite">utils/output-truncation/lib.rs:<b>25</b></span>.</p>
+      </section>
+
+      <!-- ============ 8. TRANSPORT ============ -->
+      <section id="transport">
+        <div class="sec-num">§ 08</div>
+        <h2>Transport &amp; resilience</h2>
+        <p class="sec-sub">One wire protocol (Responses API), two transports (WebSocket preferred, HTTP fallback), two tiers of retry, and an incremental-request trick that leans on the persistent socket.</p>
+
+        <h3>URL &amp; auth routing</h3>
+        <p>The base URL is chosen by auth mode <span class="cite">model-provider-info/lib.rs:<b>241</b></span>: ChatGPT-family auth → <code>https://chatgpt.com/backend-api/codex</code>; API-key → <code>https://api.openai.com/v1</code>. The captured session used ChatGPT auth (hence <code>chatgpt-account-id</code> and the <code>/backend-api/codex/responses</code> path).</p>
+
+        <div class="note trace"><span class="tag">Captured · WebSocket→HTTP fallback, observed live</span> The trace shows both <code>GET /codex/responses</code> returning <strong>101 Switching Protocols</strong> (WebSocket upgrade, header <code>openai-beta: responses_websockets=2026-02-06</code>) <em>and</em> subsequent <code>POST /codex/responses</code> returning 200 with SSE bodies. Because the logging proxy could not tunnel WS binary frames, the session degraded to HTTP SSE — inadvertently exercising the exact fallback path in the source: on retry-budget exhaustion the transport switches WebSocket→HTTPS and resets the retry counter <span class="cite">responses_retry.rs:<b>31</b></span>.</div>
+
+        <h3>Incremental request reuse over WebSocket</h3>
+        <p>When the socket persists, <code>get_incremental_items</code> <span class="cite">client.rs:<b>1130</b></span> checks that all non-input fields are unchanged and the new <code>input</code> is a strict extension of <code>previous_request.input ++ last_response.items_added</code>; if so it sends only the delta with <code>previous_response_id</code>. The equality check is exhaustive field-by-field <span class="cite">client.rs:<b>300</b></span> so any schema change forces a full resend rather than a silent stale reuse.</p>
+
+        <h3>Two-tier retry</h3>
+        <p>Transport-level retries (429/5xx/network, jittered exponential backoff) sit under a turn-level retry that, on exhaustion, downgrades the transport and resets its budget. The SSE layer classifies errors explicitly <span class="cite">codex-api/sse/responses.rs:<b>374</b></span> — <code>context_length_exceeded</code>, <code>insufficient_quota</code>, <code>cyber_policy</code> abort; everything else is retryable with a server-parsed <code>retry-after</code> delay.</p>
+
+        <div class="note trace"><span class="tag">Captured · cache economics</span> Across turn 1 the input grew 3→18 items, yet the final request cached <strong>13,696 / 14,037</strong> input tokens (97.6%). The stable <code>prompt_cache_key = thread_id</code> plus prefix-stable ordering is what buys this — the 21 KB base prompt is paid for essentially once per thread.</div>
+      </section>
+
+      <!-- ============ 9. PERSISTENCE ============ -->
+      <section id="persist">
+        <div class="sec-num">§ 09</div>
+        <h2>Persistence &amp; sub-agents</h2>
+        <p class="sec-sub">Every session is an append-only JSONL rollout; SQLite is a rebuildable index over it. Sub-agents are full sessions behind the same two-queue interface.</p>
+
+        <h3>Rollout: JSONL is the source of truth</h3>
+        <p>Sessions write to <code>~/.codex/sessions/YYYY/MM/DD/rollout-&lt;ts&gt;-&lt;uuid&gt;.jsonl</code> <span class="cite">rollout/recorder.rs:<b>1498</b></span>, one <code>RolloutLine</code> per line, flushed after each write. A persist-policy allow-list <span class="cite">rollout/policy.rs:<b>6</b></span> decouples the firehose sent to frontends from the curated subset written to disk — noisy streaming/begin events are dropped; messages, reasoning, patch results, token counts, and lifecycle survive. SQLite is filesystem-first-reconciled and always falls back to a file scan <span class="cite">rollout/recorder.rs:<b>401</b></span>.</p>
+
+        <div class="note trace"><span class="tag">Captured · resume worked off the rollout</span> Turn 2 was launched as a separate process via <code>codex exec resume --last</code>. It reconstructed the full turn-1 history from the JSONL rollout and replayed it as the 20-item <code>input</code> — the persistence layer and the resume path, verified end-to-end.</div>
+
+        <h3>Delegation as a composed session</h3>
+        <p>A sub-agent (review, compaction, guardian, collaboration) is spawned via <code>run_codex_thread_interactive</code> <span class="cite">codex_delegate.rs:<b>76</b></span>, inheriting the parent's services but with <code>SessionSource::SubAgent</code>. The parent forwards the child's events and pipes its own <code>Op</code>s inward — <strong>except approval requests, which are routed to the parent's policy</strong> <span class="cite">codex_delegate.rs:<b>277</b></span>. Review mode <span class="cite">tasks/review.rs:<b>96</b></span> is the canonical example: it disables web-search and collaboration, forces <code>approval=never</code> and a review rubric, runs one-shot, and folds the parsed <code>ReviewOutputEvent</code> back into the parent transcript.</p>
+      </section>
+
+      <!-- ============ 10. PATTERNS ============ -->
+      <section id="patterns">
+        <div class="sec-num">§ 10</div>
+        <h2>Transferable patterns</h2>
+        <p class="sec-sub">The design decisions worth stealing for any agent harness, distilled from the sections above.</p>
+
+        <div class="patterns">
+          <div class="pat"><div class="n">P-01</div><h4>Keep instructions out of the transcript</h4><p>The base prompt is a separate field mapped to the API <code>instructions</code> slot, not concatenated into history — so the cacheable system prompt stays out of the mutable input and a thread-stable cache key can do its job.</p></div>
+          <div class="pat"><div class="n">P-02</div><h4>Prefix-stable ordering, diff-based steady state</h4><p>Inject full context once, then emit only diffs, with fixed leading order and a stable cache key. The payload confirms the payoff: 97.6% cache hits.</p></div>
+          <div class="pat"><div class="n">P-03</div><h4>Concurrency with deterministic order</h4><p><code>FuturesOrdered</code> + a shared read/write lock gives parallel tool execution while outputs are appended in model-emission order.</p></div>
+          <div class="pat"><div class="n">P-04</div><h4>One dispatch funnel</h4><p>Route every tool call through a single function that owns telemetry, hooks, payload validation, and error shaping. Handlers stay trivial and uniform.</p></div>
+          <div class="pat"><div class="n">P-05</div><h4>Two orthogonal policy axes</h4><p>Separate "when to ask a human" from "what a process may touch." The same command can be auto-approved-but-sandboxed, prompted, or forbidden by the cross-product.</p></div>
+          <div class="pat"><div class="n">P-06</div><h4>Sandbox-first, escalate on detected failure</h4><p>Run sandboxed by default; only a <em>detected</em> denial triggers a reduced-sandbox retry — and never one that drops read restrictions.</p></div>
+          <div class="pat"><div class="n">P-07</div><h4>LLM reviewer as a fail-closed gate</h4><p>An optional reviewer replaces the human prompt, runs isolated and read-only, treats the transcript as untrusted, and defaults to Deny on any error.</p></div>
+          <div class="pat"><div class="n">P-08</div><h4>Suspend on a oneshot, resume by id</h4><p>Park the tool future on a registered channel, emit an event, await; external <code>notify(id, decision)</code> unparks it. Dropped channel = Abort.</p></div>
+          <div class="pat"><div class="n">P-09</div><h4>Compaction as a replayable checkpoint</h4><p>Persist the replacement history + window ids so resume reconstructs state in O(suffix), not O(history), by scanning to the last checkpoint.</p></div>
+          <div class="pat"><div class="n">P-10</div><h4>JSONL truth + rebuildable index</h4><p>Append-only rollout is canonical; SQLite is a reconciled accelerator that always falls back to a file scan. A persist allow-list keeps rollouts compact.</p></div>
+          <div class="pat"><div class="n">P-11</div><h4>Exposure as an enum, not a bool</h4><p><code>Direct/Deferred/DirectModelOnly/Hidden</code> lets huge MCP catalogs stay reachable via search without bloating the initial tool list.</p></div>
+          <div class="pat"><div class="n">P-12</div><h4>Sub-agents are just sessions</h4><p>Delegation = a parent consuming a child's event queue and producing into its submission queue, intercepting only approvals. Review/compaction reuse one primitive.</p></div>
+        </div>
+      </section>
+
+      <!-- ============ 11. REFERENCE MAP ============ -->
+      <section id="refmap">
+        <div class="sec-num">§ 11</div>
+        <h2>File &amp; line reference map</h2>
+        <p class="sec-sub">The fastest way into the code. Start at the loop, then fan out. Paths are relative to <code>codex-rs/</code>; line numbers are at commit <code>be33f80b</code>.</p>
+
+        <h4>The core loop</h4>
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>What</th><th>Where</th></tr></thead>
+            <tbody>
+              <tr><td>Submission → task spawn</td><td class="wrap-cell"><code>core/src/session/handlers.rs:260</code></td></tr>
+              <tr><td>Task wrapper &amp; re-fire loop</td><td class="wrap-cell"><code>core/src/tasks/regular.rs:73</code></td></tr>
+              <tr><td><code>run_turn</code> — the loop</td><td class="wrap-cell"><code>core/src/session/turn.rs:142</code> (loop at 225)</td></tr>
+              <tr><td>Build sampling input from history</td><td class="wrap-cell"><code>core/src/session/turn.rs:271</code></td></tr>
+              <tr><td><code>build_prompt</code></td><td class="wrap-cell"><code>core/src/session/turn.rs:1044</code></td></tr>
+              <tr><td><code>run_sampling_request</code> (retry loop)</td><td class="wrap-cell"><code>core/src/session/turn.rs:1072</code></td></tr>
+              <tr><td>Stream state machine</td><td class="wrap-cell"><code>core/src/session/turn.rs:1887</code></td></tr>
+              <tr><td>Tool-call dispatch on item done</td><td class="wrap-cell"><code>core/src/stream_events_utils.rs:405</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h4>Request assembly</h4>
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>What</th><th>Where</th></tr></thead>
+            <tbody>
+              <tr><td><code>Prompt</code> struct</td><td class="wrap-cell"><code>core/src/client_common.rs:16</code></td></tr>
+              <tr><td><code>build_responses_request</code></td><td class="wrap-cell"><code>core/src/client.rs:812</code></td></tr>
+              <tr><td><code>ResponsesApiRequest</code> wire struct</td><td class="wrap-cell"><code>codex-api/src/common.rs:198</code></td></tr>
+              <tr><td>Base-instructions resolution</td><td class="wrap-cell"><code>core/src/session/mod.rs:598</code></td></tr>
+              <tr><td>Initial context bundle</td><td class="wrap-cell"><code>core/src/session/mod.rs:3145</code></td></tr>
+              <tr><td>AGENTS.md discovery</td><td class="wrap-cell"><code>core/src/agents_md.rs</code></td></tr>
+              <tr><td>Environment context XML</td><td class="wrap-cell"><code>core/src/context/world_state/environment.rs</code></td></tr>
+              <tr><td>Metadata triple-projection</td><td class="wrap-cell"><code>core/src/responses_metadata.rs:137</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h4>Subsystems</h4>
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>What</th><th>Where</th></tr></thead>
+            <tbody>
+              <tr><td>SSE parse &amp; event mapping</td><td class="wrap-cell"><code>codex-api/src/sse/responses.rs:325</code></td></tr>
+              <tr><td>Tool spec/registry build</td><td class="wrap-cell"><code>core/src/tools/spec_plan.rs:171</code></td></tr>
+              <tr><td>Tool router &amp; dispatch funnel</td><td class="wrap-cell"><code>core/src/tools/router.rs:112</code> · <code>registry.rs:405</code></td></tr>
+              <tr><td>Parallelism lock</td><td class="wrap-cell"><code>core/src/tools/parallel.rs:133</code></td></tr>
+              <tr><td>Approval classification</td><td class="wrap-cell"><code>core/src/exec_policy.rs:269</code></td></tr>
+              <tr><td>Escalation orchestrator</td><td class="wrap-cell"><code>core/src/tools/orchestrator.rs:134</code></td></tr>
+              <tr><td>Guardian reviewer</td><td class="wrap-cell"><code>core/src/guardian/review.rs:168</code></td></tr>
+              <tr><td>Compaction dispatcher</td><td class="wrap-cell"><code>core/src/session/turn.rs:917</code></td></tr>
+              <tr><td>Token-status gates</td><td class="wrap-cell"><code>core/src/session/context_window.rs:24</code></td></tr>
+              <tr><td>WebSocket incremental reuse</td><td class="wrap-cell"><code>core/src/client.rs:1130</code></td></tr>
+              <tr><td>Turn-level retry / transport downgrade</td><td class="wrap-cell"><code>core/src/responses_retry.rs:22</code></td></tr>
+              <tr><td>Rollout recorder / policy</td><td class="wrap-cell"><code>rollout/src/recorder.rs</code> · <code>policy.rs</code></td></tr>
+              <tr><td>Sub-agent delegation</td><td class="wrap-cell"><code>core/src/codex_delegate.rs:76</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ============ 12. METHOD ============ -->
+      <section id="method">
+        <div class="sec-num">§ 12</div>
+        <h2>How this was captured</h2>
+        <p class="sec-sub">The live evidence is not a mock. It is the real <code>codex</code> binary at commit <code>be33f80b</code> talking to the production backend, teed through a logging proxy.</p>
+        <ol class="body-list">
+          <li>Built the debug <code>codex</code> binary from this checkout and pointed it at an isolated <code>CODEX_HOME</code> carrying a real ChatGPT auth token.</li>
+          <li>Set <code>chatgpt_base_url</code> and <code>openai_base_url</code> to a local Python reverse proxy that forwards to <code>chatgpt.com</code> and tees every request body and SSE response to disk (auth headers redacted, never written).</li>
+          <li>Disabled request compression (<code>features.enable_request_compression=false</code>) so bodies were readable JSON rather than zstd.</li>
+          <li>Ran a two-turn session in a throwaway git workspace: turn 1 created and tested a <code>fib.py</code>; turn 2 (<code>resume --last</code>) extended it — exercising the loop, tool dispatch, and cross-turn resume.</li>
+          <li>Dissected the captured payloads (9 sampling requests, ~40 SSE events each) and cross-referenced every field to the source with five parallel source-reading passes.</li>
+        </ol>
+        <p>The one honest caveat: because a plain HTTP proxy can't tunnel WebSocket frames, sampling traffic ran over the HTTP SSE fallback rather than the preferred WebSocket transport — which, as noted in §8, is itself a faithful exercise of the fallback code path.</p>
+
+        <div class="footer">
+          <p>Source-derived analysis of <code>openai/codex</code> · <code>codex-rs</code> at commit <code>be33f80b</code>. Line numbers drift with the tree; treat them as the entry point, not the destination. Live figures are from a single captured session (model <code>gpt-5.5</code>, effort <code>medium</code>) and will vary by task, model, and config.</p>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<script>
+  (function () {
+    var root = document.documentElement;
+    var toggle = document.getElementById('themeToggle');
+    var icon = document.getElementById('themeIcon');
+    function apply(t) {
+      root.setAttribute('data-theme', t);
+      icon.textContent = t === 'dark' ? '○' : '●';
+    }
+    var initial = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    apply(initial);
+    toggle.addEventListener('click', function () {
+      apply(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+    });
+
+    // scroll-spy
+    var links = Array.prototype.slice.call(document.querySelectorAll('.toc a'));
+    var map = {};
+    links.forEach(function (a) { map[a.getAttribute('href').slice(1)] = a; });
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          links.forEach(function (l) { l.classList.remove('active'); });
+          var a = map[e.target.id];
+          if (a) a.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-10% 0px -80% 0px', threshold: 0 });
+    document.querySelectorAll('section[id]').forEach(function (s) { obs.observe(s); });
+  })();
+</script>
+
+</body></html>
