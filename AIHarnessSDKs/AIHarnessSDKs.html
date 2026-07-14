@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Building an AI Harness: OpenAI's Agent SDKs vs. Anthropic's Claude Agent SDK</title>
+<style>
+  :root {
+    --bg: #fdfdfb;
+    --fg: #1a1d21;
+    --fg-soft: #4a5260;
+    --accent: #0f4c81;
+    --accent-2: #b4531f;
+    --rule: #d8dce2;
+    --card: #f3f4f0;
+    --code-bg: #eef0f3;
+    --table-head: #e8ebee;
+    --table-alt: #f6f7f4;
+    --good: #1d6b3a;
+    --bad: #a03024;
+    --mixed: #8a6d00;
+    --link: #0f4c81;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #16181d;
+      --fg: #e4e6e9;
+      --fg-soft: #a3aab5;
+      --accent: #7fb2e0;
+      --accent-2: #e09a6a;
+      --rule: #34383f;
+      --card: #1e2127;
+      --code-bg: #23262d;
+      --table-head: #252930;
+      --table-alt: #1b1e24;
+      --good: #6bc48a;
+      --bad: #e08a80;
+      --mixed: #d4b95e;
+      --link: #7fb2e0;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 17px;
+    line-height: 1.65;
+  }
+  header.masthead {
+    border-bottom: 3px double var(--rule);
+    padding: 3.5rem 1.5rem 2rem;
+    text-align: center;
+  }
+  header.masthead h1 {
+    font-size: 2rem;
+    line-height: 1.25;
+    margin: 0 auto 0.75rem;
+    max-width: 60rem;
+    font-weight: 700;
+  }
+  header.masthead .subtitle {
+    color: var(--fg-soft);
+    font-style: italic;
+    max-width: 46rem;
+    margin: 0 auto;
+  }
+  header.masthead .meta {
+    margin-top: 1.25rem;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--fg-soft);
+  }
+  main {
+    max-width: 56rem;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 5rem;
+  }
+  h2 {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 1.5rem;
+    margin: 3rem 0 1rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    color: var(--accent);
+  }
+  h2 .kicker {
+    display: block;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--fg-soft);
+    margin-bottom: 0.35rem;
+    font-weight: 600;
+  }
+  h3 {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 1.12rem;
+    margin: 2.2rem 0 0.6rem;
+  }
+  h4 {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.98rem;
+    margin: 1.6rem 0 0.4rem;
+    color: var(--fg-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  p { margin: 0 0 1rem; }
+  a { color: var(--link); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  code {
+    font-family: 'SF Mono', 'Cascadia Code', Menlo, Consolas, monospace;
+    font-size: 0.82em;
+    background: var(--code-bg);
+    padding: 0.1em 0.35em;
+    border-radius: 4px;
+  }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: 0.45rem; }
+  .lede { font-size: 1.08rem; }
+  .callout {
+    background: var(--card);
+    border-left: 4px solid var(--accent);
+    padding: 1rem 1.25rem;
+    margin: 1.5rem 0;
+    border-radius: 0 8px 8px 0;
+  }
+  .callout.warn { border-left-color: var(--accent-2); }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout .label {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--fg-soft);
+    display: block;
+    margin-bottom: 0.35rem;
+  }
+  .table-wrap { overflow-x: auto; margin: 1.5rem 0; border: 1px solid var(--rule); border-radius: 8px; }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.86rem;
+    line-height: 1.45;
+  }
+  th, td {
+    border-bottom: 1px solid var(--rule);
+    padding: 0.6rem 0.8rem;
+    text-align: left;
+    vertical-align: top;
+  }
+  th {
+    background: var(--table-head);
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  tbody tr:nth-child(even) { background: var(--table-alt); }
+  tbody tr:last-child td { border-bottom: none; }
+  td.rowhead { font-weight: 700; white-space: nowrap; }
+  .yes { color: var(--good); font-weight: 700; }
+  .no { color: var(--bad); font-weight: 700; }
+  .partial { color: var(--mixed); font-weight: 700; }
+  nav.toc {
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    margin: 2rem 0;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.92rem;
+  }
+  nav.toc .toc-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--fg-soft);
+    margin-bottom: 0.6rem;
+  }
+  nav.toc ol { margin: 0; padding-left: 1.3rem; }
+  nav.toc li { margin-bottom: 0.3rem; }
+  nav.toc a { text-decoration: none; }
+  nav.toc a:hover { text-decoration: underline; }
+  .verdict {
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    margin: 1.5rem 0;
+  }
+  .verdict .label {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 0.4rem;
+  }
+  .quote {
+    font-style: italic;
+    color: var(--fg-soft);
+    border-left: 3px solid var(--rule);
+    margin: 1rem 0;
+    padding: 0.25rem 0 0.25rem 1.1rem;
+  }
+  .quote .attr { display: block; font-style: normal; font-size: 0.85rem; margin-top: 0.3rem; }
+  .footnote {
+    font-size: 0.85rem;
+    color: var(--fg-soft);
+  }
+  footer {
+    border-top: 1px solid var(--rule);
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    font-size: 0.85rem;
+    color: var(--fg-soft);
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+  }
+  .src-list { font-size: 0.85rem; column-gap: 2rem; }
+  .src-list li { margin-bottom: 0.35rem; overflow-wrap: anywhere; }
+  @media (max-width: 640px) {
+    body { font-size: 16px; }
+    header.masthead h1 { font-size: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <h1>Building an AI Harness: OpenAI's Agent SDKs vs. Anthropic's Claude Agent SDK</h1>
+  <p class="subtitle">An architect's comparison of the OpenAI Agents SDK, the Codex SDK, and the Claude Agent SDK as foundations for a first-class, self-verifying, memory-forming agent harness — including what each SDK withholds relative to its in-product sibling.</p>
+  <p class="meta">Research current as of July 9, 2026 &nbsp;·&nbsp; Sources: vendor docs, GitHub repos &amp; issue trackers, HN/Reddit/practitioner blogs</p>
+</header>
+
+<main>
+
+<section id="exec-summary">
+  <p class="lede">If you are building your own agent harness — a runtime that runs an agent loop, gates its actions, verifies its work, persists memory, and learns across sessions — you face a choice that is not symmetric. <strong>Anthropic ships one SDK that <em>is</em> its product</strong>: the Claude Agent SDK is the Claude Code engine exposed as a library, with the harness (tools, permissions, hooks, compaction, memory, skills, subagents) already inside. <strong>OpenAI ships two SDKs that bracket the same territory from opposite ends</strong>: the Agents SDK is a deliberately thin orchestration framework that has been progressively growing harness organs (sandboxes, filesystem tools, memory, compaction — most of them beta as of April 2026), while the Codex SDK is the full Codex coding harness embedded as a subprocess, powerful but sealed — extensible out-of-process via hooks, MCP, and config, but with no in-process tool registration, no system-prompt override, and no official approval callback.</p>
+
+  <p>The compressed verdict, developed in Part III:</p>
+  <ul>
+    <li><strong>Most control per line of code for a custom harness:</strong> Claude Agent SDK. Its permission stack (modes → hooks → deny/ask/allow rules → <code>canUseTool</code>) and its hook system (which can block, rewrite inputs, replace outputs, inject context, and veto completion) have no equivalent on the OpenAI side. Its costs: Anthropic-model lock-in, a CLI-subprocess architecture that resists serverless deployment, an opaque bundled system prompt, and 0.x version churn with documented regressions.</li>
+    <li><strong>Most architectural freedom:</strong> OpenAI Agents SDK. Code-first, model-agnostic (via LiteLLM/adapters), the cleanest multi-agent orchestration primitives (handoffs, agents-as-tools), and a serializable <code>RunState</code> that makes human-in-the-loop pauses survive process restarts. Its costs: you assemble the harness yourself — verification loops, permission policy, compaction, and memory are opt-in or DIY, and the harness-shaped parts (sandbox agents) are explicitly beta.</li>
+    <li><strong>Closest analog to the Claude Agent SDK:</strong> the Codex SDK, not the Agents SDK. Both wrap their vendor's coding-agent harness as a subprocess. But the Codex SDK trades extensibility for kernel-level sandbox guarantees, and its cloud features (parallel tasks, best-of-N, hosted PR review) are unreachable from API-key auth entirely.</li>
+    <li><strong>Portability from the in-product offering:</strong> Claude Code → Claude Agent SDK is a low-loss migration (mind two switches: the <code>claude_code</code> system-prompt preset and <code>settingSources</code>); Codex CLI → Codex SDK is nearly lossless <em>locally</em> because the SDK drives the same binary — but the Codex <em>cloud</em> product layer does not come along at all. On both sides, what you rebuild is the entire interactive UX.</li>
+    <li><strong>For the self-verifying, memory-forming harness specifically:</strong> Anthropic currently offers more native leverage (Stop hooks that block completion, subagent evaluators, default-on auto-memory, skills-as-learning, automatic compaction) plus a published design doctrine; OpenAI reached first-party memory/compaction/skills primitives in 2026 but they live in the beta sandbox-agent stack, roughly one product cycle behind.</li>
+  </ul>
+
+  <div class="callout">
+    <span class="label">How to read this paper</span>
+    <p>Part I profiles OpenAI's two offerings standalone, differentiating them from each other. Part II profiles the Claude Agent SDK standalone. Part III compares across vendors: the permission/hook systems, product→SDK portability and completeness, fitness for a verifying/learning harness, community sentiment, and operational realities. Claims were researched against live documentation and community sources on July 9, 2026; this space moves weekly, and low-confidence or single-source claims are flagged inline.</p>
+  </div>
+
+  <nav class="toc">
+    <div class="toc-title">Contents</div>
+    <ol>
+      <li><a href="#part1">Part I — The OpenAI offering</a>
+        <ol>
+          <li><a href="#agents-sdk">The Agents SDK: a thin framework growing a harness</a></li>
+          <li><a href="#codex-sdk">The Codex SDK: the Codex harness as a library</a></li>
+          <li><a href="#openai-positioning">How OpenAI positions the two — and the AgentKit lesson</a></li>
+          <li><a href="#openai-sentiment">What practitioners say</a></li>
+        </ol>
+      </li>
+      <li><a href="#part2">Part II — The Anthropic offering</a>
+        <ol>
+          <li><a href="#claude-arch">Architecture: Claude Code as a subprocess</a></li>
+          <li><a href="#claude-permissions">The permission stack and hooks</a></li>
+          <li><a href="#claude-harness">Harness organs: context, memory, subagents, skills, sandbox</a></li>
+          <li><a href="#claude-sentiment">What practitioners say</a></li>
+        </ol>
+      </li>
+      <li><a href="#part3">Part III — Cross-comparison</a>
+        <ol>
+          <li><a href="#matrix">At-a-glance capability matrix</a></li>
+          <li><a href="#permissions-compare">Permissions and hooks, head to head</a></li>
+          <li><a href="#portability">Portability: migrating from the product to the SDK</a></li>
+          <li><a href="#harness-lens">The first-class harness lens: verify, remember, learn</a></li>
+          <li><a href="#ops">Maturity, lock-in, cost, and operations</a></li>
+          <li><a href="#recommendation">Recommendations</a></li>
+        </ol>
+      </li>
+      <li><a href="#sources">Selected sources</a></li>
+    </ol>
+  </nav>
+</section>
+
+<section id="part1">
+  <h2><span class="kicker">Part I</span>The OpenAI offering: two SDKs, two philosophies</h2>
+
+  <p>OpenAI's agent story is fragmented by design. The <strong>Agents SDK</strong> (<code>openai-agents</code>, Python and TypeScript, open source) is a general-purpose orchestration framework descended from the experimental Swarm project. The <strong>Codex SDK</strong> (<code>@openai/codex-sdk</code> on npm; <code>openai-codex</code> on PyPI, beta) embeds the full Codex coding agent — the same Rust harness that powers Codex CLI — into your application. A third artifact, <strong>AgentKit</strong> (Agent Builder + ChatKit, launched October 2025), is already being dismantled: Agent Builder was deprecated on June 3, 2026 and shuts off November 30, 2026, with the code-first Agents SDK as the designated migration path. Understanding the division of labor between the two surviving SDKs is the prerequisite for comparing either to Anthropic's offering.</p>
+
+  <h3 id="agents-sdk">1. The Agents SDK: a thin framework growing a harness</h3>
+
+  <p>The Agents SDK's founding pitch — "a lightweight, easy-to-use package with very few abstractions" — remains accurate for its core. An <em>Agent</em> is instructions + tools + handoffs + an optional typed output; a <em>Runner</em> executes the loop (call model → execute tools → repeat until a text-only final output); everything else is code-first Python/TypeScript control flow rather than a graph DSL. Launched March 11, 2025 alongside the Responses API, it sits at Python v0.18.0 / JS v0.13.0 as of July 2026 — still 0.x, with a stated policy that minor bumps may break public interfaces.</p>
+
+  <h4>Core primitives</h4>
+  <ul>
+    <li><strong>Handoffs</strong> transfer the whole conversation to another agent, exposed to the model as <code>transfer_to_&lt;agent&gt;</code> tools, with input filters to reshape the history the receiving agent sees. <strong>Agents-as-tools</strong> (<code>agent.as_tool()</code>) instead invoke a sub-agent as a scoped call without transferring the thread — the closest thing to Claude-style subagents, including <code>max_turns</code> caps, output extractors, and approval gates.</li>
+    <li><strong>Guardrails</strong> are gate-shaped validators: input guardrails (first agent only) and output guardrails (last agent only) that raise a "tripwire" exception on violation. A separate, newer layer of <strong>tool guardrails</strong> can skip a tool call or replace its output — the closest the SDK gets to a policy engine. Guardrails validate and block; they never rewrite content.</li>
+    <li><strong>Sessions</strong> are pluggable history stores: SQLite, Redis, SQLAlchemy, MongoDB, Dapr (30+ backends), an encrypted/TTL wrapper, server-side Conversations API sessions, and <code>AdvancedSQLiteSession</code> with conversation branching. The custom-backend interface is four methods. The JS SDK's built-in set is notably thinner (in-memory and Conversations API).</li>
+    <li><strong>Structured outputs</strong> via Pydantic/Zod types on the agent's final output, with error handlers for malformed results.</li>
+    <li><strong>Tracing</strong> is on by default, ships to a free OpenAI Traces dashboard, and has roughly thirty documented third-party processor integrations (LangSmith, Langfuse, Datadog, Braintrust, MLflow, …). It is the SDK's most consistently praised operational feature.</li>
+    <li><strong>Model-agnosticism</strong>: any provider via LiteLLM (100+ models), custom <code>ModelProvider</code>s, or the Vercel AI SDK adapter in JS — with the caveat that hosted tools, hosted MCP, and compaction require the OpenAI Responses API, so the "portable" subset is smaller than the full feature set. Practitioners report the bridge is leaky in practice (Responses-only features rejected on non-OpenAI backends).</li>
+  </ul>
+
+  <h4>Hooks, approvals, and the enforcement gap</h4>
+  <p>This is the part most relevant to a harness builder, and the part most often misunderstood. The Agents SDK's lifecycle hooks (<code>on_agent_start</code>, <code>on_tool_start/end</code>, <code>on_handoff</code>, <code>on_llm_start/end</code>, …) are <strong>observation-only</strong> — they return nothing and cannot veto or modify an action. Enforcement is distributed across several narrower mechanisms instead:</p>
+  <ul>
+    <li><code>needs_approval</code> predicates on tools (function tools, shell, apply-patch, MCP servers, agents-as-tools) pause the run and surface <code>interruptions</code>; you call <code>state.approve()/reject()</code> and resume. Crucially, <strong><code>RunState</code> serializes to a string</strong>, so an approval can span a process restart, a queue, or a human's lunch break. This is a genuinely strong human-in-the-loop primitive — arguably the best-designed one in either ecosystem for server-side deployments.</li>
+    <li>Tool guardrails can skip calls or replace outputs; tripwire guardrails can abort runs; <code>call_model_input_filter</code> can rewrite what the model sees per call.</li>
+    <li>There is <strong>no single interceptor that sees every action type uniformly</strong> — handoffs, for example, can be disabled but not vetoed by a guardrail — and there is no built-in permission-rule configuration format, no allowlist persistence, and no prompt UI. The plumbing is yours to assemble into a policy.</li>
+  </ul>
+
+  <h4>The April 2026 pivot: sandbox agents</h4>
+  <p>On April 15, 2026, OpenAI announced "the next evolution of the Agents SDK": a beta <code>SandboxAgent</code> stack that pairs an agent with an isolated, persistent workspace. This is OpenAI retrofitting a Codex-shaped harness onto the thin framework, and it is widely read as convergence toward the Claude Agent SDK's feature set. It brings:</p>
+  <ul>
+    <li><strong>Filesystem and shell capabilities</strong> (<code>ApplyPatchTool</code>, <code>ShellTool</code>) with Docker and seven hosted sandbox providers (E2B, Modal, Daytona, Runloop, Blaxel, Cloudflare, Vercel);</li>
+    <li><strong>Compaction</strong> as a default capability, plus <code>OpenAIResponsesCompactionSession</code> for ordinary sessions;</li>
+    <li><strong>Memory</strong>, a capability that "distills lessons from prior runs into files inside the sandbox workspace" — generated as a pre-stop hook, steerable via <code>MemoryGenerateConfig</code> — OpenAI's first first-party learning-from-experience primitive;</li>
+    <li><strong>Skills</strong>, lazy-loaded from <code>.agents/skills/</code> directories using the same open <code>SKILL.md</code> standard Anthropic originated, plus <code>AGENTS.md</code> instructions and workspace snapshots for resumable long runs.</li>
+  </ul>
+
+  <div class="callout warn">
+    <span class="label">Caveat for architects</span>
+    <p>Everything harness-shaped in the Agents SDK is explicitly beta ("expect details of the API, defaults, and supported capabilities to change"). Outside the sandbox stack, <code>ShellTool</code> runs unsandboxed on your host, <code>ApplyPatchTool</code> requires you to implement the editor, and a plain <code>Agent</code> + <code>SQLiteSession</code> will overflow the context window with no automatic compaction. The stable core of this SDK is orchestration; the harness is the new, moving part.</p>
+  </div>
+
+  <h4>What the Agents SDK does not provide</h4>
+  <ul>
+    <li>No permission prompt surface, rule format, or persisted user preferences — only approval plumbing.</li>
+    <li>No verification loop, plan mode, TODO tracking, or "block completion until checks pass" primitive.</li>
+    <li>No unified conversation+filesystem checkpoint/rewind (RunState covers approvals; sandbox snapshots cover workspaces; nothing joins them).</li>
+    <li>No long-term memory outside the beta sandbox Memory capability; no CLI/TUI; guardrails never rewrite.</li>
+  </ul>
+
+  <h3 id="codex-sdk">2. The Codex SDK: the Codex harness as a library</h3>
+
+  <p>The Codex SDK is a different animal: not a framework but an <strong>embedding of the complete Codex agent</strong>. The TypeScript SDK spawns the open-source Rust CLI and exchanges JSONL events over stdio; the beta Python SDK (<code>openai-codex</code>) speaks JSON-RPC to the Codex app-server — the same protocol the IDE extension uses. Either way, you get the harness OpenAI ships to millions of Codex users: the agent loop, tools, sandboxing, session persistence, compaction, skills, and subagents, "without extra tuning."</p>
+
+  <h4>API surface</h4>
+  <ul>
+    <li><code>startThread()</code> / <code>resumeThread(id)</code> (threads persist as JSONL rollouts under <code>~/.codex/sessions</code>), <code>thread.run()</code> and <code>runStreamed()</code> yielding typed events (<code>command_execution</code>, <code>file_change</code>, <code>mcp_tool_call</code>, <code>agent_message</code>, <code>reasoning</code>, <code>web_search</code>, <code>todo_list</code>, …).</li>
+    <li><strong>Structured output</strong> per run via JSON Schema or Zod; image inputs supported.</li>
+    <li>A <code>config</code> object flattened into <code>--config</code> overrides, meaning <em>anything <code>config.toml</code> supports is reachable from the SDK</em> — approval policies, sandbox modes, MCP servers, model providers, feature flags. This indirection is the SDK's main extension mechanism.</li>
+  </ul>
+
+  <h4>The harness you inherit</h4>
+  <ul>
+    <li><strong>Kernel-level sandboxing</strong> — the headline differentiator. macOS Seatbelt, Linux/WSL2 bubblewrap, and native Windows Sandbox enforce filesystem and network isolation below the harness. As one comparison put it: "Codex enforces in the kernel; Claude Code enforces in the harness… if you want a hard guarantee that it cannot touch network or files outside its workspace, Codex's model is what you want." Modes: <code>read-only</code>, <code>workspace-write</code> (default), <code>danger-full-access</code>; network access is a separate switch with a newer domain-level allow/deny proxy.</li>
+    <li><strong>Approval policies</strong>: <code>untrusted</code> / <code>on-request</code> / <code>never</code>, plus 2026's granular per-category routing (sandbox escalations, MCP elicitations, permission requests, skill approvals) and — notably — <code>approvals_reviewer = "auto_review"</code>, which delegates escalation adjudication to an automatic reviewer <em>agent</em> instead of a human.</li>
+    <li><strong>Lifecycle hooks</strong> (rolled out March–May 2026): <code>SessionStart</code>, <code>UserPromptSubmit</code>, <code>PreToolUse</code>, <code>PermissionRequest</code>, <code>PostToolUse</code>, <code>Pre/PostCompact</code>, <code>SubagentStart/Stop</code>, <code>Stop</code>. <code>PreToolUse</code> hooks can deny or rewrite tool inputs; <code>PermissionRequest</code> hooks can auto-allow/deny prompts; <code>PostToolUse</code> can replace output. These are configured in <code>hooks.json</code>/<code>config.toml</code> and executed as external commands — a file-and-subprocess contract, not an in-process callback. Third-party analysis reports only command-type handlers actually execute and PreToolUse interception is narrower than Claude's (single-source claim; medium confidence).</li>
+    <li><strong>AGENTS.md</strong> layered instructions (global → repo root → cwd, 32&nbsp;KiB combined cap), <strong>skills</strong> following the open SKILL.md standard (including "Record &amp; Replay," which turns demonstrated workflows into reusable skills), <strong>subagents</strong> as TOML definitions (default 6 concurrent, depth 1), <strong>MCP client</strong> (stdio + streamable HTTP, per-tool approval modes) and <strong>MCP server</strong> (<code>codex mcp-server</code> exposes Codex itself as a tool — the documented bridge for orchestrating Codex from the Agents SDK), auto-compaction at ~85% of the context window, plan/todo tooling, and web search.</li>
+    <li><strong>Model flexibility, surprisingly</strong>: the local harness accepts any provider speaking the Responses (and historically Chat Completions) wire API, with first-class <code>--oss</code> support for Ollama/LM Studio local models and Amazon Bedrock providers. The cloud/review/ChatGPT surfaces are OpenAI-models-only.</li>
+  </ul>
+
+  <h4>What the Codex SDK seals off</h4>
+  <ul>
+    <li><strong>No in-process custom tools.</strong> There is no API to register a tool function on a thread; the sanctioned path is standing up an MCP server and wiring it via config. Compare: both the Claude Agent SDK and the Agents SDK let you define tools as plain functions in your process.</li>
+    <li><strong>No supported system-prompt override.</strong> You steer with AGENTS.md, skills, and subagent instructions; the base prompt is the harness's.</li>
+    <li><strong>No official approval callback in the SDK.</strong> The app-server protocol demonstrably carries interactive approval requests (community Elixir and Go SDKs implement approve/deny callbacks on it), but the official TS/Python SDKs expose policy-first configuration, not per-command interception. For a harness whose permission UX is the product, this is the single most consequential gap.</li>
+    <li><strong>The entire Codex cloud layer</strong> — covered in Part III's portability section — is unreachable from API-key auth.</li>
+  </ul>
+
+  <h3 id="openai-positioning">3. How OpenAI positions the two — and the AgentKit lesson</h3>
+
+  <p>OpenAI's own guidance: use the Codex SDK for coding-focused threads; if Codex is one specialist inside a broader workflow, run <code>codex mcp-server</code> and orchestrate it from the Agents SDK. In other words: <em>Agents SDK for the org chart, Codex SDK for the engineer.</em> The two are converging — the Agents SDK grew Codex-style filesystem tools, sandboxes, skills, and memory in 2026 — but they remain distinct codebases with distinct maturity profiles: the Agents SDK's harness organs are beta; Codex's harness is battle-tested but its programmable surface is thin.</p>
+
+  <p>The AgentKit story deserves a paragraph in any lock-in analysis. Agent Builder — the visual workflow canvas launched at DevDay in October 2025 with enterprise fanfare — was deprecated eight months later (June 3, 2026; shutdown November 30, 2026). The community read was pragmatic rather than panicked, and the lesson practitioners drew is directly relevant here: <em>code-first SDK layers survived; the hosted builder didn't.</em> Anything you build on OpenAI's agent stack should assume the SDK is the durable surface and hosted conveniences are not.</p>
+
+  <h3 id="openai-sentiment">4. What practitioners say</h3>
+
+  <h4>Agents SDK — praise</h4>
+  <ul>
+    <li>Simplicity is the dominant theme from launch to today: "one of the few agent abstractions I've seen that actually seems intuitive" (HN launch thread, March 2025); "handoff patterns and guardrails in under 100 lines of code" (2026 comparisons). Even roundups that recommend alternatives concede it is the fastest zero-to-agent path.</li>
+    <li>Built-in tracing and guardrails are repeatedly called "the minimum viable requirements for any production agent," with teams reporting materially faster debugging versus bolting observability on.</li>
+    <li>Real production adopters: Coinbase (prototyped its AgentKit wallet product on it in hours; later ~1,200 internal agents), Box (enterprise document workflows), Ramp, and a first-party Temporal integration as the de-facto durability path.</li>
+  </ul>
+
+  <h4>Agents SDK — criticism</h4>
+  <ul>
+    <li><strong>Lock-in nuance:</strong> "OpenAI models only… a dealbreaker" is the most-repeated critique — technically unfair (LiteLLM exists) but directionally right, since the best features ride the Responses API and the multi-provider bridge has documented translation bugs.</li>
+    <li><strong>Weak persistence/memory story</strong> pre-2026: "OpenAI agents forget everything between runs"; the GitHub issue tracker's dominant cluster is sessions/memory, including users explicitly requesting "a native compact feature similar to what Claude Code does."</li>
+    <li><strong>"Optimized for demos, not production":</strong> missing resource management for long-running agents, failure isolation, and cost controls against runaway loops; guardrail/handoff behavior drifting between local tests and production.</li>
+    <li><strong>0.x churn:</strong> upgrades have broken Azure deployments and pinned-dependency chains; the versioning policy explicitly permits breaking changes in minor bumps. Maintainer responsiveness, however, is consistently rated good, with fast triage and weekly-to-biweekly releases.</li>
+  </ul>
+
+  <h4>Codex CLI/SDK — praise</h4>
+  <ul>
+    <li>Kernel sandboxing as a hard guarantee; generous flat-rate limits ("I've never hit my $20 plan limit"); token efficiency (~2–4× fewer tokens per task in community measurements); first-try reliability for well-scoped tasks; and local/OSS model support that made it a favorite in r/LocalLLaMA circles.</li>
+    <li>Rapid harness catch-up in 2026: hooks, subagents, skills (Simon Willison praised the progressive-disclosure design), and Windows-native support all landed within months.</li>
+    <li>Vercel's AI SDK 7 shipping a Codex harness adapter alongside Claude Code's is read as third-party validation that the Codex SDK is a credible programmable harness.</li>
+  </ul>
+
+  <h4>Codex CLI/SDK — criticism</h4>
+  <ul>
+    <li><strong>Software quality churn is the defining complaint</strong>: severe recurring memory leaks (75&nbsp;GB+ sessions; a 172&nbsp;GB runaway), a persistent Windows sandbox + MCP instability cluster, apply-patch regressions in specific version bands, and a meta-issue asking for changelogs because features get deprecated while docs still reference them.</li>
+    <li><strong>A security-flavored one worth flagging:</strong> MCP tools have been reported not to respect the sandbox (network and file writes even in read-only mode — openai/codex #7635). For a harness whose pitch is kernel enforcement, that is a material asterisk.</li>
+    <li>Approval prompts ignoring <code>approval_policy="never"</code> in some versions; lossy repeated compaction; session-resume gaps (largely fixed through 2026).</li>
+    <li>Skepticism toward OpenAI's own "harness engineering" marketing: the June 2026 post claiming an internal beta built with "0 lines of manually-written code" drew heavy HN pushback on metrics and verifiability.</li>
+  </ul>
+
+  <div class="verdict">
+    <span class="label">Part I verdict — the OpenAI offering standalone</span>
+    <p>The Agents SDK and Codex SDK complaints are different in kind, and conflating them is the most common analytical error in this space. Agents SDK criticism targets <em>framework design</em> (memory, persistence, lock-in shape); Codex criticism targets <em>software quality and limits</em> (leaks, sandbox bugs, release hygiene) while the harness concept itself is mostly praised. For a custom harness: the Agents SDK gives you clean orchestration bones and asks you to grow the organs; the Codex SDK gives you a complete organism you may only steer from outside. The documented composition pattern — Agents SDK orchestrating Codex via MCP — is OpenAI's implicit admission that neither alone covers the territory the Claude Agent SDK covers in one package.</p>
+  </div>
+</section>
+
+
+
+<section id="part2">
+  <h2><span class="kicker">Part II</span>The Anthropic offering: the Claude Agent SDK</h2>
+
+  <p>Anthropic's line is one product deep and one philosophy wide: the Claude Agent SDK (renamed from "Claude Code SDK" in September 2025) <em>is</em> Claude Code, exposed as a TypeScript and Python library. There is no thin-framework counterpart; if you want orchestration bones without the harness, you drop to the raw Messages API. The SDK's pitch — "same capabilities, different interface" — is close to literal: the agent loop, tool suite, permission engine, hook system, compaction, memory, skills, and subagents that ship in the product ship in the library. The design doctrine behind it is published and unusually explicit: an agent loop of <em>gather context → take action → verify work → repeat</em>, with the filesystem and bash as the agent's primary interface to the world.</p>
+
+  <h3 id="claude-arch">1. Architecture: Claude Code as a subprocess</h3>
+
+  <p>When your code calls <code>query()</code>, the SDK spawns a Claude Code process and talks to it over stdio; one agent session maps to one subprocess that owns the shell, the working directory, and JSONL session transcripts on local disk. Two important updates to the folk wisdom about this architecture:</p>
+  <ul>
+    <li><strong>The Node.js dependency is gone.</strong> Both SDKs now bundle a <em>native</em> Claude Code binary pinned to the SDK package version — Python 3.10+ is the Python SDK's only runtime requirement. The widely-cited "it spawns node and breaks in Electron/slim containers" pitfalls describe the 2024–2025 architecture.</li>
+    <li><strong>The subprocess is swappable in principle.</strong> Python exposes <code>cli_path</code> and an abstract <code>Transport</code> class, so the stdio child can be replaced with, e.g., a remote connection.</li>
+  </ul>
+  <p>The architecture's real costs remain: every agent is a long-lived process (~1&nbsp;GiB RAM / 5&nbsp;GiB disk / 1 CPU guidance) tied to local state, which is why serverless and microVM deployments have been the loudest pain point. Anthropic's mitigations are recent: <code>SessionStore</code> adapters mirror transcripts to S3/Redis/Postgres for cross-host resume, and the hosted "Claude Managed Agents" product (public beta April 2026) exists precisely because self-hosting this was hard.</p>
+
+  <p>The built-in tool suite is the product's: <code>Read</code>/<code>Write</code>/<code>Edit</code>, <code>Bash</code> (plus <code>Monitor</code> for watching background processes), <code>Glob</code>/<code>Grep</code>, <code>WebSearch</code>/<code>WebFetch</code>, the <code>Agent</code> tool for subagents, <code>Skill</code>, task-tracking tools, <code>AskUserQuestion</code>, on-demand tool loading via <code>ToolSearch</code>, and (TypeScript) a <code>Workflow</code> tool for script-driven orchestration of large agent fleets. Structured outputs validate against JSON Schema with automatic re-prompting on mismatch. Read-only tools run concurrently; mutating tools serialize.</p>
+
+  <h3 id="claude-permissions">2. The permission stack and hooks</h3>
+
+  <p>This is the SDK's crown jewel and the single largest capability gap versus everything OpenAI ships. It is a layered pipeline, evaluated in a documented order for every tool call:</p>
+
+  <ol>
+    <li><strong>PreToolUse hooks</strong> — in-process callbacks (or settings-file commands) that can deny outright, allow, escalate to "ask," rewrite the tool's input, or defer;</li>
+    <li><strong>Deny rules</strong> — declarative patterns (<code>Bash(rm *)</code>) that block even in <code>bypassPermissions</code> mode;</li>
+    <li><strong>Ask rules</strong> — patterns that force escalation to the callback;</li>
+    <li><strong>Permission mode</strong> — six modes: <code>default</code>, <code>dontAsk</code>, <code>acceptEdits</code>, <code>plan</code> (read-only exploration; writes never auto-approve), <code>bypassPermissions</code>, and <code>auto</code>, in which a model classifier adjudicates each call. Modes can change mid-session;</li>
+    <li><strong>Allow rules</strong> — declarative auto-approval patterns;</li>
+    <li><strong><code>canUseTool</code></strong> — your programmatic final arbiter, which can approve, deny with a message, or approve <em>with modified input</em>.</li>
+  </ol>
+
+  <p>The documented footgun: auto-approved tools never reach <code>canUseTool</code>, so checks that must run on every call belong in a PreToolUse hook (recent SDK versions emit a warning when your callback is shadowed). The design consequence for a harness builder: <em>declarative policy, interactive escalation, and programmatic override are all first-class and composable</em> — you implement a permission UX, not a permission engine.</p>
+
+  <p>The hook system extends far beyond permissions. Events include <code>PreToolUse</code>, <code>PostToolUse</code> (which can replace tool output and inject context back to the model), <code>PostToolUseFailure</code>, <code>UserPromptSubmit</code>, <code>Stop</code>, <code>SubagentStart/Stop</code>, <code>PreCompact</code>, <code>PermissionRequest</code>, <code>Notification</code>, and (TypeScript only) session-lifecycle, config-change, task-completion, and worktree events. Three properties matter most for harness design:</p>
+  <ul>
+    <li><strong>Hooks can block completion.</strong> A <code>Stop</code> hook returning a block decision forces the agent to keep working, with the reason fed back to the model — the native "not done until verification passes" primitive.</li>
+    <li><strong>Hooks can mutate.</strong> Input rewriting, output replacement, and context injection turn hooks into a feedback channel, not just a veto.</li>
+    <li><strong>Hooks are in-process functions</strong> (async supported, parallel execution, most-restrictive-wins), so your policy code shares state with your application. Python lags TypeScript on several event types — a real asymmetry to check before choosing a language.</li>
+  </ul>
+
+  <h3 id="claude-harness">3. Harness organs: context, memory, subagents, skills, sandbox</h3>
+
+  <h4>Context management</h4>
+  <p>Compaction is automatic and default-on: when context nears the limit, the harness summarizes older history (emitting a <code>compact_boundary</code> marker), re-injects startup content, and continues. Prompt caching is automatic and aggressive, with a documented option to restructure the system prompt so identical agent fleets share cache entries. Sessions persist as JSONL with resume, forking, and (TypeScript) opt-out. File checkpointing is SDK-exposed: <code>rewindFiles(uuid)</code> restores files to a message-boundary checkpoint — tracking edits made via file tools, though not via bash, and files only, not conversation state. A 1M-token context window is available on current models.</p>
+
+  <h4>Memory</h4>
+  <p>Three distinct mechanisms, often conflated:</p>
+  <ul>
+    <li><strong>CLAUDE.md</strong> — human-authored standing instructions, loaded hierarchically (user → project → local, plus path-scoped rule files), when <code>settingSources</code> includes the matching source.</li>
+    <li><strong>Auto-memory</strong> — <em>agent-authored</em>, on by default, SDK-exposed: a per-project memory directory with a <code>MEMORY.md</code> index loaded into every session, which the agent maintains with its ordinary file tools. This is the closest thing either vendor ships to default-on cross-session learning. Subagents can carry their own memory scopes.</li>
+    <li><strong>The API-level "memory tool"</strong> (a Messages API beta where your application implements the storage backend) — notably <em>not</em> part of the Agent SDK surface. First-party managed cross-session memory landed in the hosted Managed Agents product instead, a fact worth registering in any build-vs-buy analysis.</li>
+  </ul>
+
+  <h4>Subagents, skills, plugins</h4>
+  <ul>
+    <li><strong>Subagents</strong> are definable programmatically (name, system prompt, tool allowlist/denylist, per-agent model, per-agent MCP servers, memory scope, permission mode, effort) or via filesystem markdown. They run concurrently and in the background by default, isolate context fully (fresh window; only the final message returns), can nest to depth five, and are resumable by ID. This is materially richer than the Agents SDK's agents-as-tools and has no Codex SDK equivalent (Codex subagents exist but are TOML-configured six-thread affairs).</li>
+    <li><strong>Skills</strong> are filesystem-only (<code>SKILL.md</code> with progressive disclosure) — no programmatic registration API — and are the load-bearing mechanism in Anthropic's "agents codify their own patterns of behavior into reusable capabilities" learning story.</li>
+    <li><strong>Plugins</strong> bundle skills/agents/hooks/MCP config, but the SDK only loads local paths — marketplace installation is product-side.</li>
+  </ul>
+
+  <h4>Sandboxing</h4>
+  <p>OS-level sandboxing exists (macOS Seatbelt; Linux/WSL2 bubblewrap with a proxy-based network layer supporting per-domain allow/deny and credential masking) and is configurable from SDK options. Two honest caveats versus Codex: there is no native Windows sandbox (WSL2 only), and reads are permissive by default (whole disk minus denials — credentials readable unless configured). The default network proxy does not terminate TLS, with a documented domain-fronting exfiltration caveat. Codex's kernel-first posture is stronger by default; Claude's is more configurable and more deeply integrated with the permission system.</p>
+
+  <h4>MCP and custom tools</h4>
+  <p>MCP support covers stdio, SSE, and streamable HTTP as a client, plus <strong>in-process SDK MCP servers</strong>: custom tools defined as plain functions in your application, no subprocess, with annotations that opt them into parallel execution. MCP tool schemas are deferred out of context by default and loaded on demand — relevant at fleet scale. OAuth flows are your responsibility, and claude.ai-account connectors auto-load unless explicitly suppressed (a multi-tenant gotcha).</p>
+
+  <h3 id="claude-sentiment">4. What practitioners say</h3>
+
+  <h4>Praise</h4>
+  <ul>
+    <li><strong>"Claude Code as a library" is the dominant theme:</strong> "The built-in tools, permissions, and session handling collapse weeks of harness work… nothing else matches it for coding-agent ergonomics" (June 2026). Hands-on reports cite parallel subagents delivering 6.7× faster document processing with 40% less context, and MCP integrations wired "in an afternoon."</li>
+    <li><strong>The harness demonstrably matters:</strong> at Anthropic's AI Engineer Code Summit, Opus 4.5 scored 78% on the CORE benchmark inside the Claude Code harness versus 42% in alternative frameworks — the number most often quoted in the SDK's favor.</li>
+    <li><strong>Ecosystem gravity:</strong> Apple's Xcode integrated the SDK (February 2026); Microsoft's Agent Framework ships an official Claude package; Notion, Rakuten, and Sentry run on the managed offering; Anthropic's own Cowork product is built on it. Search demand grew ~300× from May 2025 to April 2026.</li>
+  </ul>
+
+  <h4>Criticism</h4>
+  <ul>
+    <li><strong>The subprocess architecture</strong> draws the sharpest technical fire: "just a wrapper around the CLI," awkward in Electron, and hostile to serverless — one HN practitioner self-hosting in microVMs described crashes in streaming mode and "quite fragile" custom lifecycle plumbing. (Partially mitigated since: bundled native binary, SessionStore adapters.)</li>
+    <li><strong>Opacity:</strong> "the loop is a black box you steer rather than code you step through." A third-party project exists solely to decompile and track the bundled system prompt (110+ fragments across 126 versions). Config precedence surprises (a stray <code>ANTHROPIC_API_KEY</code> in user settings silently outranking your env var) are documented pitfalls.</li>
+    <li><strong>Version churn with teeth:</strong> the TS changelog shows repeated breaking minor releases; the worst community report is a 3× token-cost regression between two 0.1.x versions on identical tasks. The chronic GitHub clusters are subscription-vs-API auth and local-filesystem state vs. cloud deployment.</li>
+    <li><strong>The May–June 2026 billing whiplash</strong> is the biggest trust event: Anthropic announced SDK/headless usage would move off subscription limits to a separate credit pool, drew furious HN reaction ("yet another developer-hostile decision"), then paused the change on June 15 — the day it was to take effect. Post-pause sentiment holds that metered SDK billing "will eventually happen." The standing policy that third-party products may not offer claude.ai login to <em>their</em> users is unambiguous; individual use of one's own subscription with the SDK works mechanically and currently draws from a plan-included Agent SDK credit.</li>
+    <li><strong>Model lock-in</strong> is architectural: officially Anthropic models only (Anthropic API, Bedrock, Vertex, Foundry). Proxy workarounds exist and are unsupported; comparison posts route multi-model teams to LangGraph or the Agents SDK.</li>
+  </ul>
+
+  <div class="verdict">
+    <span class="label">Part II verdict — the Anthropic offering standalone</span>
+    <p>The Claude Agent SDK is the most complete agent harness available as a library, and the only one whose permission and hook systems were designed for a harness builder rather than retrofitted. Its trade is equally clear: you inherit a vendor's opinionated, partially opaque runtime — its models, its subprocess architecture, its release cadence, and its billing politics. Teams that love it treat it as an appliance they steer; teams that fight it are usually trying to make it something it is not (a stateless library, a multi-model router, or a fully transparent loop).</p>
+  </div>
+</section>
+
+
+
+<section id="part3">
+  <h2><span class="kicker">Part III</span>Cross-comparison</h2>
+
+  <p>The fair comparison is triangular. The Claude Agent SDK's true peer is the <strong>Codex SDK</strong> — both are their vendor's coding harness wrapped as a subprocess-driving library. The <strong>Agents SDK</strong> is a different species (an orchestration framework) that has been growing harness organs; it competes with the Claude Agent SDK only in the sense that both are places you could choose to build. Where a single winner matters below, the Codex SDK is treated as the primary OpenAI comparator, with the Agents SDK scored alongside.</p>
+
+  <h3 id="matrix">1. At-a-glance capability matrix</h3>
+
+  <div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Capability</th>
+        <th>OpenAI Agents SDK</th>
+        <th>OpenAI Codex SDK</th>
+        <th>Claude Agent SDK</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td class="rowhead">What it is</td><td>Thin orchestration framework (Swarm lineage); harness features arriving as beta "sandbox agents"</td><td>The Codex CLI harness embedded as a library (TS wraps CLI; Python speaks app-server JSON-RPC, beta)</td><td>The Claude Code harness embedded as a library (bundled native binary, stdio)</td></tr>
+      <tr><td class="rowhead">Maturity (July 2026)</td><td>Py 0.18.0 / JS 0.13.0; 0.x policy allows breaking minors; sandbox stack explicitly beta</td><td>CLI 0.144.0, 903 releases, weekly cadence; TS SDK stable-ish, Python beta; ~5k open issues</td><td>TS 0.3.205 / Py 0.2.114; multiple releases/week tracking Claude Code 2.1.x; breaking changes in minors</td></tr>
+      <tr><td class="rowhead">File &amp; shell tools</td><td class="partial">Via beta sandbox stack (ApplyPatch/Shell); unsandboxed on host otherwise</td><td class="yes">Full suite, battle-tested</td><td class="yes">Full suite, battle-tested</td></tr>
+      <tr><td class="rowhead">Sandboxing</td><td class="partial">Docker + 7 hosted providers (beta); local Unix client is not kernel-isolated</td><td class="yes">Kernel-level: Seatbelt / bubblewrap / native Windows Sandbox; domain-level network proxy</td><td class="partial">Seatbelt / bubblewrap + network proxy w/ credential masking; no native Windows; permissive reads by default</td></tr>
+      <tr><td class="rowhead">Permission rules engine</td><td class="no">None — approval plumbing only</td><td class="partial">Policy presets + granular category routing + execpolicy rules; config-file driven</td><td class="yes">Deny/ask/allow rules + 6 modes + programmatic callback, layered &amp; documented</td></tr>
+      <tr><td class="rowhead">Programmatic approval callback</td><td class="yes"><code>needs_approval</code> + serializable RunState (survives restarts)</td><td class="no">Not in official SDKs (protocol supports it; hooks approximate it out-of-process)</td><td class="yes"><code>canUseTool</code> incl. input modification; in-process</td></tr>
+      <tr><td class="rowhead">Hooks that can block/modify</td><td class="no">Lifecycle hooks observe-only; tool guardrails can skip/replace</td><td class="partial">PreToolUse deny/rewrite, PermissionRequest auto-decide, PostToolUse replace — external-command contract</td><td class="yes">In-process; block, rewrite input, replace output, inject context, veto completion (Stop)</td></tr>
+      <tr><td class="rowhead">Block-completion (verify) primitive</td><td class="no">DIY in orchestration code</td><td class="partial">Stop hook event exists; completion-blocking semantics unconfirmed</td><td class="yes">Stop hook blocks with reason fed back to model</td></tr>
+      <tr><td class="rowhead">Context compaction</td><td class="partial">Opt-in (compaction session / sandbox capability)</td><td class="yes">Automatic (~85% threshold), Pre/PostCompact hooks; known quality complaints</td><td class="yes">Automatic, default-on; PreCompact hook; cache-aware</td></tr>
+      <tr><td class="rowhead">Cross-session memory</td><td class="partial">Sandbox Memory capability (beta): lessons distilled to workspace files</td><td class="partial"><code>features.memories</code> flag (off by default); AGENTS.md/skills as workaround</td><td class="yes">Auto-memory: default-on, agent-maintained MEMORY.md + topic files, per project</td></tr>
+      <tr><td class="rowhead">Skills (SKILL.md standard)</td><td class="partial">Beta, in sandbox stack</td><td class="yes">Yes, incl. Record &amp; Replay skill generation</td><td class="yes">Yes; filesystem-only registration</td></tr>
+      <tr><td class="rowhead">Subagents</td><td class="partial">Agents-as-tools (shared process; no isolation by default)</td><td class="partial">TOML-defined, 6 concurrent, depth 1</td><td class="yes">Programmatic, isolated context, parallel + background, depth 5, resumable; Workflow tool for fleets</td></tr>
+      <tr><td class="rowhead">Custom in-process tools</td><td class="yes">Function tools (decorator/Zod)</td><td class="no">MCP servers only</td><td class="yes">In-process SDK MCP servers</td></tr>
+      <tr><td class="rowhead">System prompt control</td><td class="yes">Full (instructions are yours)</td><td class="no">No supported override (AGENTS.md/skills only)</td><td class="partial">Replace, append, or adopt <code>claude_code</code> preset; product behaviors bundled</td></tr>
+      <tr><td class="rowhead">Structured output</td><td class="yes">Typed final outputs (Pydantic/Zod)</td><td class="yes">JSON Schema/Zod per run</td><td class="yes">JSON Schema with validation + re-prompt</td></tr>
+      <tr><td class="rowhead">Checkpoint / rewind</td><td class="partial">RunState (approvals) + sandbox snapshots; not unified</td><td class="partial">Thread resume/fork; no file rewind</td><td class="partial">File checkpointing + <code>rewindFiles()</code>; conversation rewind product-side</td></tr>
+      <tr><td class="rowhead">Model portability</td><td class="yes">Any provider (LiteLLM/adapters); best features Responses-only</td><td class="partial">Local harness: any Responses-API provider incl. Ollama/Bedrock; cloud surfaces OpenAI-only</td><td class="no">Anthropic models only (API/Bedrock/Vertex/Foundry); proxies unsupported</td></tr>
+      <tr><td class="rowhead">Observability</td><td class="yes">Tracing on by default + dashboard + ~30 integrations</td><td class="partial">Event stream; OTel maturing; third-party teardowns fill gaps</td><td class="partial">OTel export; hidden thinking + debug-noise complaints; community proxies exist</td></tr>
+      <tr><td class="rowhead">License / openness</td><td>MIT, open source</td><td>Apache-2.0, open source (forkable Rust harness)</td><td>SDK MIT; harness binary closed, prompt bundled</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3 id="permissions-compare">2. Permissions and hooks, head to head</h3>
+
+  <p>The user-facing question for a harness builder is: <em>when my agent is about to do something, what can my code know, veto, or change — and how much of that machinery do I have to build?</em></p>
+
+  <p><strong>Claude Agent SDK: a permission engine you configure.</strong> The six-step pipeline (hooks → deny rules → ask rules → mode → allow rules → callback) means declarative policy, pattern-matching, interactive escalation, and programmatic override compose without custom glue. The hook system doubles as a verification and feedback channel: PostToolUse can rewrite what the model sees; Stop can refuse to let the agent finish. Everything runs in your process with your state. The gaps are ergonomic rather than structural: the auto-approval/callback shadowing footgun, Python's missing hook events, and the fact that a "permission prompt" is still a UX you must render yourself.</p>
+
+  <p><strong>Codex SDK: a permission policy you select.</strong> Approval policies, granular category routing, execpolicy command rules, and sandbox modes give strong <em>declarative</em> control — arguably stronger defaults than Claude's, since the kernel sandbox backstops everything. The 2026 hooks close much of the interception gap (deny/rewrite in PreToolUse, auto-decide in PermissionRequest). But the contract is files and subprocesses, not in-process callbacks; the official SDKs expose no per-command approval API even though the underlying app-server protocol carries one (community SDKs in Elixir and Go prove it). If your harness's permission UX is central — an approval inbox, a policy learned from user decisions, an audit trail with context — you will either work at the protocol layer or accept Codex's own adjudication surfaces (including its novel auto-reviewer agent).</p>
+
+  <p><strong>Agents SDK: permission primitives you assemble.</strong> Ironically, it has the single best-engineered approval primitive of the three — <code>needs_approval</code> interruptions with a serializable RunState that survives process restarts, ideal for server-side approval queues — but nothing around it: no rule format, no modes, no persisted preferences, no uniform interceptor, and lifecycle hooks that cannot enforce anything. You get a good axle and build the rest of the cart.</p>
+
+  <div class="verdict">
+    <span class="label">Verdict — permissions &amp; hooks</span>
+    <p>For a harness whose identity includes a custom permission model: Claude Agent SDK, clearly. For hard containment guarantees with minimal ceremony: Codex. For asynchronous, restart-surviving human approval flows in a distributed system: the Agents SDK's RunState is the best single primitive, at the cost of assembling everything else.</p>
+  </div>
+
+  <h3 id="portability">3. Portability: migrating from the product to the SDK</h3>
+
+  <p>Both vendors' SDKs wrap the same engine as their products, so the migration question is really two questions: <em>what carries over automatically</em>, and <em>what was never in the engine at all — only in the product around it?</em></p>
+
+  <h4>Claude Code → Claude Agent SDK</h4>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Carries over</th><th>Carries over with a switch</th><th>Product-only — you rebuild or lose it</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>MCP servers, hooks logic, subagent definitions, Skills, permission rules &amp; modes, session format, auto-memory (on by default), sandbox settings, plugins (local)</td>
+        <td><strong>The Claude Code system prompt</strong> — SDK defaults to a minimal prompt; opt in via <code>systemPrompt: {preset: "claude_code"}</code>. The #1 reported migration surprise ("the agent feels dumber").<br><br><strong>Filesystem settings/CLAUDE.md</strong> — governed by <code>settingSources</code>; defaults now match the CLI, but hermetic isolation requires <code>[]</code> plus auditing the inputs that bypass it (managed policy, auto-memory, claude.ai connectors)</td>
+        <td>The interactive TUI (prompt UI, /config, /context, /sandbox panels); IDE extensions; Claude Code on the Web and cloud sessions; web↔CLI teleport; <strong>agent teams</strong> (explicitly CLI-only); conversation-rewind UX; marketplace plugin install; output styles (Python); background-task management UI; claude.ai-login distribution to your users (prohibited)</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+  <p>Net assessment: <strong>low-loss</strong>. Anthropic's stated design goal — assets built for the product carry to the SDK — largely holds, and the community migration reports agree once the two switches above are flipped. The recurring "missing" items from GitHub are narrower: no headless <code>/compact</code> trigger in Python, LSP tools present in the CLI but unexposed, hidden extended-thinking output, and approval UX rebuilt from <code>canUseTool</code> primitives.</p>
+
+  <h4>Codex (product) → Codex SDK</h4>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Carries over</th><th>Carries over with a switch</th><th>Product-only — you rebuild or lose it</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>The entire local harness: sandbox, approval policies, execpolicy, hooks, AGENTS.md, config.toml, MCP servers, skills, subagents, sessions/resume, compaction, plan tool, web search, structured output</td>
+        <td>Anything in <code>config.toml</code> is reachable via the SDK's <code>config</code> overrides — including feature flags (<code>memories</code>, <code>network_proxy</code>), model providers, and hook wiring</td>
+        <td><strong>Codex cloud entirely</strong>: parallel background tasks in managed containers, environment caching, task queue &amp; web review UI — <em>cloud requires ChatGPT sign-in; API-key auth cannot reach it at all</em>. Also: <strong>best-of-N attempts</strong> (<code>--attempts 3</code>, cloud-only); the hosted GitHub PR-review product; Slack/Linear dispatch; IDE extension &amp; desktop-app affordances; TUI approval UX; ChatGPT-plan flat-rate economics for programmatic use</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+  <p>Net assessment: <strong>lossless locally, walled-off in the cloud</strong>. The local harness rides along because the SDK literally drives the CLI. But OpenAI has drawn its moat one layer up: the hosted execution/review layer is a product perimeter, gated by ChatGPT auth, not an SDK capability you forgot to enable. If your harness design assumes cloud delegation or managed parallelism, the Codex SDK cannot be your substrate for that part — you rebuild it on your own infra (as the sandbox-provider ecosystem invites you to) or keep a foot in the product.</p>
+
+  <h4>Codex (product) → Agents SDK</h4>
+  <p>For completeness: this migration is a rebuild, not a port. The Agents SDK shares no config surface with Codex; you would recreate the harness from beta parts (sandbox agents, shell/apply-patch tools, skills, memory) or bridge to the real one via <code>codex mcp-server</code>. The bridge pattern is officially documented and is the honest answer when you want Agents SDK orchestration <em>and</em> Codex's harness.</p>
+
+  <div class="verdict">
+    <span class="label">Verdict — portability &amp; completeness vs. the in-product offering</span>
+    <p>Anthropic exposes more of its product through the SDK than OpenAI does — the notable Claude Code exclusives are collaboration/UX features, while Codex's exclusives include genuine <em>capability</em> (cloud parallelism, best-of-N, hosted review). Symmetrically, both SDKs withhold the interactive UX layer, and both vendors reserve their richest managed offerings (Claude Managed Agents; Codex cloud) for their own perimeter. A personal harness loses least by building on the Claude Agent SDK; a harness that wanted Codex's cloud muscle keeps a dependency on the Codex product no matter what.</p>
+  </div>
+
+  <h3 id="harness-lens">4. The first-class harness lens: verify, remember, learn</h3>
+
+  <p>Assume the target is a harness that (a) verifies its own work, (b) saves memories, and (c) learns from them. How much does each SDK give you natively, and what does the field's experience say about the remainder?</p>
+
+  <h4>Verification</h4>
+  <p>Anthropic has both the primitives and a published doctrine. The primitives: Stop hooks that block completion until checks pass; PostToolUse hooks that inject feedback (lint output, test failures) directly into the loop; isolated subagent evaluators for adversarial review; and Monitor/Bash for driving real end-to-end checks. The doctrine, from Anthropic's engineering posts: prefer deterministic, rules-based feedback over LLM judges; give the agent browser automation because code-only inspection misses real failures; and — critically — <strong>separate the evaluator from the generator</strong>, because agents asked to grade their own work "respond by confidently praising the work" even when it is mediocre. Documented failure modes (premature victory declarations, features marked done without verification) match what practitioners report, and a real footgun exists: a malformed Stop hook once looped an agent for a full session. Independent practitioners corroborate the doctrine's LLM-judge skepticism ("slow, expensive, unreliable" versus deterministic checks).</p>
+  <p>On the OpenAI side, verification splits by SDK. The Agents SDK offers gate-shaped guardrails (pass/fail tripwires, optionally LLM-judge-powered) and clean code-first loops you write yourself — a generator→judge→retry loop is a documented pattern, not a primitive. Codex offers verification <em>as a product</em> — the hosted PR review and local <code>/review</code> presets are excellent for the code-review workflow specifically — plus hooks that can replace tool output with feedback; whether its Stop hook can block completion Claude-style is unconfirmed. Telemetry-grounded self-verification (giving the agent a query DSL over runtime traces so it "verifies against runtime evidence rather than guessing") is an emerging pattern on both stacks.</p>
+
+  <h4>Memory</h4>
+  <p>Both vendors converged on the same architectural bet — <em>file-shaped memory the agent reads and writes itself</em> — which the evidence favors over vector-store memory layers. Anthropic ships it default-on (auto-memory with a MEMORY.md index) with CLAUDE.md for human-authored standing rules; OpenAI's equivalent (the sandbox Memory capability distilling "workflow lessons" as a pre-stop hook; Codex's off-by-default <code>memories</code> flag) arrived in 2026 and is one maturity notch behind. Neither SDK ships retrieval-backed semantic memory, and the third-party memory-layer market (Mem0, Zep, Letta, LangMem — all of which integrate with both SDKs) should be evaluated skeptically: the LOCOMO benchmark most vendor claims rest on was shown to accept 62.8% of intentionally wrong answers, vendors publicly dispute each other's evaluations, and academic work finds no advanced memory system consistently beating a plain RAG baseline. The credible pattern is boring: explicit, inspectable files under git, with a periodic consolidation pass — which both harnesses can do, and Claude's does by default.</p>
+
+  <h4>Learning</h4>
+  <p>The proven learning loop in the field is <strong>skills-as-accumulated-capability</strong>: after each run, distill what worked into a SKILL.md (or lessons file) that future runs load on demand. Anthropic states this as an explicit goal ("agents create, edit, and evaluate Skills on their own, codifying their own patterns of behavior"), has a marquee production example (Warp's agents rewriting their own skills from human corrections), and a mature community methodology (compound engineering: plan → work → review → compound, with lesson files grepped before acting). OpenAI adopted the same open SKILL.md standard in Codex (including Record &amp; Replay skill generation from demonstrations) and added skills to the Agents SDK's sandbox stack — the mechanics are converging fast, but the doctrine and worked examples are, as of mid-2026, roughly "one cookbook in." For a learning harness, the standard's portability is the strategic fact: <em>skills you author are the most vendor-portable asset in either ecosystem.</em></p>
+
+  <h4>Context engineering</h4>
+  <p>Claude's SDK does the most for you by default (automatic compaction, aggressive caching, subagent isolation, deferred tool schemas); Codex's harness does comparable work inside the CLI (with community-documented quality complaints at compaction boundaries); the Agents SDK does the least by default but now has the pieces. One dissenting note from Anthropic's own harness-design writing applies everywhere: for very long-running work, <em>context resets with structured file handoffs beat in-place compaction</em> — a clean-slate session reading a good progress file outperforms a summarized one, and counters "context anxiety" (models rushing as the window fills). A first-class harness should treat compaction as a safety net, not the architecture.</p>
+
+  <div class="verdict">
+    <span class="label">Verdict — the self-verifying, learning harness</span>
+    <p>Build-cost asymmetry, not capability ceiling, is the real difference. Everything described above is <em>achievable</em> on all three SDKs; on the Claude Agent SDK the verification loop, memory, and learning substrate are native or default-on, on Codex they are configuration plus product features, and on the Agents SDK they are your code. The deeper your ambitions for permission UX and verification enforcement, the more the Claude SDK's in-process hooks pay; the more you value containment guarantees and multi-model freedom, the more the OpenAI pairing pays.</p>
+  </div>
+
+  <h3 id="ops">5. Maturity, lock-in, cost, and operations</h3>
+
+  <ul>
+    <li><strong>All three are 0.x.</strong> None has shipped a 1.0; all reserve the right to break you in minor releases, and all have done so (Agents SDK: dependency and default-model breaks; Codex: apply-patch and hook-config regressions, changelog hygiene complaints; Claude: removed session APIs, a reported 3× cost regression). Pin versions, read changelogs, and budget for churn regardless of choice.</li>
+    <li><strong>Lock-in has different shapes.</strong> Claude's is model lock-in (architectural, by policy). The Agents SDK's is platform-gravity lock-in (portable in principle; best features Responses-only). Codex's is perimeter lock-in (open local harness, gated cloud). The AgentKit deprecation and the Claude billing whiplash are the two cautionary tales: hosted conveniences and pricing terms are the least durable parts of both ecosystems — the code-first SDK surfaces have been the stable ground.</li>
+    <li><strong>Billing for an always-on harness:</strong> OpenAI steers programmatic use to API keys (Codex cloud excepted — ChatGPT auth only); community sentiment credits Codex plans with the more generous flat-rate limits for product use. Anthropic currently includes an Agent SDK credit with paid plans for individual use, after pausing a controversial metering change; multi-user distribution on subscription auth is prohibited on both sides. Token economics in long loops are dominated by cache discipline on both stacks (cached input ≈ 10% of fresh); compaction and session-resume behaviors that invalidate caches are documented cost traps on both.</li>
+    <li><strong>Operational posture:</strong> the Claude SDK wants a persistent machine (long-lived subprocess, local state; SessionStore for cloud); Codex likewise runs local-first with the cloud as a separate product; the Agents SDK is the most natural fit for conventional server-side deployment (stateless-ish library, serializable state, Temporal integration for durability). If your harness must run in serverless or fleet-scale infrastructure, this row may outweigh several feature rows.</li>
+    <li><strong>Ecosystem hedge:</strong> meta-harness layers now exist — Vercel AI SDK 7's HarnessAgent wraps Claude Code, Codex, and others behind one API, and startups abstract both SDKs as swappable backends. Designing your harness's internal interfaces so the vendor SDK is a replaceable driver is no longer speculative; it is the emerging industry pattern.</li>
+  </ul>
+
+  <h3 id="recommendation">6. Recommendations</h3>
+
+  <p>For the specific goal stated at the outset — a personal, first-class harness that verifies its work, saves memories, and learns from them:</p>
+
+  <ol>
+    <li><strong>Default choice: build on the Claude Agent SDK</strong> — it is the only offering where the permission stack, blocking hooks, subagent evaluators, auto-memory, skills, and compaction are native, and the Claude Code → SDK migration preserves your accumulated assets (skills, hooks, MCP, CLAUDE.md, memory) nearly intact. Accept the trade knowingly: Anthropic models only, a subprocess runtime, and exposure to Anthropic's pricing politics.</li>
+    <li><strong>If containment or multi-model freedom is non-negotiable, pair the OpenAI SDKs:</strong> Codex SDK (or <code>codex mcp-server</code>) as the sandboxed executor, Agents SDK as the orchestration and approval layer. This buys kernel-level isolation and provider flexibility at the cost of assembling verification and permission UX yourself — and forgoing Codex cloud unless you keep ChatGPT-authenticated product surfaces in the loop.</li>
+    <li><strong>Whichever substrate you choose, keep the vendor-portable core vendor-neutral:</strong> skills (SKILL.md is now a cross-vendor standard), AGENTS.md/CLAUDE.md instructions, lesson/memory files under git, MCP servers, and deterministic verification scripts all port. The SDK-specific investment — hook wiring, permission policy, session plumbing — should live behind an interface you own, following the HarnessAgent-style pattern. The teams that regretted their choice were locked in by plumbing, not by assets.</li>
+    <li><strong>Design the harness around the field's three hard-won lessons:</strong> separate the evaluator from the generator (self-grading agents flatter themselves); prefer deterministic checks and real end-to-end exercise over LLM judges; and prefer explicit file-based memory with periodic consolidation over semantic memory layers whose benchmarks don't survive scrutiny.</li>
+  </ol>
+</section>
+
+
+
+<section id="sources">
+  <h2><span class="kicker">Appendix</span>Selected sources</h2>
+  <p class="footnote">A curated subset of the sources consulted (July 9, 2026). Community sentiment was additionally drawn from Hacker News comment threads (via Algolia), GitHub issue trackers, and secondary Reddit digests where direct access was unavailable.</p>
+
+  <h4>Primary documentation</h4>
+  <ul class="src-list">
+    <li>OpenAI Agents SDK docs — <a href="https://openai.github.io/openai-agents-python/">openai.github.io/openai-agents-python</a> (agents, handoffs, guardrails, sessions, tools, MCP, tracing, models, sandbox agents, human-in-the-loop, release policy) and <a href="https://openai.github.io/openai-agents-js/">openai-agents-js</a></li>
+    <li>OpenAI agents guide &amp; sandboxes — <a href="https://developers.openai.com/api/docs/guides/agents">developers.openai.com/api/docs/guides/agents</a></li>
+    <li>Codex docs — <a href="https://developers.openai.com/codex/">developers.openai.com/codex</a> (SDK, sandboxing, approvals, hooks, skills, subagents, AGENTS.md, config reference, MCP server, cloud, auth, changelog)</li>
+    <li>Codex repo &amp; TypeScript SDK — <a href="https://github.com/openai/codex">github.com/openai/codex</a></li>
+    <li>Claude Agent SDK docs — <a href="https://code.claude.com/docs/en/agent-sdk/overview">code.claude.com/docs/en/agent-sdk</a> (overview, permissions, hooks, subagents, sessions, session-storage, MCP, custom tools, skills, plugins, structured outputs, cost tracking, file checkpointing, hosting, migration guide, claude-code-features) and <a href="https://code.claude.com/docs/en/memory">/docs/en/memory</a>, <a href="https://code.claude.com/docs/en/sandboxing">/docs/en/sandboxing</a></li>
+    <li>Claude Agent SDK repos — <a href="https://github.com/anthropics/claude-agent-sdk-typescript">anthropics/claude-agent-sdk-typescript</a>, <a href="https://github.com/anthropics/claude-agent-sdk-python">anthropics/claude-agent-sdk-python</a></li>
+  </ul>
+
+  <h4>Vendor engineering &amp; announcements</h4>
+  <ul class="src-list">
+    <li>Anthropic: <a href="https://claude.com/blog/building-agents-with-the-claude-agent-sdk">Building agents with the Claude Agent SDK</a>; <a href="https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents">Effective harnesses for long-running agents</a>; <a href="https://www.anthropic.com/engineering/harness-design-long-running-apps">Harness design for long-running application development</a>; <a href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents">Effective context engineering</a>; <a href="https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills">Agent Skills</a>; <a href="https://www.anthropic.com/news/apple-xcode-claude-agent-sdk">Xcode integration</a></li>
+    <li>OpenAI: <a href="https://openai.com/index/the-next-evolution-of-the-agents-sdk/">The next evolution of the Agents SDK</a> (Apr 2026); <a href="https://openai.com/index/introducing-agentkit/">Introducing AgentKit</a>; <a href="https://openai.com/index/harness-engineering/">Harness engineering</a>; <a href="https://developers.openai.com/cookbook/examples/agents_sdk/building_reliable_agents_memory_compaction">Building reliable agents with memory and compaction</a>; <a href="https://developers.openai.com/cookbook/examples/codex/build_code_review_with_codex_sdk">Build code review with the Codex SDK</a></li>
+    <li>Temporal × Agents SDK — <a href="https://temporal.io/blog/announcing-openai-agents-sdk-integration">temporal.io/blog</a>; Vercel AI SDK 7 HarnessAgent — <a href="https://vercel.com/changelog/program-agent-harnesses-with-ai-sdk">vercel.com/changelog</a></li>
+  </ul>
+
+  <h4>Community sentiment &amp; analysis (selection)</h4>
+  <ul class="src-list">
+    <li>HN: Agents SDK launch (<a href="https://news.ycombinator.com/item?id=43334644">43334644</a>); Claude plan-usage &amp; billing threads (<a href="https://news.ycombinator.com/item?id=48125552">48125552</a>, <a href="https://news.ycombinator.com/item?id=48546618">48546618</a>); harness engineering pushback (<a href="https://news.ycombinator.com/item?id=48416264">48416264</a>); Codex skills (<a href="https://news.ycombinator.com/item?id=46250332">46250332</a>)</li>
+    <li>Anthropic billing pause coverage — <a href="https://arstechnica.com/ai/2026/06/anthropic-pauses-token-based-billing-for-its-claude-agent-sdk/">Ars Technica</a>, <a href="https://thenewstack.io/anthropic-pauses-claude-agent-sdk-subscription-change/">The New Stack</a>; AgentKit deprecation — <a href="https://mcp.directory/blog/openai-agentkit-deprecation-2026">mcp.directory</a></li>
+    <li>Practitioner pieces: <a href="https://liruifengv.com/posts/claude-agent-sdk-pitfalls-en/">Common pitfalls with the Claude Agent SDK</a>; <a href="https://www.developersdigest.tech/blog/claude-agent-sdk-vs-langgraph">Claude Agent SDK vs LangGraph</a>; <a href="https://www.ml6.eu/en/blog/inside-the-claude-agents-sdk-lessons-from-the-ai-engineer-summit">ML6 — inside the Claude Agent SDK</a>; <a href="https://www.firecrawl.dev/blog/claude-code-vs-codex">Firecrawl — Claude Code vs Codex</a>; <a href="https://codex.danielvaughan.com/2026/03/31/codex-cli-context-compaction-architecture/">Codex compaction teardown</a>; <a href="https://mariozechner.at/posts/2025-11-30-pi-coding-agent/">Mario Zechner — pi</a>; <a href="https://ampcode.com/notes/how-to-build-an-agent">Thorsten Ball — How to build an agent</a>; <a href="https://github.com/Piebald-AI/claude-code-system-prompts">Piebald — Claude Code system-prompt extraction</a></li>
+    <li>Memory-layer skepticism: <a href="https://essays.bloo-mind.ai/posts/2026-05-20-mem-eval/">The Benchmark Theatre (LOCOMO audit)</a>; <a href="https://blog.getzep.com/lies-damn-lies-statistics-is-mem0-really-sota-in-agent-memory/">Zep's rebuttal to Mem0</a>; <a href="https://mem0.ai/blog/state-of-ai-agent-memory-2026">Mem0 — state of agent memory 2026</a></li>
+    <li>Key GitHub issues: Codex MCP-sandbox bypass (<a href="https://github.com/openai/codex/issues/7635">#7635</a>), memory leaks (<a href="https://github.com/openai/codex/issues/20740">#20740</a>); Claude SDK cost regression (<a href="https://github.com/anthropics/claude-agent-sdk-typescript/issues/93">TS #93</a>), session storage for cloud (<a href="https://github.com/anthropics/claude-agent-sdk-typescript/issues/97">TS #97</a>), headless compact (<a href="https://github.com/anthropics/claude-agent-sdk-python/issues/23">Py #23</a>); Agents SDK session/memory cluster (<a href="https://github.com/openai/openai-agents-python/issues/745">#745</a>, <a href="https://github.com/openai/openai-agents-python/issues/1539">#1539</a>)</li>
+  </ul>
+</section>
+
+
+
+<footer>
+  <p>Prepared July 9, 2026. Feature sets, pricing, and policies in this space change on a weekly cadence; verify load-bearing claims against current vendor documentation before committing to an architecture. Claims marked as single-source or unconfirmed should be treated as directional rather than definitive.</p>
+</footer>
+
+</main>
+</body>
+</html>
