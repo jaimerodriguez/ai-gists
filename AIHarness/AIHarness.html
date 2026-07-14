@@ -1,0 +1,1465 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="utf-8">
+  <meta name="generator" content="pandoc 3.10">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <meta name="author" content="Codex">
+  <meta name="dcterms.date" content="2026-07-09">
+  <title>AI Harnesses: Components, Boundaries, and Call Order</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0;
+      max-width: none;
+      padding: 0;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <style>
+  :root {
+    color-scheme: light;
+    --bg: #f6f7f9;
+    --paper: #ffffff;
+    --ink: #17202a;
+    --muted: #53616f;
+    --quiet: #7b8794;
+    --line: #d8dee6;
+    --soft-line: #e8edf2;
+    --accent: #0f766e;
+    --accent-soft: #e7f5f3;
+    --accent-dark: #0b5f59;
+    --code-bg: #f3f5f7;
+    --table-head: #f0f3f6;
+    --shadow: 0 22px 70px rgba(23, 32, 42, 0.12);
+    --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
+    --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    max-width: none;
+    background:
+      linear-gradient(90deg, rgba(15, 118, 110, 0.055), transparent 32%, transparent 68%, rgba(15, 118, 110, 0.045)),
+      var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 17px;
+    line-height: 1.66;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body > * {
+    max-width: 1120px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  body {
+    padding: 48px clamp(18px, 4vw, 56px) 72px;
+  }
+
+  #title-block-header,
+  body > h1:first-of-type,
+  body > h1:first-child {
+    max-width: 1120px;
+  }
+
+  #title-block-header {
+    margin-bottom: 26px;
+    padding: clamp(34px, 6vw, 58px);
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+  }
+
+  #title-block-header .title {
+    margin: 0;
+    font-size: clamp(34px, 6vw, 58px);
+    line-height: 1.03;
+    letter-spacing: -0.025em;
+    max-width: 13.5em;
+  }
+
+  #title-block-header .author,
+  #title-block-header .date {
+    margin: 14px 0 0;
+    color: var(--muted);
+    font-size: 15px;
+  }
+
+  #TOC {
+    margin-bottom: 30px;
+    padding: 22px 26px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: 0 10px 32px rgba(23, 32, 42, 0.06);
+  }
+
+  #TOC::before {
+    content: "Contents";
+    display: block;
+    margin: 0 0 10px;
+    color: var(--accent-dark);
+    font-size: 12px;
+    font-weight: 750;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  #TOC ul {
+    margin: 0;
+    padding-left: 1.2rem;
+    columns: 2 280px;
+    column-gap: 36px;
+  }
+
+  #TOC li {
+    break-inside: avoid;
+    margin: 0 0 5px;
+    color: var(--quiet);
+    font-size: 14px;
+    line-height: 1.45;
+  }
+
+  #TOC a {
+    color: var(--muted);
+    text-decoration: none;
+  }
+
+  #TOC a:hover {
+    color: var(--accent-dark);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+
+  body > h1:not(.title),
+  body > h2,
+  body > h3,
+  body > h4,
+  body > h5,
+  body > h6,
+  body > p,
+  body > ul,
+  body > ol,
+  body > pre,
+  body > blockquote,
+  body > table,
+  body > div,
+  body > dl {
+    background: transparent;
+  }
+
+  h1:not(.title),
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: var(--ink);
+    line-height: 1.2;
+    letter-spacing: -0.014em;
+  }
+
+  h1:not(.title) {
+    margin-top: 46px;
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--line);
+    font-size: clamp(31px, 4.4vw, 46px);
+  }
+
+  h2 {
+    margin-top: 46px;
+    margin-bottom: 12px;
+    padding-top: 12px;
+    font-size: clamp(25px, 3.2vw, 34px);
+  }
+
+  h2::before {
+    content: "";
+    display: block;
+    width: 52px;
+    height: 4px;
+    margin-bottom: 16px;
+    background: var(--accent);
+    border-radius: 999px;
+  }
+
+  h3 {
+    margin-top: 34px;
+    margin-bottom: 9px;
+    font-size: clamp(20px, 2.4vw, 25px);
+  }
+
+  h4 {
+    margin-top: 24px;
+    margin-bottom: 8px;
+    color: var(--accent-dark);
+    font-size: 16px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  p {
+    margin-top: 0;
+    margin-bottom: 16px;
+  }
+
+  a {
+    color: var(--accent-dark);
+    text-decoration-color: rgba(15, 118, 110, 0.35);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+
+  a:hover {
+    text-decoration-color: var(--accent-dark);
+  }
+
+  ul,
+  ol {
+    padding-left: 1.35rem;
+    margin-top: 0;
+    margin-bottom: 18px;
+  }
+
+  li {
+    margin-bottom: 6px;
+  }
+
+  li::marker {
+    color: var(--accent);
+  }
+
+  strong {
+    font-weight: 720;
+  }
+
+  blockquote {
+    margin: 24px auto;
+    padding: 16px 20px;
+    color: var(--muted);
+    background: var(--accent-soft);
+    border-left: 4px solid var(--accent);
+    border-radius: 10px;
+  }
+
+  code {
+    font-family: var(--mono);
+    font-size: 0.88em;
+    background: var(--code-bg);
+    border: 1px solid var(--soft-line);
+    border-radius: 5px;
+    padding: 0.12em 0.34em;
+  }
+
+  pre {
+    margin: 22px auto;
+    padding: 18px 20px;
+    overflow-x: auto;
+    color: #d8e2ec;
+    background: #111827;
+    border: 1px solid #1f2937;
+    border-radius: 12px;
+    box-shadow: 0 12px 36px rgba(17, 24, 39, 0.16);
+  }
+
+  pre code {
+    padding: 0;
+    color: inherit;
+    background: transparent;
+    border: 0;
+    font-size: 0.86em;
+    line-height: 1.58;
+  }
+
+  table {
+    display: block;
+    width: 100%;
+    margin: 22px auto;
+    overflow-x: auto;
+    border-collapse: collapse;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(23, 32, 42, 0.055);
+  }
+
+  thead {
+    background: var(--table-head);
+  }
+
+  th,
+  td {
+    padding: 10px 13px;
+    border-bottom: 1px solid var(--soft-line);
+    vertical-align: top;
+    text-align: left;
+  }
+
+  th {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 760;
+    letter-spacing: 0.065em;
+    text-transform: uppercase;
+  }
+
+  tr:last-child td {
+    border-bottom: 0;
+  }
+
+  td {
+    font-size: 14.5px;
+    line-height: 1.48;
+  }
+
+  hr {
+    max-width: 1120px;
+    margin: 44px auto;
+    border: 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .sourceCode {
+    background: transparent;
+  }
+
+  @media (min-width: 1180px) {
+    body {
+      padding-left: 320px;
+      padding-right: 64px;
+    }
+
+    #TOC {
+      position: fixed;
+      top: 28px;
+      left: 28px;
+      width: 260px;
+      max-height: calc(100vh - 56px);
+      overflow: auto;
+      margin: 0;
+      padding: 18px 18px;
+    }
+
+    #TOC ul {
+      columns: 1;
+      padding-left: 1rem;
+    }
+  }
+
+  @media (max-width: 680px) {
+    body {
+      font-size: 16px;
+      padding-top: 22px;
+    }
+
+    #title-block-header {
+      padding: 28px 24px;
+      border-radius: 14px;
+    }
+
+    #TOC {
+      padding: 18px 20px;
+    }
+
+    th,
+    td {
+      padding: 9px 10px;
+    }
+  }
+
+  @media print {
+    :root {
+      --bg: #ffffff;
+      --paper: #ffffff;
+      --ink: #111111;
+      --muted: #444444;
+      --line: #cfcfcf;
+      --soft-line: #e5e5e5;
+      --accent: #0f766e;
+      --shadow: none;
+    }
+
+    body {
+      padding: 0;
+      background: #ffffff;
+      font-size: 11pt;
+      line-height: 1.45;
+    }
+
+    body > * {
+      max-width: none;
+    }
+
+    #title-block-header,
+    #TOC,
+    pre,
+    table {
+      box-shadow: none;
+    }
+
+    #TOC {
+      position: static;
+      width: auto;
+      max-height: none;
+      page-break-after: always;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    h1,
+    h2,
+    h3 {
+      page-break-after: avoid;
+    }
+
+    pre,
+    table,
+    blockquote {
+      page-break-inside: avoid;
+    }
+  }
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">AI Harnesses: Components, Boundaries, and Call Order</h1>
+<p class="author">Codex</p>
+<p class="date">2026-07-09</p>
+</header><nav id="TOC" role="doc-toc">
+<ul>
+<li><a id="toc-abstract" href="#abstract">Abstract</a></li>
+<li><a id="toc-1-what-an-ai-harness-is" href="#1-what-an-ai-harness-is">1. What an AI Harness Is</a></li>
+<li><a id="toc-2-required-components" href="#2-required-components">2. Required Components</a>
+<ul>
+<li><a id="toc-21-agent-loop" href="#21-agent-loop">2.1 Agent Loop</a></li>
+<li><a id="toc-22-context-assembler" href="#22-context-assembler">2.2 Context Assembler</a></li>
+<li><a id="toc-23-tool-registry-and-dispatch-funnel" href="#23-tool-registry-and-dispatch-funnel">2.3 Tool Registry and Dispatch Funnel</a></li>
+<li><a id="toc-24-permissions-approval-policy-and-sandbox" href="#24-permissions-approval-policy-and-sandbox">2.4 Permissions, Approval Policy, and Sandbox</a></li>
+<li><a id="toc-25-persistence-and-resume" href="#25-persistence-and-resume">2.5 Persistence and Resume</a></li>
+<li><a id="toc-26-verification-and-feedback" href="#26-verification-and-feedback">2.6 Verification and Feedback</a></li>
+<li><a id="toc-27-error-classifier" href="#27-error-classifier">2.7 Error Classifier</a></li>
+<li><a id="toc-28-observability-and-accounting" href="#28-observability-and-accounting">2.8 Observability and Accounting</a></li>
+</ul>
+</li>
+<li><a id="toc-3-minimum-useful-components" href="#3-minimum-useful-components">3. Minimum-Useful Components</a>
+<ul>
+<li><a id="toc-31-context-management" href="#31-context-management">3.1 Context Management</a></li>
+<li><a id="toc-32-task-and-plan-state" href="#32-task-and-plan-state">3.2 Task and Plan State</a></li>
+<li><a id="toc-33-interrupts-and-steering" href="#33-interrupts-and-steering">3.3 Interrupts and Steering</a></li>
+<li><a id="toc-34-streaming" href="#34-streaming">3.4 Streaming</a></li>
+</ul>
+</li>
+<li><a id="toc-4-optional-or-conditional-components" href="#4-optional-or-conditional-components">4. Optional or Conditional Components</a>
+<ul>
+<li><a id="toc-41-profiles" href="#41-profiles">4.1 Profiles</a></li>
+<li><a id="toc-42-memory" href="#42-memory">4.2 Memory</a></li>
+<li><a id="toc-43-skills" href="#43-skills">4.3 Skills</a></li>
+<li><a id="toc-44-plugins" href="#44-plugins">4.4 Plugins</a></li>
+<li><a id="toc-45-mcp-and-connectors" href="#45-mcp-and-connectors">4.5 MCP and Connectors</a></li>
+<li><a id="toc-46-hooks" href="#46-hooks">4.6 Hooks</a></li>
+<li><a id="toc-47-subagents" href="#47-subagents">4.7 Subagents</a></li>
+<li><a id="toc-48-parallel-tool-execution" href="#48-parallel-tool-execution">4.8 Parallel Tool Execution</a></li>
+<li><a id="toc-49-guardian-or-reviewer-models" href="#49-guardian-or-reviewer-models">4.9 Guardian or Reviewer Models</a></li>
+<li><a id="toc-410-checkpoints-and-rollback" href="#410-checkpoints-and-rollback">4.10 Checkpoints and Rollback</a></li>
+</ul>
+</li>
+<li><a id="toc-5-profiles-and-memory-required-substructure" href="#5-profiles-and-memory-required-substructure">5. Profiles and Memory: Required Substructure</a></li>
+<li><a id="toc-6-canonical-call-order" href="#6-canonical-call-order">6. Canonical Call Order</a>
+<ul>
+<li><a id="toc-61-session-start" href="#61-session-start">6.1 Session Start</a></li>
+<li><a id="toc-62-turn-prologue" href="#62-turn-prologue">6.2 Turn Prologue</a></li>
+<li><a id="toc-63-request-build" href="#63-request-build">6.3 Request Build</a></li>
+<li><a id="toc-64-model-stream-handling" href="#64-model-stream-handling">6.4 Model Stream Handling</a></li>
+<li><a id="toc-65-tool-call-funnel" href="#65-tool-call-funnel">6.5 Tool Call Funnel</a></li>
+<li><a id="toc-66-loop-continuation" href="#66-loop-continuation">6.6 Loop Continuation</a></li>
+<li><a id="toc-67-stop-gates-and-finalizer" href="#67-stop-gates-and-finalizer">6.7 Stop Gates and Finalizer</a></li>
+<li><a id="toc-68-subagent-delegation" href="#68-subagent-delegation">6.8 Subagent Delegation</a></li>
+</ul>
+</li>
+<li><a id="toc-7-component-dependency-rules" href="#7-component-dependency-rules">7. Component Dependency Rules</a></li>
+<li><a id="toc-8-codex-and-hermes-as-reference-shapes" href="#8-codex-and-hermes-as-reference-shapes">8. Codex and Hermes as Reference Shapes</a>
+<ul>
+<li><a id="toc-81-codex-pattern" href="#81-codex-pattern">8.1 Codex Pattern</a></li>
+<li><a id="toc-82-hermes-pattern" href="#82-hermes-pattern">8.2 Hermes Pattern</a></li>
+<li><a id="toc-83-where-they-agree" href="#83-where-they-agree">8.3 Where They Agree</a></li>
+</ul>
+</li>
+<li><a id="toc-9-build-order" href="#9-build-order">9. Build Order</a>
+<ul>
+<li><a id="toc-v0-minimal-acting-harness" href="#v0-minimal-acting-harness">v0: Minimal Acting Harness</a></li>
+<li><a id="toc-v1-daily-use-harness" href="#v1-daily-use-harness">v1: Daily-Use Harness</a></li>
+<li><a id="toc-v2-extensible-harness" href="#v2-extensible-harness">v2: Extensible Harness</a></li>
+<li><a id="toc-v3-autonomous-or-multi-user-harness" href="#v3-autonomous-or-multi-user-harness">v3: Autonomous or Multi-User Harness</a></li>
+</ul>
+</li>
+<li><a id="toc-10-practical-design-recommendations" href="#10-practical-design-recommendations">10. Practical Design Recommendations</a></li>
+<li><a id="toc-11-source-notes" href="#11-source-notes">11. Source Notes</a></li>
+</ul>
+</nav>
+<p>Author: Codex<br>Date: 2026-07-09<br>Scope: LLM agent harnesses that can use tools, manage context, persist work, and act with bounded autonomy.</p>
+<section id="abstract" class="level2">
+<h2>Abstract</h2>
+<p>An AI harness is the deterministic runtime around a model. The model decides, but the harness assembles context, exposes tools, enforces permissions, records state, runs verification, and decides when a turn is complete. The loop itself is simple: call the model, execute requested tools, append observations, repeat until the model produces a final answer or the harness stops it. The hard part is everything around that loop.</p>
+<p>This paper answers four questions:</p>
+<ol type="1">
+<li>What components are required for a serious harness?</li>
+<li>What components are optional, conditional, or profile-specific?</li>
+<li>What memory and profile abstractions are useful?</li>
+<li>In what order should components call one another during a session, a turn, a tool call, and a subagent delegation?</li>
+</ol>
+</section>
+<section id="1-what-an-ai-harness-is" class="level2">
+<h2>1. What an AI Harness Is</h2>
+<p>An AI harness is the runtime substrate that converts a user's goal into a sequence of model calls, tool calls, state updates, and safety decisions. It is not the model, not the frontend, and not the tool implementation alone. It is the orchestration layer that controls:</p>
+<ul>
+<li>What the model sees.</li>
+<li>What the model can call.</li>
+<li>What code or external systems are allowed to do.</li>
+<li>How results are fed back into the model.</li>
+<li>How work is recorded, resumed, summarized, verified, and audited.</li>
+</ul>
+<p>The core lesson: the model is a decision component; the harness is the operating system for that decision component.</p>
+</section>
+<section id="2-required-components" class="level2">
+<h2>2. Required Components</h2>
+<p>The required set depends on whether the agent can act. A read-only chat assistant can skip several controls. A harness that runs tools, edits files, calls APIs, or spends money cannot.</p>
+<section id="21-agent-loop" class="level3">
+<h3>2.1 Agent Loop</h3>
+<p>Required for any agentic harness.</p>
+<p>The irreducible loop is:</p>
+<pre class="text"><code>append user message
+while budget remains:
+  response = model(context, tools)
+  append response
+  if response has no tool calls:
+    break
+  for each tool call:
+    result = execute_tool(call)
+    append result
+return final response or controlled exit</code></pre>
+<p>The production version needs:</p>
+<ul>
+<li>A max-iteration budget.</li>
+<li>A cost/token budget.</li>
+<li>An explicit exit reason enum such as <code>final_response</code>, <code>budget_exhausted</code>, <code>interrupted</code>, <code>approval_denied</code>, <code>guardrail_halt</code>, or <code>error</code>.</li>
+<li>A finalizer that runs on every exit path.</li>
+<li>[Edit: Added] Interrupts and steering.&nbsp;</li>
+</ul>
+<p>Why it matters: without budgets, denial-of-wallet and infinite retries become normal failure modes. OWASP explicitly calls out unbounded loops and token/cost tracking as security concerns.</p>
+<p>[Edit pass: Note] This irreducible loop feels like a turn/task. To accomplish a goal, there should be an outer loop iterating the tasks, saving state, etc.&nbsp;</p>
+</section>
+<section id="22-context-assembler" class="level3">
+<h3>2.2 Context Assembler</h3>
+<p>Required.</p>
+<p>The context assembler decides what gets sent to the model on each call. It should separate content by stability and authority:</p>
+<ol type="1">
+<li>Stable system/developer instructions.</li>
+<li>Project instructions.</li>
+<li>Profile/user preferences.</li>
+<li>Memory snapshots and recalled facts.</li>
+<li>Current user message and task state.</li>
+<li>Prior messages, tool calls, and tool results.</li>
+<li>Tool schemas.</li>
+</ol>
+<p>[Edit pass: Bolded] <strong>The assembler must preserve prompt-cache discipline.</strong> OpenAI's prompt caching docs state that cache hits depend on exact prompt prefixes, so static content should go at the beginning and variable user-specific content at the end. Hermes and Codex both exploit that principle: stable instructions stay byte-stable; dynamic data rides late in the request.</p>
+<p>Required behavior:</p>
+<ul>
+<li>Keep the system prompt stable during a session.</li>
+<li>Put volatile per-turn material near the end.&nbsp; [Edit pass: Added] Sort convent by volatility.&nbsp;&nbsp;</li>
+<li>Canonicalize tool schemas and structured content where possible.</li>
+<li>Include only the tools visible for this request.</li>
+<li>Treat external content as data, not instructions.</li>
+<li>[Edit pass: Added]. Keep prompts at right altitude. With newer models, you need less instructions. Provide just enough information to outline the desired behaviors and outcomes.&nbsp;</li>
+</ul>
+</section>
+<section id="23-tool-registry-and-dispatch-funnel" class="level3">
+<h3>2.3 Tool Registry and Dispatch Funnel</h3>
+<p>Required for acting agents.</p>
+<p>A tool needs four things:</p>
+<ul>
+<li>Name.</li>
+<li>Description.</li>
+<li>Input schema.</li>
+<li>Execution function.</li>
+</ul>
+<p>OpenAI's function calling guide describes the loop: make a request with available tools, receive a tool call, execute application-side code, return the tool output, and call the model again. The harness must own the execution step.</p>
+<p>The registry answers: "What tools exist and are visible for this model, task, profile, and trust level?"</p>
+<p>The dispatch funnel answers: "Given a specific tool call, what checks and wrappers run before and after the handler?"</p>
+<p>Required dispatch steps:</p>
+<ol type="1">
+<li>Parse and validate the call.</li>
+<li>Record the requested call.</li>
+<li>Apply pre-tool hooks or middleware.</li>
+<li>Consult permissions and approval policy.</li>
+<li>Acquire credentials, if needed.</li>
+<li>Execute in the sandbox or external tool boundary.</li>
+<li>Normalize result or error.</li>
+<li>Truncate or offload large output.</li>
+<li>Fence untrusted data.</li>
+<li>Record the result.</li>
+</ol>
+<p>[Edit pass: Bolded]. <strong>All tools should pass through one funnel. Otherwise policy, telemetry, redaction, and error shaping will drift between handlers.</strong></p>
+</section>
+<section id="24-permissions-approval-policy-and-sandbox" class="level3">
+<h3>2.4 Permissions, Approval Policy, and Sandbox</h3>
+<p>Required for acting agents.</p>
+<p>[Edit pass: Bolded] <strong>Separate two axes:</strong></p>
+<ul>
+<li style="font-weight: bold;"><strong>Permission or sandbox policy: what a process or tool may technically touch.</strong></li>
+<li><strong>Approval policy: when the harness must stop and ask before doing something</strong>.</li>
+</ul>
+<p>OpenAI's Codex sandboxing docs make the same distinction: the sandbox defines the technical boundary; approval policy decides when to ask before crossing it. OWASP adds least privilege, per-tool scoping, explicit approval for sensitive operations, and fail-closed behavior for policy failures.</p>
+<p>Required controls:</p>
+<ul>
+<li>Filesystem boundary.</li>
+<li>Network boundary.</li>
+<li>Tool allow/deny lists.</li>
+<li>High-impact action classification.</li>
+<li>Approval records bound to exact action parameters.</li>
+<li>Deny-first precedence.</li>
+<li>Audit trail.</li>
+<li>Fail-closed default.&nbsp; [Edit pass: Added] If risk classification, approval validation, policy lookup, or audit logging fails</li>
+</ul>
+<p>Credentials are not permissions. Credentials should be retrieved only after policy approves an action, scoped to the specific tool/action, and injected into the executor or API client, not into the prompt.</p>
+</section>
+<section id="25-persistence-and-resume" class="level3">
+<h3>2.5 Persistence and Resume</h3>
+<p>Required.</p>
+<p>The harness needs an append-only record of:</p>
+<ul>
+<li>User messages.</li>
+<li>Model responses.</li>
+<li>Tool calls.</li>
+<li>Tool outputs.</li>
+<li>Approval decisions.</li>
+<li>Context compactions.</li>
+<li>Verification evidence.</li>
+<li>Exit reasons and usage.</li>
+</ul>
+<p>Codex uses append-only rollout records as canonical history in the local trace. Hermes flushes transcript state before tool side effects so a destructive or crashing command cannot erase the record of the command request.</p>
+<p>Required behavior:</p>
+<ul>
+<li>Append before side effects.</li>
+<li>Restore stored session state on resume instead of rebuilding it from new defaults.</li>
+<li>Preserve the original prompt/profile snapshot for a resumed session unless the user explicitly migrates it.</li>
+<li>Clean dangling tool-call tails before resume.</li>
+<li>Keep enough metadata for audit and debugging.</li>
+</ul>
+<p>[Edit pass: Added]. If your business requirements allow it, prefer files for persistance over databases.&nbsp;</p>
+</section>
+<section id="26-verification-and-feedback" class="level3">
+<h3>2.6 Verification and Feedback</h3>
+<p>Required in principle; stronger gates are minimum-useful for coding and high-impact workflows.</p>
+<p>At minimum, every tool result must feed back into the next model call. The model should see actual exit codes, API responses, test output, and errors.<br>[Edit pass: I would word it as " every thing should go into the context", not "into the next model call"]&nbsp;</p>
+<p>For software work, a serious harness needs an evidence ledger:</p>
+<ul>
+<li>Mark edits as making verification stale.</li>
+<li>Record test/lint/build commands that passed after the last edit.</li>
+<li>Block or bounce "done" claims when fresh verification is missing.</li>
+<li>Keep verification evidence separate from model assertions.</li>
+</ul>
+<p>Anthropic's long-running-agent guidance emphasizes explicit end-to-end testing because agents otherwise mark work complete too early. The supplied Hermes summary reports a verify-on-stop gate that checks evidence before accepting a final answer.</p>
+<p>[Edit pass: Added]. The Evaluator should be external. Split the evaluator from the generator into distinct agents.&nbsp;</p>
+</section>
+<section id="27-error-classifier" class="level3">
+<h3>2.7 Error Classifier</h3>
+<p>Required beyond toy use.</p>
+<p>Do not treat all errors as "try again." Classify them into action hints:</p>
+<ul>
+<li>Retry with backoff.</li>
+<li>Compress context.</li>
+<li>Rotate credential.</li>
+<li>Fail over provider.</li>
+<li>Ask user.</li>
+<li>Abort as policy or quota failure.</li>
+</ul>
+<p>The classifier belongs in the harness, not in every provider adapter or tool handler.</p>
+</section>
+<section id="28-observability-and-accounting" class="level3">
+<h3>2.8 Observability and Accounting</h3>
+<p>Required for any multi-step or multi-user harness.</p>
+<p>Record:</p>
+<ul>
+<li>Model calls.</li>
+<li>Tool calls.</li>
+<li>Approval requests and decisions.</li>
+<li>Token/cost usage.</li>
+<li>Errors and retries.</li>
+<li>Compactions.</li>
+<li>Verification commands.</li>
+<li>Final exit reason.</li>
+</ul>
+<p>OWASP recommends logging agent decisions, tool calls, outcomes, token usage, costs per session/user, approval metadata, and unusual behavior. Without accounting, budgets are unenforceable.</p>
+</section>
+</section>
+<section id="3-minimum-useful-components" class="level2">
+<h2>3. Minimum-Useful Components</h2>
+<p>These are not required for a nine-line demo, but they become required quickly in real work.</p>
+<section id="31-context-management" class="level3">
+<h3>3.1 Context Management</h3>
+<p>Use an escalation ladder:</p>
+<ol type="1">
+<li>Truncate large tool outputs at ingest.</li>
+<li>Offload oversized outputs to sidecar files with previews.</li>
+<li>Drop or summarize old tool results.</li>
+<li>Compact the middle of the conversation.</li>
+<li>Reset into a fresh context using task/progress files.</li>
+</ol>
+<p>OpenAI supports server-side and standalone compaction for long-running Responses workflows. Anthropic's context engineering guidance frames context as a finite attention budget and recommends using the smallest high-signal set of tokens.</p>
+</section>
+<section id="32-task-and-plan-state" class="level3">
+<h3>3.2 Task and Plan State</h3>
+<p>[Edit pass: Added]. This is the outer loop mentioned above.&nbsp;</p>
+<p>Required for run-until-done autonomy.</p>
+<p>A plan is not just UI. It is model-visible state that prevents the agent from attempting everything at once or declaring victory too early.</p>
+<p>Minimum form:</p>
+<ul>
+<li>A task checklist.</li>
+<li>One in-progress item at a time.</li>
+<li>Progress notes.</li>
+<li>Verification evidence per item.</li>
+<li>Resume instructions.</li>
+</ul>
+<p>Anthropic's long-running-agent harness used an initializer agent to create feature requirements and a progress file, then asked later coding agents to work incrementally and leave structured updates<br><br></p>
+</section>
+<section id="33-interrupts-and-steering" class="level3">
+<h3>3.3 Interrupts and Steering</h3>
+<p>Minimum for interactive use.</p>
+<p>The harness should let the user:</p>
+<ul>
+<li>Interrupt a turn.</li>
+<li>Deny or approve a pending action.</li>
+<li>Add steering while a turn is running.</li>
+<li>Pause and resume.</li>
+</ul>
+<p>Steering should become input to the next model iteration, not a hidden out-of-band mutation.</p>
+</section>
+<section id="34-streaming" class="level3">
+<h3>3.4 Streaming</h3>
+<p>Minimum for good interactive UX; optional for headless batch runs.</p>
+<p>Streaming adds complexity:</p>
+<ul>
+<li>Partial tool-call accumulation.</li>
+<li>Broken JSON repair.</li>
+<li>Provider quirks.</li>
+<li>Cancellation.</li>
+<li>Stale stream detection.</li>
+<li>Ordered result reconciliation.</li>
+</ul>
+<p>Hermes is a good example of why streaming is a harness problem: provider adapters normalize chunks, repair tool calls, scrub hidden thinking tags, and convert stream state into a downstream response shape.</p>
+</section>
+</section>
+<section id="4-optional-or-conditional-components" class="level2">
+<h2>4. <s>Optional</s> Recommended Conditional Components</h2>
+<p>[Edit pass: Note] Codex labeled these as Optional because my prompt requested "required + optional" distinction. I am labeling these Recommended, as I think these are a "must" for production harnesses.&nbsp;</p>
+<p>[Edit pass: 4.1 removed, it was specific to something I was doing]&nbsp;</p>
+<section id="41-profiles" class="level3">
+<h3><span style="color: var(--ink); font-size: clamp(20px, 2.4vw, 25px); letter-spacing: -0.014em; font-family: var(--sans);">4.2 Memory</span></h3>
+</section>
+<section id="42-memory" class="level3">
+<p>Optional for short tasks; useful for repeated work; risky if unbounded.</p>
+<p>Useful memory types:</p>
+<ul>
+<li>Working memory: current context window and active plan.</li>
+<li>Conversation history: append-only transcripts.</li>
+<li>Episodic memory: what happened in prior sessions.</li>
+<li>Semantic memory: durable facts, preferences, project conventions.</li>
+<li>Procedural memory: reusable workflows, often promoted into skills.</li>
+<li>Task memory: goals, plans, progress files, evidence.</li>
+<li>Environment memory: setup notes, repo-specific gotchas, command history.</li>
+<li>Reflection memory: post-turn learnings.</li>
+</ul>
+<p>Recommended memory API:</p>
+<pre class="text"><code>snapshot(profile, project) -&gt; stable summary loaded at session start
+recall(query, scope) -&gt; selective memories injected late
+write(candidate, kind, provenance) -&gt; pending memory
+consolidate(scope) -&gt; dedupe, age, summarize, archive</code></pre>
+<p>OWASP warns about memory poisoning and recommends validation, isolation, expiration, size limits, and sensitive-data audits before persistence. OpenAI's Codex memory docs similarly treat memories as a helpful recall layer, not the sole source of required team rules.</p>
+</section>
+<section id="43-skills" class="level3">
+<h3>4.3 Skills</h3>
+<p>Optional, but often the cheapest extensibility layer.</p>
+<p>A skill is a reusable instruction bundle with optional references or scripts. Codex skills use progressive disclosure: the model sees a catalog first and reads the full skill only when selected. This is a better default than stuffing every workflow into the system prompt.</p>
+<p>Use skills for:</p>
+<ul>
+<li>Repeatable workflows.</li>
+<li>Domain-specific procedures.</li>
+<li>Artifact templates.</li>
+<li>Tool usage playbooks.</li>
+</ul>
+<p>Do not use skills for hard security controls. Enforcement belongs in policy, sandboxing, and hooks.</p>
+</section>
+<section id="44-plugins" class="level3">
+<h3>4.4 Plugins</h3>
+<p>Optional distribution layer.</p>
+<p>Plugins package one or more of:</p>
+<ul>
+<li>Skills.</li>
+<li>App integrations.</li>
+<li>MCP server config.</li>
+<li>Assets.</li>
+<li>Lifecycle hooks.</li>
+</ul>
+<p>Use plugins when you need installation, sharing, marketplace metadata, or bundled integrations. Do not use plugins as the base abstraction inside the harness; they are packaging, not the control plane.</p>
+</section>
+<section id="45-mcp-and-connectors" class="level3">
+<h3>4.5 MCP and Connectors</h3>
+<p>Optional integration layer.</p>
+<p>MCP is an open standard for connecting AI applications to external systems. Its architecture separates host, client, and server: the host coordinates LLM integration, permissions, context aggregation, consent, and multiple isolated client connections; servers expose resources, tools, and prompts with focused responsibilities.</p>
+<p>Use MCP when:</p>
+<ul>
+<li>External tools already speak MCP.</li>
+<li>You need a common protocol for many data/tool providers.</li>
+<li>You want remote or local servers to expose capabilities cleanly.</li>
+</ul>
+<p>Keep the harness host in charge. MCP servers should not see the whole conversation or other servers. Large MCP catalogs should be deferred behind tool search or discovery rather than included in every prompt.</p>
+</section>
+<section id="46-hooks" class="level3">
+<h3>4.6 Hooks</h3>
+<p>Optional, but valuable once policy needs deterministic extension.</p>
+<p>Hooks run at lifecycle points such as:</p>
+<ul>
+<li>User prompt submit.</li>
+<li>Pre-tool use.</li>
+<li>Permission request.</li>
+<li>Post-tool use.</li>
+<li>Pre/post compaction.</li>
+<li>Stop.</li>
+<li>Subagent start/stop.</li>
+</ul>
+<p>Use hooks for logging, policy checks, data-loss prevention, validation, custom prompt injection, or stop gates. Hooks should be reviewed and trusted because they execute host-side code.</p>
+</section>
+<section id="47-subagents" class="level3">
+<h3>4.7 Subagents</h3>
+<p>Optional for simple tasks; useful for parallel read-heavy exploration and context isolation.</p>
+<p>A subagent is a separate harness run with:</p>
+<ul>
+<li>Its own context.</li>
+<li>Its own budget.</li>
+<li>A restricted tool set.</li>
+<li>A bounded task.</li>
+<li>A distilled result returned to the parent.</li>
+</ul>
+<p>Use subagents when:</p>
+<ul>
+<li>Work can be split safely.</li>
+<li>Intermediate output would pollute the main context.</li>
+<li>Different specialists need different tools or prompts.</li>
+<li>You need parallel review or triage.</li>
+</ul>
+<p>Avoid parallel write-heavy subagents unless the harness has strong merge coordination.</p>
+</section>
+<section id="48-parallel-tool-execution" class="level3">
+<h3>4.8 Parallel Tool Execution</h3>
+<p>Optional.</p>
+<p>Start sequential. Add parallelism only after tools declare mutability:</p>
+<ul>
+<li>Read-only tools can run concurrently.</li>
+<li>Mutating tools should run sequentially unless path/resource scopes do not overlap.</li>
+<li>Results should be appended in model-emission order, not completion order.</li>
+</ul>
+</section>
+<section id="49-guardian-or-reviewer-models" class="level3">
+<h3>4.9 Guardian or Reviewer Models</h3>
+<p>Optional.</p>
+<p>A reviewer model can classify approval requests, inspect tool arguments, or evaluate final claims. It should never replace sandboxing. It is a reviewer at the boundary, not the boundary itself.</p>
+</section>
+<section id="410-checkpoints-and-rollback" class="level3">
+<h3>4.10 Checkpoints and Rollback</h3>
+<p>Optional for read-only work; useful for autonomous file edits and risky operations.</p>
+<p>Checkpoint before:</p>
+<ul>
+<li>Destructive shell commands.</li>
+<li>Large edits.</li>
+<li>Database writes.</li>
+<li>External side effects.</li>
+</ul>
+<p>The checkpoint system should be outside model control.</p>
+<p>&nbsp;</p>
+<p>[Edit Pass: Section 5 removed]&nbsp;</p>
+<p>&nbsp;</p>
+</section>
+</section>
+<section id="5-profiles-and-memory-required-substructure" class="level2">
+<h2><span style="color: var(--ink); font-size: clamp(25px, 3.2vw, 34px); letter-spacing: -0.014em; font-family: var(--sans);">6. Canonical Call Order</span></h2>
+</section>
+<section id="6-canonical-call-order" class="level2">
+<section id="61-session-start" class="level3">
+<h3>6.1 Session Start</h3>
+<p>Call order:</p>
+<ol type="1">
+<li>Resolve frontend request: CLI, app, IDE, API, scheduler, chat connector.</li>
+<li>Resolve profile or automation identity.</li>
+<li>Resolve workspace/project.</li>
+<li>Load enforced organization/admin policy.</li>
+<li>Load profile policy, budgets, model preferences.</li>
+<li>Load project instructions.</li>
+<li>Load profile persona and user model.</li>
+<li>Load memory snapshot if enabled.</li>
+<li>Discover tools, skills, MCP servers, and plugins.</li>
+<li>Apply visibility, allow/deny, and availability probes.</li>
+<li>Open or create session history.</li>
+<li>Freeze session prompt prefix and cache key namespace.</li>
+</ol>
+<p>Do not call credentials yet. Credentials are per action, not per session.</p>
+</section>
+<section id="62-turn-prologue" class="level3">
+<h3>6.2 Turn Prologue</h3>
+<p>Call order:</p>
+<ol type="1">
+<li>Receive user message or scheduled task.</li>
+<li>Run <code>UserPromptSubmit</code> hooks, if configured.</li>
+<li>Append user message to canonical history.</li>
+<li>Reset per-turn counters.</li>
+<li>Mint per-turn budget.</li>
+<li>Refresh tool/MCP availability if needed.</li>
+<li>Rehydrate task state and progress files.</li>
+<li>Run preflight context-size check.</li>
+<li>Compact or summarize if over threshold.</li>
+<li>Build request context.</li>
+</ol>
+</section>
+<section id="63-request-build" class="level3">
+<h3>6.3 Request Build</h3>
+<p>Call order:</p>
+<ol type="1">
+<li>Start with stable system/developer instructions.</li>
+<li>Add harness operating rules.</li>
+<li>Add permission/sandbox description the model should know.</li>
+<li>Add environment context: cwd, date, writable roots, platform.</li>
+<li>Add project instructions in precedence order.</li>
+<li>Add profile snapshot: persona, user model, memory summary.</li>
+<li>Add skill index and selected skill instructions.</li>
+<li>Add task/plan state.</li>
+<li>Add conversation history or conversation ID.</li>
+<li>Add late recalled memory and dynamic context.</li>
+<li>Add current user message.</li>
+<li>Add tool schemas for visible tools.</li>
+<li>Add cache metadata.</li>
+<li>Send model request.</li>
+</ol>
+<p>If using OpenAI Responses directly, the application owns this loop. If using the Agents SDK, the SDK owns more of the loop and exposes agents, sessions, guardrails, handoffs, approvals, and traces.</p>
+</section>
+<section id="64-model-stream-handling" class="level3">
+<h3>6.4 Model Stream Handling</h3>
+<p>Call order:</p>
+<ol type="1">
+<li>Receive deltas.</li>
+<li>Accumulate text.</li>
+<li>Accumulate tool-call names and arguments.</li>
+<li>Normalize provider-specific stream state.</li>
+<li>Emit user-visible partial text only when safe for the UI.</li>
+<li>On completed response item, classify it as message or tool call.</li>
+<li>If no tool calls remain, move to stop gates.</li>
+<li>If tool calls exist, dispatch each through the tool funnel.</li>
+</ol>
+</section>
+<section id="65-tool-call-funnel" class="level3">
+<h3>6.5 Tool Call Funnel</h3>
+<p>Call order:</p>
+<ol type="1">
+<li>Parse tool name and arguments.</li>
+<li>Resolve deferred tool, if using tool search.</li>
+<li>Validate schema.</li>
+<li>Record requested call to history.</li>
+<li>Run <code>PreToolUse</code> hooks.</li>
+<li>Classify action risk.</li>
+<li>Ask policy provider: allow, ask, or deny.</li>
+<li>If <code>ask</code>, route to user or reviewer agent.</li>
+<li>If approved, bind approval to exact normalized action.</li>
+<li>Fetch scoped credentials if needed.</li>
+<li>Start sandboxed or external execution.</li>
+<li>Enforce timeout and cancellation.</li>
+<li>Capture stdout/stderr/API result.</li>
+<li>Redact secrets.</li>
+<li>Truncate or offload large output.</li>
+<li>Fence untrusted external data.</li>
+<li>Run <code>PostToolUse</code> hooks.</li>
+<li>Append result to history.</li>
+<li>Return result into the next model request.</li>
+</ol>
+<p>Credentials are intentionally late. Policy and approval decide whether the action is allowed before any secret is fetched.</p>
+</section>
+<section id="66-loop-continuation" class="level3">
+<h3>6.6 Loop Continuation</h3>
+<p>Call order:</p>
+<ol type="1">
+<li>Check interruption.</li>
+<li>Check budget.</li>
+<li>Check guardrails for repeated failures or no progress.</li>
+<li>Check context size.</li>
+<li>Compact if needed.</li>
+<li>Build next request with tool results included.</li>
+<li>Call model again.</li>
+</ol>
+</section>
+<section id="67-stop-gates-and-finalizer" class="level3">
+<h3>6.7 Stop Gates and Finalizer</h3>
+<p>Call order:</p>
+<ol type="1">
+<li>Model produces no tool calls.</li>
+<li>Run empty-response or "I will do it" recovery checks, if configured.</li>
+<li>Run verification gate if edits or high-impact actions occurred.</li>
+<li>Run <code>Stop</code> hooks.</li>
+<li>If a stop gate asks for continuation, append a synthetic user/tool message and continue the loop.</li>
+<li>If accepted, finalize answer.</li>
+<li>Persist final turn state.</li>
+<li>Record usage and cost.</li>
+<li>Update task state.</li>
+<li>Trigger post-turn memory/skill reflection in a restricted background worker, if enabled.</li>
+<li>Return final response to frontend.</li>
+</ol>
+<p>Memory writeback should happen after the turn, not mid-request, unless the user explicitly asks to remember something. Even then, save a pending memory candidate and validate it before consolidation.</p>
+</section>
+<section id="68-subagent-delegation" class="level3">
+<h3>6.8 Subagent Delegation</h3>
+<p>Call order:</p>
+<ol type="1">
+<li>Parent decides delegation is useful.</li>
+<li>Parent creates subtask prompt with explicit success criteria.</li>
+<li>Harness creates child profile view: same user ceiling, narrower tools, separate budget.</li>
+<li>Child session starts with no access to full parent transcript unless explicitly summarized.</li>
+<li>Child runs normal loop.</li>
+<li>Child approval requests route to parent/user policy.</li>
+<li>Child returns distilled result and evidence.</li>
+<li>Parent appends summary, not raw logs.</li>
+<li>Parent decides next action.</li>
+</ol>
+<p>The parent should not hand children broad credentials, broad tools, or unrelated memory.</p>
+</section>
+</section>
+<section id="7-component-dependency-rules" class="level2">
+<h2>7. Component Dependency Rules</h2>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Must call before</th>
+<th>Must not call before</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Profile resolver</td>
+<td>Context assembly, policy, budgets</td>
+<td>Tool execution</td>
+</tr>
+<tr>
+<td>Policy provider</td>
+<td>Credential provider, executor</td>
+<td>Raw tool handler side effects</td>
+</tr>
+<tr>
+<td>Credential provider</td>
+<td>Executor/API client</td>
+<td>Model prompt assembly</td>
+</tr>
+<tr>
+<td>Memory snapshot</td>
+<td>Context assembly</td>
+<td>Policy enforcement</td>
+</tr>
+<tr>
+<td>Memory recall</td>
+<td>Final request assembly</td>
+<td>Stable prompt prefix freeze</td>
+</tr>
+<tr>
+<td>Tool registry</td>
+<td>Request build</td>
+<td>User approval</td>
+</tr>
+<tr>
+<td>Pre-tool hooks</td>
+<td>Policy decision or executor, depending on hook purpose</td>
+<td>History record of requested call</td>
+</tr>
+<tr>
+<td>Approval reviewer</td>
+<td>Executor</td>
+<td>Sandbox setup for side effect</td>
+</tr>
+<tr>
+<td>Sandbox</td>
+<td>Process execution</td>
+<td>Policy decision</td>
+</tr>
+<tr>
+<td>Compactor</td>
+<td>Oversized request continuation</td>
+<td>Raw history append</td>
+</tr>
+<tr>
+<td>Verifier</td>
+<td>Final answer acceptance</td>
+<td>Tool result recording</td>
+</tr>
+<tr>
+<td>Memory writeback</td>
+<td>Turn finalization</td>
+<td>Active tool execution</td>
+</tr>
+<tr>
+<td>Subagent</td>
+<td>Parent task decomposition</td>
+<td>Parent permission ceiling</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="8-codex-and-hermes-as-reference-shapes" class="level2">
+<h2>8. Codex and Hermes as Reference Shapes</h2>
+<section id="81-codex-pattern" class="level3">
+<h3>8.1 Codex Pattern</h3>
+<p>Codex, as reflected in the supplied local trace and current docs, is a strong example of a security-first coding harness:</p>
+<ul>
+<li>Frontends submit operations to a session; events stream back.</li>
+<li>Stable base instructions stay outside mutable conversation history.</li>
+<li>Environment and permission context are explicitly described.</li>
+<li>Tools are computed per request.</li>
+<li>Tool calls route through typed dispatch.</li>
+<li>Approval and sandbox policy are separate.</li>
+<li>Tool results feed the next Responses request.</li>
+<li>Rollout persistence enables resume.</li>
+<li>Subagents use the same queue/event primitive with parent-routed approvals.</li>
+</ul>
+<p>Best transferable idea: keep the safety gate as a deterministic pipeline: parse, record, hook, classify, approve, sandbox, execute, normalize, record.</p>
+</section>
+<section id="82-hermes-pattern" class="level3">
+<h3>8.2 Hermes Pattern</h3>
+<p>Hermes, as reflected in the supplied local trace, is a strong example of a multi-provider, multi-frontend harness:</p>
+<ul>
+<li>Many frontends enter one engine method.</li>
+<li>Prompt tiers are cache-stable.</li>
+<li>Dynamic memory/plugin/advisor content is injected late.</li>
+<li>Provider transports normalize model differences.</li>
+<li>Tool dispatch has concurrency analysis and output budgeting.</li>
+<li>Guardrails detect repeated failures.</li>
+<li>Verify-on-stop prevents unsupported completion claims.</li>
+<li>Background self-improvement extracts memories and skills after the turn.</li>
+</ul>
+<p>Best transferable idea: treat provider behavior, verification, and memory learning as harness concerns, not one-off model prompt instructions.</p>
+</section>
+<section id="83-where-they-agree" class="level3">
+<h3>8.3 Where They Agree</h3>
+<p>Both agree on the critical architecture:</p>
+<ul>
+<li>One central loop.</li>
+<li>Stable prompt prefix.</li>
+<li>Ordered context assembly.</li>
+<li>Tool schemas as prompt surface.</li>
+<li>One dispatch funnel.</li>
+<li>Safety before execution.</li>
+<li>Tool outputs as ground truth.</li>
+<li>Append-only history.</li>
+<li>Context management.</li>
+<li>Optional subagents for bounded delegation.</li>
+</ul>
+</section>
+</section>
+<section id="9-build-order" class="level2">
+<h2>9. Build Order</h2>
+<section id="v0-minimal-acting-harness" class="level3">
+<h3>v0: Minimal Acting Harness</h3>
+<p>Build:</p>
+<ol type="1">
+<li>Model adapter.</li>
+<li>Agent loop with max iterations.</li>
+<li>Static system prompt.</li>
+<li>Four tools: shell, read, write/patch, search/list.</li>
+<li>Sequential dispatch funnel.</li>
+<li>Basic sandbox.</li>
+<li>JSONL history.</li>
+<li>Error-as-result behavior.</li>
+<li>Final answer exit reason.</li>
+</ol>
+<p>Do not add plugins, subagents, vector memory, or parallelism yet.</p>
+</section>
+<section id="v1-daily-use-harness" class="level3">
+<h3>v1: Daily-Use Harness</h3>
+<p>Add:</p>
+<ol type="1">
+<li>Prompt-cache discipline.</li>
+<li>Tool output truncation/offload.</li>
+<li>Context compaction.</li>
+<li>Approval policy.</li>
+<li>Verification ledger.</li>
+<li>Task/plan state.</li>
+<li>Resume.</li>
+<li>Token/cost accounting.</li>
+<li>Error classifier with retry/compress/abort hints.</li>
+<li>Interrupts.</li>
+</ol>
+<p>This is the level where the harness becomes reliable for real work.</p>
+</section>
+<section id="v2-extensible-harness" class="level3">
+<h3>v2: Extensible Harness</h3>
+<p>Add:</p>
+<ol type="1">
+<li>Memory provider.</li>
+<li>Skill library.</li>
+<li>MCP client support.</li>
+<li>Hooks.</li>
+<li>Streaming.</li>
+<li>Multi-provider routing.</li>
+<li>Tool availability probes.</li>
+<li>Parallel read-only execution.</li>
+</ol>
+</section>
+<section id="v3-autonomous-or-multi-user-harness" class="level3">
+<h3>v3: Autonomous or Multi-User Harness</h3>
+<p>Add:</p>
+<ol type="1">
+<li>Per-user budgets.</li>
+<li>Per-user telemetry.</li>
+<li>Short-lived credential provider.</li>
+<li>Subagents.</li>
+<li>Checkpoints and rollback.</li>
+<li>Guardian/reviewer models.</li>
+<li>Memory consolidation.</li>
+<li>Evals and replayable traces.</li>
+<li>Admin policy and managed configuration.</li>
+</ol>
+</section>
+</section>
+<section id="10-practical-design-recommendations" class="level2">
+<h2>10. Practical Design Recommendations</h2>
+<ol type="1">
+<li>
+<p>Own the loop until you know why you do not want to. Frameworks are useful, but the harness's correctness depends on details hidden by many frameworks: prompt contents, tool outputs, approval state, and retry behavior.</p>
+</li>
+<li>
+<p>Keep the model prompt descriptive, not authoritative. The prompt can explain policy to the model, but the harness must enforce policy.</p>
+</li>
+<li>
+<p>Make authority late-bound. Credentials, approvals, and write permissions should be resolved only at the action boundary.</p>
+</li>
+<li>
+<p>Make context stable by default. Stable prefix first, volatile content late, dynamic retrieval on demand.</p>
+</li>
+<li>
+<p>Prefer files before databases for a light harness. Markdown/JSONL task files, memory files, and session logs are inspectable and easy to debug. Add indexes later.</p>
+</li>
+<li>
+<p>Treat memory as untrusted input. Validate, scope, expire, and audit. Memory poisoning is persistent prompt injection.</p>
+</li>
+<li>
+<p>Use subagents to protect context, not to create organizational theater. Subagents are useful when they isolate noisy work and return concise evidence.</p>
+</li>
+<li>
+<p>Make verification evidence mechanical. A test pass, exit code, browser trace, or API result is evidence. A model claim is not.</p>
+</li>
+<li>
+<p>Prefer small tool sets with clear contracts. Anthropic's tool guidance and the local Hermes trace both show tool descriptions are prompt engineering. Bloated overlapping tools confuse models.</p>
+</li>
+<li>
+<p>Keep logs and caches inside the trust boundary. Prompt-cache keys, traces, and telemetry can contain or reveal profile data.</p>
+</li>
+</ol>
+</section>
+<section id="11-source-notes" class="level2">
+<h2>11. Source Notes</h2>
+<p>Local summaries supplied by the user:</p>
+<ul>
+<li>Codex harness summary: <code>/Users/jaime/git/jaime/ai-gists/CodexHarness/loop.html</code></li>
+<li>Hermes harness summary: <code>/Users/jaime/git/jaime/ai-gists/HermesHarness/loop.html</code></li>
+<li>Prior harness design summary: <code>/Users/jaime/git/jaime/ai-gists/HarnessDesign/harness.html</code></li>
+</ul>
+<p>External references:</p>
+<ul>
+<li>OpenAI Agents SDK overview: <a href="https://developers.openai.com/api/docs/guides/agents">https://developers.openai.com/api/docs/guides/agents</a></li>
+<li>OpenAI function calling flow: <a href="https://developers.openai.com/api/docs/guides/function-calling">https://developers.openai.com/api/docs/guides/function-calling</a></li>
+<li>OpenAI prompt caching: <a href="https://developers.openai.com/api/docs/guides/prompt-caching">https://developers.openai.com/api/docs/guides/prompt-caching</a></li>
+<li>OpenAI compaction: <a href="https://developers.openai.com/api/docs/guides/compaction">https://developers.openai.com/api/docs/guides/compaction</a></li>
+<li>OpenAI conversation state: <a href="https://developers.openai.com/api/docs/guides/conversation-state">https://developers.openai.com/api/docs/guides/conversation-state</a></li>
+<li>OpenAI Codex sandboxing: <a href="https://developers.openai.com/codex/concepts/sandboxing">https://developers.openai.com/codex/concepts/sandboxing</a></li>
+<li>OpenAI Codex memories: <a href="https://developers.openai.com/codex/memories">https://developers.openai.com/codex/memories</a></li>
+<li>OpenAI Codex skills: <a href="https://developers.openai.com/codex/skills">https://developers.openai.com/codex/skills</a></li>
+<li>OpenAI Codex hooks: <a href="https://developers.openai.com/codex/hooks">https://developers.openai.com/codex/hooks</a></li>
+<li>Anthropic, "Building effective agents": <a href="https://www.anthropic.com/engineering/building-effective-agents">https://www.anthropic.com/engineering/building-effective-agents</a></li>
+<li>Anthropic, "Writing effective tools for agents": <a href="https://www.anthropic.com/engineering/writing-tools-for-agents">https://www.anthropic.com/engineering/writing-tools-for-agents</a></li>
+<li>Anthropic, "Effective context engineering for AI agents": <a href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents">https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents</a></li>
+<li>Anthropic, "Effective harnesses for long-running agents": <a href="https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents">https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents</a></li>
+<li>OWASP AI Agent Security Cheat Sheet: <a href="https://cheatsheetseries.owasp.org/cheatsheets/AI_Agent_Security_Cheat_Sheet.html">https://cheatsheetseries.owasp.org/cheatsheets/AI_Agent_Security_Cheat_Sheet.html</a></li>
+<li>Model Context Protocol introduction: <a href="https://modelcontextprotocol.io/docs/getting-started/intro">https://modelcontextprotocol.io/docs/getting-started/intro</a></li>
+<li>Model Context Protocol architecture: <a href="https://modelcontextprotocol.io/specification/2025-06-18/architecture">https://modelcontextprotocol.io/specification/2025-06-18/architecture</a></li>
+<li>12-Factor Agents: <a href="https://github.com/humanlayer/12-factor-agents">https://github.com/humanlayer/12-factor-agents</a></li>
+</ul>
+</section>
+</body>
+</html>

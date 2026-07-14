@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="A technical comparison of the sandbox and containment architectures of ChatGPT Codex and ChatGPT Work on macOS and Windows, following the July 2026 desktop app merger.">
+<title>ChatGPT Codex vs. ChatGPT Work — Sandbox Architectures Compared</title>
+<style>
+  /* ============ Design tokens ============ */
+  :root{
+    --bg:        #F5F5F2;
+    --surface:   #FFFFFF;
+    --ink:       #21262B;
+    --ink-soft:  #55606B;
+    --hairline:  rgba(33,38,43,.16);
+    --hairline2: rgba(33,38,43,.08);
+    --codex-c:   #4A4FB5;   /* ChatGPT Codex — indigo */
+    --codex-bg:  rgba(74,79,181,.08);
+    --work-c:    #A15A14;   /* ChatGPT Work — ochre */
+    --work-bg:   rgba(161,90,20,.09);
+    --warn:      #8A5A00;
+    --warn-bg:   rgba(178,120,0,.10);
+    --mono:      ui-monospace,"SF Mono","Cascadia Code",Consolas,"Liberation Mono",Menlo,monospace;
+    --serif:     Charter,"Bitstream Charter","Sitka Text",Cambria,Georgia,serif;
+    --sans:      system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;
+  }
+  [data-theme="dark"]{
+    --bg:        #14161C;
+    --surface:   #1B1F27;
+    --ink:       #E0E3E8;
+    --ink-soft:  #99A2AD;
+    --hairline:  rgba(224,227,232,.20);
+    --hairline2: rgba(224,227,232,.09);
+    --codex-c:   #9BA0F0;
+    --codex-bg:  rgba(155,160,240,.10);
+    --work-c:    #E0A25C;
+    --work-bg:   rgba(224,162,92,.10);
+    --warn:      #E0B15C;
+    --warn-bg:   rgba(224,177,92,.10);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]):not([data-theme="dark"]){
+      --bg:        #14161C;
+      --surface:   #1B1F27;
+      --ink:       #E0E3E8;
+      --ink-soft:  #99A2AD;
+      --hairline:  rgba(224,227,232,.20);
+      --hairline2: rgba(224,227,232,.09);
+      --codex-c:   #9BA0F0;
+      --codex-bg:  rgba(155,160,240,.10);
+      --work-c:    #E0A25C;
+      --work-bg:   rgba(224,162,92,.10);
+      --warn:      #E0B15C;
+      --warn-bg:   rgba(224,177,92,.10);
+    }
+  }
+
+  /* ============ Base ============ */
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{transition:none!important;animation:none!important} }
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--serif);
+    font-size:17px;
+    line-height:1.65;
+    transition:background .25s ease,color .25s ease;
+  }
+  .wrap{max-width:860px;margin:0 auto;padding:0 24px 96px}
+  a{color:inherit;text-decoration-color:var(--hairline);text-underline-offset:3px}
+  a:hover{text-decoration-color:currentColor}
+  :focus-visible{outline:2px solid var(--codex-c);outline-offset:2px;border-radius:2px}
+
+  /* ============ Header ============ */
+  header{padding:56px 0 8px}
+  .topline{
+    display:flex;justify-content:space-between;align-items:center;gap:16px;
+    padding-bottom:20px;border-bottom:1px solid var(--hairline);
+  }
+  .eyebrow{
+    font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--ink-soft);
+  }
+  h1{
+    font-family:var(--serif);font-weight:700;
+    font-size:clamp(30px,5vw,44px);line-height:1.12;letter-spacing:-.01em;
+    margin:28px 0 12px;
+  }
+  .subtitle{color:var(--ink-soft);font-size:18px;max-width:660px;margin:0 0 6px}
+  .meta{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft);margin-top:18px}
+
+  /* ============ Theme toggle ============ */
+  .theme-toggle{
+    display:inline-flex;border:1px solid var(--hairline);border-radius:999px;padding:3px;background:var(--surface);
+  }
+  .theme-toggle button{
+    font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;
+    background:none;border:none;color:var(--ink-soft);padding:5px 12px;border-radius:999px;cursor:pointer;
+  }
+  .theme-toggle button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+
+  /* ============ Naming note ============ */
+  .naming{
+    border:1px solid var(--hairline);border-radius:10px;background:var(--surface);
+    padding:16px 20px;margin:34px 0 6px;font-size:15px;color:var(--ink-soft);
+  }
+  .naming .lbl{
+    font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink);
+    display:block;margin-bottom:6px;
+  }
+
+  /* ============ Signature: isolation spectrum ============ */
+  .spectrum{
+    display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:28px 0 8px;
+  }
+  @media (max-width:640px){ .spectrum{grid-template-columns:1fr} }
+  .iso{
+    border:1px solid var(--hairline);border-radius:10px;background:var(--surface);padding:18px 18px 22px;
+  }
+  .iso .tag{
+    font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;
+    display:inline-block;padding:3px 10px;border-radius:999px;margin-bottom:14px;
+  }
+  .iso.codex .tag{color:var(--codex-c);background:var(--codex-bg)}
+  .iso.work .tag{color:var(--work-c);background:var(--work-bg)}
+  .layer{
+    border:1.5px dashed var(--hairline);border-radius:8px;padding:12px 12px 14px;
+  }
+  .layer .lbl{
+    font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);
+    display:block;margin-bottom:10px;
+  }
+  .iso.codex .layer.solid{border-style:solid;border-color:var(--codex-c)}
+  .iso.work  .layer.solid{border-style:solid;border-color:var(--work-c)}
+  .kernel{
+    font-family:var(--mono);font-size:12px;padding:8px 10px;border-radius:6px;text-align:center;line-height:1.5;
+  }
+  .iso.codex .kernel{background:var(--codex-bg);color:var(--codex-c)}
+  .iso.work  .kernel{background:var(--work-bg);color:var(--work-c)}
+  .iso p.cap{font-size:14px;color:var(--ink-soft);margin:14px 0 0;line-height:1.5}
+
+  /* ============ Sections ============ */
+  section{margin-top:56px}
+  h2{
+    font-size:clamp(22px,3.4vw,28px);line-height:1.2;letter-spacing:-.005em;margin:0 0 6px;
+  }
+  .sec-eyebrow{
+    font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);
+    display:block;margin-bottom:10px;
+  }
+  h3{font-size:19px;margin:30px 0 8px}
+  p{margin:14px 0}
+  code{
+    font-family:var(--mono);font-size:.86em;background:var(--hairline2);
+    padding:1.5px 5px;border-radius:4px;
+  }
+
+  ul.tight{padding-left:22px;margin:14px 0}
+  ul.tight li{margin:10px 0}
+
+  h2 .pill{
+    font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;vertical-align:middle;
+    padding:3px 10px;border-radius:999px;margin-right:10px;position:relative;top:-3px;
+  }
+  .pill.codex{color:var(--codex-c);background:var(--codex-bg)}
+  .pill.work{color:var(--work-c);background:var(--work-bg)}
+
+  .callout{
+    border-left:3px solid var(--warn);background:var(--warn-bg);
+    padding:14px 18px;border-radius:0 8px 8px 0;margin:22px 0;font-size:15.5px;
+  }
+  .callout .lbl{
+    font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--warn);
+    display:block;margin-bottom:6px;
+  }
+
+  /* ============ Comparison table ============ */
+  .tbl-wrap{overflow-x:auto;margin:26px 0;border:1px solid var(--hairline);border-radius:10px;background:var(--surface)}
+  table{border-collapse:collapse;width:100%;font-family:var(--sans);font-size:14.5px;line-height:1.5}
+  th,td{padding:12px 16px;text-align:left;vertical-align:top;border-bottom:1px solid var(--hairline2)}
+  tr:last-child td{border-bottom:none}
+  thead th{
+    font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--ink-soft);border-bottom:1px solid var(--hairline);
+  }
+  th.codex-h{color:var(--codex-c)} th.work-h{color:var(--work-c)}
+  td.dim{color:var(--ink-soft);font-family:var(--mono);font-size:12.5px;white-space:nowrap}
+
+  /* ============ References ============ */
+  ol.refs{padding-left:24px;font-size:15px;line-height:1.6}
+  ol.refs li{margin:10px 0}
+  ol.refs .src{font-family:var(--mono);font-size:12px;color:var(--ink-soft);display:block}
+  sup a{font-family:var(--mono);font-size:.72em;text-decoration:none;color:var(--codex-c)}
+
+  footer{
+    margin-top:72px;padding-top:20px;border-top:1px solid var(--hairline);
+    font-family:var(--mono);font-size:12px;color:var(--ink-soft);
+    display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="topline">
+    <span class="eyebrow">AI Gist · Security Architecture</span>
+    <div class="theme-toggle" role="group" aria-label="Color theme">
+      <button type="button" data-mode="light"  aria-pressed="false">Light</button>
+      <button type="button" data-mode="system" aria-pressed="true">System</button>
+      <button type="button" data-mode="dark"   aria-pressed="false">Dark</button>
+    </div>
+  </div>
+
+  <h1>ChatGPT Codex vs. ChatGPT Work:<br>Sandbox Architectures Compared</h1>
+  <p class="subtitle">What each mode of the unified ChatGPT desktop app allows by default on macOS and Windows, how to expand or override the boundaries, and how code execution, web tools, and connector (MCP) calls behave differently in each.</p>
+  <p class="meta">Compiled July 2026 · Sources: OpenAI docs &amp; Help Center, engineering posts, third-party security research · Companion to "Claude Code vs. Claude Cowork"</p>
+
+  <div class="naming">
+    <span class="lbl">A note on naming</span>
+    On July 9, 2026, OpenAI merged the standalone Codex app into a new unified ChatGPT desktop app for macOS and Windows, with three modes: Chat, Work, and Codex. The previous ChatGPT desktop app was renamed ChatGPT Classic.<sup><a href="#ref-6">[6]</a><a href="#ref-11">[11]</a></sup> "ChatGPT Codex" below refers to the Codex mode (and its CLI/IDE siblings, which share the same sandbox stack); "ChatGPT Work" refers to the new agentic Work mode. Most of the sandbox architecture predates the merger under the legacy names <em>Codex</em> and <em>ChatGPT agent</em>, and OpenAI's docs still describe it that way.
+  </div>
+
+  <div class="spectrum">
+    <div class="iso codex">
+      <span class="tag">ChatGPT Codex</span>
+      <div class="layer solid">
+        <span class="lbl">Your OS · your user account</span>
+        <div class="layer">
+          <span class="lbl">Approval policy (when to ask)</span>
+          <div class="layer">
+            <span class="lbl">OS sandbox — on by default, commands only</span>
+            <div class="kernel">Seatbelt (macOS) · bwrap+seccomp (Linux/WSL2) · Restricted tokens + ACLs + firewall (native Windows)</div>
+          </div>
+        </div>
+      </div>
+      <p class="cap">Local-first. Sandboxed by default with network off; an approval flow governs every crossing of the boundary. Cloud tasks run in OpenAI-managed containers.</p>
+    </div>
+    <div class="iso work">
+      <span class="tag">ChatGPT Work</span>
+      <div class="layer">
+        <span class="lbl">Your OS — folder &amp; app grants only (desktop)</span>
+        <div class="layer solid">
+          <span class="lbl">Managed cloud execution environment</span>
+          <div class="layer">
+            <span class="lbl">Network toggle · separate web/browser/connector controls</span>
+            <div class="kernel">OpenAI-managed isolation · code &amp; shell run server-side</div>
+          </div>
+        </div>
+      </div>
+      <p class="cap">Cloud-first. Code and shell commands run in an isolated environment on OpenAI's side; the desktop app is the bridge to local files and apps.</p>
+    </div>
+  </div>
+</header>
+
+<section id="core">
+  <span class="sec-eyebrow">01 · Thesis</span>
+  <h2>The core architectural difference</h2>
+  <p>The two modes now share one desktop shell, one account, and one plugin/connector surface, but they retain distinct execution architectures.<sup><a href="#ref-10">[10]</a></sup> Codex is <strong>local-first</strong>: it works with local folders, repositories, terminals, and developer tools, is available only as a desktop mode (not on web or mobile), and runs model-generated commands inside an OS-enforced sandbox on your machine.<sup><a href="#ref-5">[5]</a><a href="#ref-1">[1]</a></sup> Work is <strong>cloud-first</strong>: it runs code and shell commands in a managed, isolated environment on OpenAI's side, is available on web and mobile as pure cloud execution, and uses the desktop app as a permissioned bridge when a task needs local files or desktop apps.<sup><a href="#ref-2">[2]</a><a href="#ref-5">[5]</a></sup></p>
+  <p>Codex's security model is explicitly two-layer: a <strong>sandbox mode</strong> defines what commands can technically do (where they can write, whether they can reach the network), and an <strong>approval policy</strong> defines when the agent must stop and ask before crossing a boundary.<sup><a href="#ref-1">[1]</a></sup> The sandbox applies to spawned commands, not just built-in file operations — a notable difference from Claude Code, whose built-in sandbox covers only the Bash tool.<sup><a href="#ref-2">[2]</a></sup> Codex is also the only major CLI coding agent that ships with sandboxing <em>on by default</em>.<sup><a href="#ref-9">[9]</a></sup></p>
+</section>
+
+<section id="codex">
+  <span class="sec-eyebrow">02 · Product deep dive</span>
+  <h2><span class="pill codex">ChatGPT Codex</span>Defaults and platform behavior</h2>
+
+  <h3>Default state: sandboxed, offline, workspace-scoped</h3>
+  <p>By default the agent runs with network access turned off, inside an OS-enforced sandbox that limits writes to the current workspace, plus an approval policy controlling when it must ask before acting.<sup><a href="#ref-1">[1]</a></sup> The default <strong>Auto</strong> preset (<code>--sandbox workspace-write --ask-for-approval on-request</code>) lets Codex read files, make edits, and run commands in the working directory automatically, asking for approval to edit files outside the workspace or run commands that need network access.<sup><a href="#ref-1">[1]</a></sup> The workspace includes the current directory plus temp directories like <code>/tmp</code>; even in workspace-write mode, certain paths stay read-only — <code>.git</code> internals (recursively, including hooks), <code>.agents/</code>, and <code>.codex/</code> — so a sandboxed command can't tamper with its own policy or repository plumbing.<sup><a href="#ref-4">[4]</a></sup> The other presets are <strong>read-only</strong> and <strong>danger-full-access</strong>.<sup><a href="#ref-1">[1]</a></sup></p>
+
+  <h3>Platform support — including native Windows</h3>
+  <p>Codex uses platform-native enforcement on each OS.<sup><a href="#ref-2">[2]</a></sup> macOS uses Seatbelt policies, running commands via <code>sandbox-exec</code> with a profile matching the selected sandbox mode. Linux uses bwrap plus seccomp by default (the sandbox moved from Landlock to bwrap in v0.115). On Windows, WSL2 gets the Linux implementation — and, unlike Claude Code, <strong>native Windows has its own sandbox</strong>.<sup><a href="#ref-1">[1]</a></sup> OpenAI's May 2026 engineering post describes it: an <em>elevated</em> mode (preferred) using dedicated lower-privilege sandbox users, ACL-based filesystem boundaries, and Windows Firewall rules for network control after a one-time admin setup; and an <em>unelevated</em> fallback using a restricted token derived from the current user, with weaker network isolation — unsupported policies are refused rather than silently weakened.<sup><a href="#ref-3">[3]</a><a href="#ref-8">[8]</a></sup></p>
+
+  <h3>Expanding or overriding the boundaries</h3>
+  <ul class="tight">
+    <li><strong>Permission profiles.</strong> <code>config.toml</code> profiles define filesystem rules (read / write / deny, with glob support and deny &gt; write &gt; read precedence) and network domain allow/deny lists — e.g. keep the workspace writable while denying all <code>**/*.env</code> files. Profiles can extend <code>:read-only</code> or <code>:workspace</code> but can never extend <code>:danger-full-access</code>.<sup><a href="#ref-3">[3]</a></sup></li>
+    <li><strong>Widening scope.</strong> <code>--add-dir</code> or <code>writable_roots</code> add writable paths; <code>[sandbox_workspace_write].network_access = true</code> enables network for sandboxed commands. Local and private network targets stay blocked by default unless explicitly allowlisted.<sup><a href="#ref-3">[3]</a><a href="#ref-4">[4]</a></sup></li>
+    <li><strong>The escalation flow.</strong> If a sandboxed command fails on a permissions error, Codex asks whether to retry unsandboxed; approving marks the command trusted and re-executes it with no sandbox.<sup><a href="#ref-12">[12]</a></sup> Approval cadence is tunable (<code>on-request</code>, <code>unless-trusted</code>, <code>on-failure</code>, <code>never</code>).<sup><a href="#ref-1">[1]</a></sup></li>
+    <li><strong>Skipping everything.</strong> <code>--sandbox danger-full-access</code> and <code>--dangerously-bypass-approvals-and-sandbox</code> (aka <code>--yolo</code>) remove the boundaries; OpenAI's docs frame these for containers and other externally isolated environments.<sup><a href="#ref-4">[4]</a></sup></li>
+  </ul>
+
+  <h3>Projects, folders, and the cloud variant</h3>
+  <p>Like Claude Code, a Codex "project" is fundamentally the trusted working directory (Codex may start read-only until you explicitly trust the folder), extended by profile-defined <code>workspace_roots</code> for multi-repo work.<sup><a href="#ref-4">[4]</a><a href="#ref-3">[3]</a></sup> Codex cloud is a different animal: tasks run in isolated OpenAI-managed containers with a <strong>two-phase runtime</strong> — a setup phase with network access to install dependencies, then an agent phase that runs offline by default unless internet access is enabled for that environment (optionally with a domain allowlist). Secrets configured for cloud environments are available only during setup and are removed before the agent phase starts.<sup><a href="#ref-1">[1]</a></sup></p>
+</section>
+
+<section id="work">
+  <span class="sec-eyebrow">03 · Product deep dive</span>
+  <h2><span class="pill work">ChatGPT Work</span>Defaults and platform behavior</h2>
+
+  <h3>Architecture</h3>
+  <p>Work runs code and shell commands in a managed, isolated environment on OpenAI's infrastructure, with workspace policy and tool-specific controls determining which capabilities are available.<sup><a href="#ref-2">[2]</a></sup> On web and mobile, Work runs entirely in the cloud and cannot directly access files on your computer. In the desktop app, Work can additionally use local files and desktop apps with your permission — and, notably, desktop Work threads and local files remain on that computer, while cloud Work conversations stay in the cloud (at launch the two don't sync).<sup><a href="#ref-5">[5]</a><a href="#ref-6">[6]</a></sup></p>
+
+  <h3>Default file access: grants, not mounts</h3>
+  <p>Like Cowork, Work does not begin with an automatic mount of your filesystem. On desktop you open a local folder or project and grant access only to the files the task needs; local files and outputs remain on that computer unless you explicitly move or share them.<sup><a href="#ref-5">[5]</a></sup> Work also ships a built-in browser for gathering information from websites and working with web-based tools — this browser does not inherit your Chrome profile, cookies, or signed-in sessions, and ChatGPT asks before touching a new website unless you've already allowed that host or chosen a more permissive setting.<sup><a href="#ref-6">[6]</a><a href="#ref-13">[13]</a></sup></p>
+
+  <h3>Network defaults</h3>
+  <p>For code and shell commands, network access is governed by <strong>Settings → Data controls → Work network access</strong>, where "Allow public internet access" opens the execution environment to the public internet; changes take effect after the current run finishes and the environment refreshes. Web search, apps and connectors, and the remote browser have <em>separate</em> controls — the code-execution network toggle does not govern them.<sup><a href="#ref-2">[2]</a></sup> Enterprise administrators can restrict browser access, plugin access, local file access, and agent network permissions at the workspace, group, and user level, and OpenAI has added an <strong>Auto-Review layer</strong> — a second model that checks important actions involving connected tools before they execute.<sup><a href="#ref-10">[10]</a></sup></p>
+
+  <h3>Computer use</h3>
+  <p>Computer Use is available in the desktop app in both Work and Codex modes on macOS and Windows, installed as a plugin. It operates graphical interfaces on the host — requiring Screen Recording and Accessibility permissions on macOS — with per-app permission prompts, an "Always allow" list (persisted in <code>config.toml</code> on Windows), and hard exclusions: it can't automate terminals or ChatGPT itself, and can't authenticate as an administrator or approve security prompts.<sup><a href="#ref-7">[7]</a></sup> As with Cowork, this capability necessarily operates <em>outside</em> the isolated execution environment, because its whole purpose is to act on your real desktop.<sup><a href="#ref-7">[7]</a></sup></p>
+</section>
+
+<section id="behavior">
+  <span class="sec-eyebrow">04 · Runtime behavior</span>
+  <h2>How code, web search, and MCP behave differently</h2>
+  <p>Three asymmetries matter most in practice — and they rhyme closely with the Claude Code / Cowork pair.</p>
+
+  <h3>1 · What the sandbox actually covers</h3>
+  <p>Codex's local sandbox governs sandboxed shell commands. Connectors, MCP servers, browser and computer-use surfaces, cloud environment settings, and approved escalations all use their own separate controls — the permission profile does not constrain them.<sup><a href="#ref-3">[3]</a></sup> Work inverts the picture: code and shell are structurally contained server-side, but the desktop bridge (local files, desktop apps, computer use) is where the host-side risk lives. In both modes, computer use is the uncontained surface, acting directly on your real desktop.<sup><a href="#ref-7">[7]</a></sup></p>
+
+  <h3>2 · Web tools have their own rules</h3>
+  <div class="callout">
+    <span class="lbl">Commonly missed</span>
+    In Work, the code-execution network toggle does not govern web search, connectors, or the remote browser — each has separate controls.<sup><a href="#ref-2">[2]</a></sup> In Codex, web search defaults to <em>cached</em> mode: an OpenAI-maintained index returns pre-indexed results instead of fetching live pages, reducing exposure to prompt injection from arbitrary live content. Live browsing requires <code>--search</code> or <code>web_search = "live"</code> — and if you're running full-access, web search silently defaults to live.<sup><a href="#ref-4">[4]</a></sup>
+  </div>
+
+  <h3>3 · MCP / connector calls</h3>
+  <p>Since the merger, Chat, Work, and Codex share the same plugin and connector surface — the same Slack, Google Drive, GitHub, and Salesforce connections now reach all three modes, which is what makes the merger structurally significant for the trust boundary.<sup><a href="#ref-10">[10]</a></sup> Codex elicits approval for connector tool calls that advertise side effects, and destructive MCP tool calls always require approval when the tool advertises a destructive annotation — even if it also advertises read-only hints.<sup><a href="#ref-1">[1]</a></sup> In Work, connector actions are additionally screened by the Auto-Review model for important actions, plus admin-configurable restrictions per workspace.<sup><a href="#ref-10">[10]</a></sup></p>
+</section>
+
+<section id="matrix">
+  <span class="sec-eyebrow">05 · Reference</span>
+  <h2>Side-by-side summary</h2>
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">Dimension</th>
+          <th scope="col" class="codex-h">ChatGPT Codex</th>
+          <th scope="col" class="work-h">ChatGPT Work</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="dim">Execution locus</td>
+          <td>Local-first (desktop, CLI, IDE); optional cloud containers</td>
+          <td>Cloud-first managed environment; desktop app bridges to local resources</td>
+        </tr>
+        <tr>
+          <td class="dim">Surfaces</td>
+          <td>Desktop mode only; remote tasks viewable from mobile</td>
+          <td>Web, mobile (cloud only), and desktop</td>
+        </tr>
+        <tr>
+          <td class="dim">macOS mechanism</td>
+          <td>Seatbelt via sandbox-exec, on by default</td>
+          <td>Server-side isolation; local access via folder/app grants</td>
+        </tr>
+        <tr>
+          <td class="dim">Windows mechanism</td>
+          <td>Native sandbox: restricted tokens, ACLs, firewall rules, sandbox users (elevated) — or WSL2 for the Linux model</td>
+          <td>Same server-side model; desktop bridge identical to macOS</td>
+        </tr>
+        <tr>
+          <td class="dim">File reads (default)</td>
+          <td>Broad reads; writes confined to workspace + temp; .git/.codex/.agents protected</td>
+          <td>Nothing local — only folders/files you grant per task</td>
+        </tr>
+        <tr>
+          <td class="dim">Network (default)</td>
+          <td>Off for sandboxed commands; domain allowlists via profiles; cloud agent phase offline by default</td>
+          <td>Toggle under Data controls for code/shell; web search, connectors, remote browser controlled separately</td>
+        </tr>
+        <tr>
+          <td class="dim">Expanding scope</td>
+          <td>config.toml permission profiles, writable_roots, --add-dir, network_access</td>
+          <td>Folder/app grants, per-host browser approvals, admin workspace policy</td>
+        </tr>
+        <tr>
+          <td class="dim">Escape hatches</td>
+          <td>Retry-unsandboxed prompt, danger-full-access, --yolo</td>
+          <td>No per-command escape; permissive approval settings widen autonomy, not the isolation boundary</td>
+        </tr>
+        <tr>
+          <td class="dim">MCP / connectors</td>
+          <td>Own approval track; destructive annotations always prompt; outside the command sandbox</td>
+          <td>Shared connector surface + Auto-Review model screening + admin restrictions</td>
+        </tr>
+        <tr>
+          <td class="dim">Web search</td>
+          <td>Cached index by default; live is opt-in (default under full access)</td>
+          <td>Separate control from code-execution network; built-in browser with per-host approval</td>
+        </tr>
+        <tr>
+          <td class="dim">Uncontained surface</td>
+          <td>Computer Use plugin; connectors/MCP on host</td>
+          <td>Computer Use plugin; desktop bridge to local files and apps</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p>One notable contrast with the Anthropic pair: on native Windows, Codex ships a real OS sandbox (restricted tokens, ACLs, firewall rules) where Claude Code offers none without WSL2 — while Cowork counters with a full Hyper-V VM that Codex's token-based approach doesn't match in isolation strength.</p>
+</section>
+
+<section id="caveats">
+  <span class="sec-eyebrow">06 · Limits</span>
+  <h2>The honest caveats</h2>
+  <p>The merger itself is the biggest one. Codex's original design was deliberately bounded — cloud tasks cloned a repository into an isolated environment, ran offline by default, and never touched the host — and security analysts note that the unified app now places code execution, browser access, local files, and enterprise connectors inside a single agent runtime, a significantly larger trust boundary than the original sandboxed Codex environment.<sup><a href="#ref-10">[10]</a></sup> OpenAI itself has acknowledged that prompt injection is unlikely to ever be fully solved, positioning the Auto-Review layer as mitigation rather than elimination.<sup><a href="#ref-10">[10]</a></sup></p>
+  <p>Two patched vulnerabilities from early 2026 illustrate the boundary-testing that's already occurred: a command-injection flaw in GitHub branch-name handling, and a DNS-based side-channel exfiltration path in the code-execution environment.<sup><a href="#ref-10">[10]</a></sup> And a freshness caveat: ChatGPT Work is days old at time of writing — its documentation is still being consolidated under the new naming, rollout is staged across plans, and specifics (especially cloud/desktop sync behavior and enterprise controls) are explicitly marked "at launch" in OpenAI's own Help Center. Verify against current docs before relying on any single detail.<sup><a href="#ref-5">[5]</a></sup></p>
+</section>
+
+<section id="references">
+  <span class="sec-eyebrow">07 · Sources</span>
+  <h2>References</h2>
+  <ol class="refs">
+    <li id="ref-1"><a href="https://developers.openai.com/codex/agent-approvals-security">Agent approvals &amp; security</a><span class="src">OpenAI Developer Docs · Codex</span></li>
+    <li id="ref-2"><a href="https://developers.openai.com/codex/concepts/sandboxing">Sandbox (concepts)</a><span class="src">OpenAI Developer Docs · covers desktop app, CLI, IDE, and Work's managed environment</span></li>
+    <li id="ref-3"><a href="https://learn.chatgpt.com/docs/permissions">Permissions</a><span class="src">ChatGPT Learn · permission profiles, Windows elevated/unelevated sandbox</span></li>
+    <li id="ref-4"><a href="https://learn.chatgpt.com/docs/agent-approvals-security">Agent approvals &amp; security (Learn)</a><span class="src">ChatGPT Learn · protected paths, cached web search, cloud two-phase runtime</span></li>
+    <li id="ref-5"><a href="https://help.openai.com/en/articles/20001275-chatgpt-work-and-codex">ChatGPT Work and Codex</a><span class="src">OpenAI Help Center · article 20001275</span></li>
+    <li id="ref-6"><a href="https://help.openai.com/en/articles/6825453-chatgpt-release-notes">ChatGPT Release Notes</a><span class="src">OpenAI Help Center · July 2026 merger entries</span></li>
+    <li id="ref-7"><a href="https://learn.chatgpt.com/docs/computer-use">Computer Use</a><span class="src">ChatGPT Learn</span></li>
+    <li id="ref-8"><a href="https://codex.danielvaughan.com/2026/05/14/codex-cli-windows-sandbox-engineering-restricted-tokens-acls-elevated-architecture/">Inside the Codex Windows Sandbox</a><span class="src">Codex Knowledge Base · analysis of OpenAI's "Building a safe, effective sandbox to enable Codex on Windows" (May 2026)</span></li>
+    <li id="ref-9"><a href="https://codex.danielvaughan.com/2026/04/13/docker-sandboxes-codex-cli-microvm-isolation/">Docker Sandboxes for Codex CLI</a><span class="src">Codex Knowledge Base · external isolation comparison</span></li>
+    <li id="ref-10"><a href="https://www.techtimes.com/articles/320087/20260710/chatgpt-work-free-every-plan-what-openais-codex-merger-changes-you.htm">ChatGPT Work Is Free on Every Plan: What OpenAI's Codex Merger Changes</a><span class="src">Tech Times · merger security analysis, Auto-Review, enterprise controls</span></li>
+    <li id="ref-11"><a href="https://thenewstack.io/openai-codex-work-atlas/">OpenAI is folding Codex into the ChatGPT app</a><span class="src">The New Stack · launch coverage</span></li>
+    <li id="ref-12"><a href="https://pierce.dev/notes/a-deep-dive-on-agent-sandboxes">A deep dive on agent sandboxes</a><span class="src">Pierce Freeman · source-level analysis of Codex escalation behavior</span></li>
+    <li id="ref-13"><a href="https://www.smithstephen.com/p/your-agent-asked-permission-thats">Your Agent Asked Permission. That's What Should Worry You.</a><span class="src">Stephen Smith · Work permission-model analysis</span></li>
+  </ol>
+</section>
+
+<footer>
+  <span>ai-gists / OpenAISandboxes</span>
+  <span>Details reflect documentation as of July 2026 — Work launched July 9, so expect rapid change.</span>
+</footer>
+
+</div>
+
+<script>
+(function(){
+  // Theme: light | system | dark. "System" removes the attribute so the
+  // prefers-color-scheme media query takes over. Selection is per-visit.
+  var buttons = document.querySelectorAll('.theme-toggle button');
+  function setMode(mode){
+    if(mode === 'system'){ document.documentElement.removeAttribute('data-theme'); }
+    else { document.documentElement.setAttribute('data-theme', mode); }
+    buttons.forEach(function(b){
+      b.setAttribute('aria-pressed', b.dataset.mode === mode ? 'true' : 'false');
+    });
+  }
+  buttons.forEach(function(b){
+    b.addEventListener('click', function(){ setMode(b.dataset.mode); });
+  });
+  setMode('system');
+})();
+</script>
+</body>
+</html>

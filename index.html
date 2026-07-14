@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="ai-gists — a collection of AI-generated, human-reviewed research notes on agentic AI: harnesses, sandboxes, and evals.">
+<title>ai-gists</title>
+<style>
+  /* ============ Design tokens ============ */
+  :root {
+    --bg: #F7F8F9;
+    --bg-raised: #FFFFFF;
+    --ink: #1B2430;
+    --ink-soft: #4C5A68;
+    --line: #D8DEE4;
+    --accent: #0E6E68;
+    --accent-soft: #E3F0EF;
+    --code-bg: #EEF1F3;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    --sans: -apple-system, "Segoe UI", system-ui, Roboto, sans-serif;
+    --mono: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+  }
+  [data-theme="dark"] {
+    --bg: #10161C;
+    --bg-raised: #171F27;
+    --ink: #D9E1E8;
+    --ink-soft: #93A1AE;
+    --line: #2A343E;
+    --accent: #53B8B0;
+    --accent-soft: #14302E;
+    --code-bg: #1C252E;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]):not([data-theme="dark"]) {
+      --bg: #10161C;
+      --bg-raised: #171F27;
+      --ink: #D9E1E8;
+      --ink-soft: #93A1AE;
+      --line: #2A343E;
+      --accent: #53B8B0;
+      --accent-soft: #14302E;
+      --code-bg: #1C252E;
+    }
+  }
+
+  /* ============ Base ============ */
+  * { box-sizing: border-box; }
+  html { background: var(--bg); scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.65 var(--sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 46rem; margin: 0 auto; padding: 3rem 1.25rem 4rem; }
+  h1, h2 { font-family: var(--serif); line-height: 1.2; text-wrap: balance; font-weight: 600; }
+  h1 { font-size: 2.3rem; margin: 0.5rem 0 0.75rem; }
+  h2 { font-size: 1.4rem; margin: 3rem 0 0.8rem; padding-top: 1.6rem; border-top: 1px solid var(--line); }
+  p { margin: 0 0 1rem; }
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .eyebrow {
+    text-transform: uppercase; letter-spacing: 0.14em; font-size: 0.72rem;
+    color: var(--accent); font-weight: 700;
+  }
+  .standfirst { font-size: 1.12rem; color: var(--ink-soft); max-width: 42rem; }
+  .note { color: var(--ink-soft); font-size: 0.9rem; }
+
+  /* ============ Theme toggle ============ */
+  .theme-toggle {
+    position: fixed; top: 0.9rem; right: 0.9rem; z-index: 10;
+    display: flex; gap: 0; border: 1px solid var(--line); border-radius: 999px;
+    background: var(--bg-raised); overflow: hidden; font-size: 0.72rem;
+  }
+  .theme-toggle button {
+    border: 0; background: transparent; color: var(--ink-soft);
+    font: 700 0.72rem var(--sans); letter-spacing: 0.04em;
+    padding: 0.35rem 0.75rem; cursor: pointer;
+  }
+  .theme-toggle button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+
+  /* ============ Table ============ */
+  .scroll { overflow-x: auto; margin: 1.5rem 0; }
+  table { border-collapse: collapse; width: 100%; font-size: 0.92rem; }
+  th, td { text-align: left; padding: 0.6rem 0.85rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-soft); font-weight: 700; }
+  td:last-child, th:last-child { white-space: nowrap; font-variant-numeric: tabular-nums; color: var(--ink-soft); }
+  tbody tr:last-child td { border-bottom: 0; }
+  .group td {
+    font-weight: 700; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--accent); background: var(--accent-soft); border-bottom: 1px solid var(--line);
+    padding-top: 0.5rem; padding-bottom: 0.5rem;
+  }
+  td a { font-weight: 600; text-decoration: none; }
+  td a:hover { text-decoration: underline; }
+  .desc { color: var(--ink); }
+  code {
+    font-family: var(--mono); font-size: 0.86em;
+    background: var(--code-bg); padding: 0.1em 0.35em; border-radius: 4px;
+  }
+
+  footer {
+    margin-top: 3.5rem; padding-top: 1.2rem; border-top: 1px solid var(--line);
+    font-size: 0.8rem; color: var(--ink-soft);
+  }
+</style>
+</head>
+<body>
+<div class="theme-toggle" role="group" aria-label="Color theme">
+  <button type="button" data-mode="light" aria-pressed="false">Light</button>
+  <button type="button" data-mode="system" aria-pressed="true">System</button>
+  <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+</div>
+
+<div class="wrap">
+  <span class="eyebrow">ai-gists</span>
+  <h1>ai-gists</h1>
+  <p class="standfirst">A collection of AI-generated research notes, human-reviewed to remove
+  hallucinations and add context. Sharing them might save someone else a few tokens.</p>
+  <p class="note">These can go stale quickly. If you spot an inaccuracy or have context to add,
+  please file an issue.</p>
+
+  <h2>Contents</h2>
+  <p class="note">Listed by creation date, but there's no required order — start with any write-up.
+  A basic understanding of agentic AI and assistants is the only prerequisite.</p>
+
+  <div class="scroll"><table>
+    <thead>
+      <tr><th>Article</th><th>Description</th><th>Date</th></tr>
+    </thead>
+    <tbody>
+      <tr class="group"><td colspan="3">Harnesses</td></tr>
+      <tr>
+        <td><a href="https://jaimerodriguez.github.io/ai-gists/AIHarness/AIHarness.html">AI Harness</a></td>
+        <td class="desc">Introduction to AI harnesses and their required components.</td>
+        <td>07/08/26</td>
+      </tr>
+      <tr>
+        <td><a href="https://jaimerodriguez.github.io/ai-gists/CodexHarness/CodexHarness.html">CodexHarness</a></td>
+        <td class="desc">Fable's analysis of Codex's harness, mapped back to code. Line numbers will go stale quickly.</td>
+        <td>07/08/26</td>
+      </tr>
+      <tr>
+        <td><a href="https://jaimerodriguez.github.io/ai-gists/HermesHarness/HermesHarness.html">HermesHarness</a></td>
+        <td class="desc">Fable's analysis of Hermes' harness, mapped back to code. Line numbers will go stale quickly.</td>
+        <td>07/09/26</td>
+      </tr>
+      <tr>
+        <td><a href="https://jaimerodriguez.github.io/ai-gists/AIHarnessSDKs/AIHarnessSDKs.html">AIHarnessSDKs</a></td>
+        <td class="desc">Comparison of Anthropic's Agents SDK, OpenAI's Codex SDK, and OpenAI's Agents SDK as harness starting points.</td>
+        <td>07/09/26</td>
+      </tr>
+      <tr class="group"><td colspan="3">Sandboxes</td></tr>
+      <tr>
+        <td><a href="https://jaimerodriguez.github.io/ai-gists/AnthropicSandboxes/AnthropicSandboxes.html">AnthropicSandboxes</a></td>
+        <td class="desc">How Claude Code and Claude Cowork sandboxes differ. Covers macOS and Windows.</td>
+        <td>07/11/26</td>
+      </tr>
+      <tr>
+        <td><a href="https://jaimerodriguez.github.io/ai-gists/OpenAISandboxes/OpenAISandboxes.html">OpenAISandboxes</a></td>
+        <td class="desc">Overview of OpenAI's Work and Codex sandboxes. Covers macOS and Windows.</td>
+        <td>07/11/26</td>
+      </tr>
+      <tr class="group"><td colspan="3">Evals</td></tr>
+      <tr>
+        <td><a href="https://jaimerodriguez.github.io/ai-gists/AgentEvals/AgentEvals.html">Agent Evals</a></td>
+        <td class="desc">Introduction to agent evals and basic design. Assumes eval familiarity.</td>
+        <td>07/12/26</td>
+      </tr>
+    </tbody>
+  </table></div>
+
+  <h2>License</h2>
+  <p class="note">Licensed under the <a href="LICENSE">MIT License</a>.</p>
+
+  <footer>ai-gists · AI-generated, human-reviewed notes on agentic AI.</footer>
+</div>
+
+<script>
+(function () {
+  var KEY = "ai-gists-theme";
+  var root = document.documentElement;
+  var buttons = document.querySelectorAll(".theme-toggle button");
+
+  function apply(mode) {
+    if (mode === "light" || mode === "dark") {
+      root.setAttribute("data-theme", mode);
+    } else {
+      root.removeAttribute("data-theme"); // system: let prefers-color-scheme decide
+      mode = "system";
+    }
+    buttons.forEach(function (b) {
+      b.setAttribute("aria-pressed", String(b.dataset.mode === mode));
+    });
+  }
+
+  buttons.forEach(function (b) {
+    b.addEventListener("click", function () {
+      var mode = b.dataset.mode;
+      try { localStorage.setItem(KEY, mode); } catch (e) {}
+      apply(mode);
+    });
+  });
+
+  var saved = null;
+  try { saved = localStorage.getItem(KEY); } catch (e) {}
+  apply(saved || "system");
+})();
+</script>
+</body>
+</html>

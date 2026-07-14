@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="A technical comparison of the sandbox and containment architectures of Claude Code and Claude Cowork on macOS and Windows.">
+<title>Claude Code vs. Claude Cowork — Sandbox Architectures Compared</title>
+<style>
+  /* ============ Design tokens ============ */
+  :root{
+    --bg:        #F4F6F5;
+    --surface:   #FFFFFF;
+    --ink:       #1B2733;
+    --ink-soft:  #4A5A69;
+    --hairline:  rgba(27,39,51,.16);
+    --hairline2: rgba(27,39,51,.08);
+    --code-c:    #2B5FAA;   /* Claude Code — cobalt */
+    --code-bg:   rgba(43,95,170,.08);
+    --cowork-c:  #1E7A63;   /* Claude Cowork — viridian */
+    --cowork-bg: rgba(30,122,99,.08);
+    --warn:      #8A5A00;
+    --warn-bg:   rgba(178,120,0,.10);
+    --mono:      ui-monospace,"SF Mono","Cascadia Code",Consolas,"Liberation Mono",Menlo,monospace;
+    --serif:     Charter,"Bitstream Charter","Sitka Text",Cambria,Georgia,serif;
+    --sans:      system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;
+  }
+  [data-theme="dark"]{
+    --bg:        #10161D;
+    --surface:   #171F28;
+    --ink:       #DCE4EB;
+    --ink-soft:  #94A4B3;
+    --hairline:  rgba(220,228,235,.20);
+    --hairline2: rgba(220,228,235,.09);
+    --code-c:    #7AA8E8;
+    --code-bg:   rgba(122,168,232,.10);
+    --cowork-c:  #5CC2A5;
+    --cowork-bg: rgba(92,194,165,.10);
+    --warn:      #E0B15C;
+    --warn-bg:   rgba(224,177,92,.10);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]):not([data-theme="dark"]){
+      --bg:        #10161D;
+      --surface:   #171F28;
+      --ink:       #DCE4EB;
+      --ink-soft:  #94A4B3;
+      --hairline:  rgba(220,228,235,.20);
+      --hairline2: rgba(220,228,235,.09);
+      --code-c:    #7AA8E8;
+      --code-bg:   rgba(122,168,232,.10);
+      --cowork-c:  #5CC2A5;
+      --cowork-bg: rgba(92,194,165,.10);
+      --warn:      #E0B15C;
+      --warn-bg:   rgba(224,177,92,.10);
+    }
+  }
+
+  /* ============ Base ============ */
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{transition:none!important;animation:none!important} }
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--serif);
+    font-size:17px;
+    line-height:1.65;
+    transition:background .25s ease,color .25s ease;
+  }
+  .wrap{max-width:860px;margin:0 auto;padding:0 24px 96px}
+  a{color:inherit;text-decoration-color:var(--hairline);text-underline-offset:3px}
+  a:hover{text-decoration-color:currentColor}
+  :focus-visible{outline:2px solid var(--code-c);outline-offset:2px;border-radius:2px}
+
+  /* ============ Header ============ */
+  header{padding:56px 0 8px}
+  .topline{
+    display:flex;justify-content:space-between;align-items:center;gap:16px;
+    padding-bottom:20px;border-bottom:1px solid var(--hairline);
+  }
+  .eyebrow{
+    font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--ink-soft);
+  }
+  h1{
+    font-family:var(--serif);font-weight:700;
+    font-size:clamp(30px,5vw,44px);line-height:1.12;letter-spacing:-.01em;
+    margin:28px 0 12px;
+  }
+  .subtitle{color:var(--ink-soft);font-size:18px;max-width:640px;margin:0 0 6px}
+  .meta{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft);margin-top:18px}
+
+  /* ============ Theme toggle ============ */
+  .theme-toggle{
+    display:inline-flex;border:1px solid var(--hairline);border-radius:999px;padding:3px;background:var(--surface);
+  }
+  .theme-toggle button{
+    font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;
+    background:none;border:none;color:var(--ink-soft);padding:5px 12px;border-radius:999px;cursor:pointer;
+  }
+  .theme-toggle button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+
+  /* ============ Signature: isolation spectrum ============ */
+  .spectrum{
+    display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:40px 0 8px;
+  }
+  @media (max-width:640px){ .spectrum{grid-template-columns:1fr} }
+  .iso{
+    border:1px solid var(--hairline);border-radius:10px;background:var(--surface);padding:18px 18px 22px;
+  }
+  .iso .tag{
+    font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;
+    display:inline-block;padding:3px 10px;border-radius:999px;margin-bottom:14px;
+  }
+  .iso.code .tag{color:var(--code-c);background:var(--code-bg)}
+  .iso.cowork .tag{color:var(--cowork-c);background:var(--cowork-bg)}
+  .layer{
+    border:1.5px dashed var(--hairline);border-radius:8px;padding:12px 12px 14px;
+  }
+  .layer .lbl{
+    font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);
+    display:block;margin-bottom:10px;
+  }
+  .layer .layer{margin-top:0}
+  .iso.code  .layer.solid{border-style:solid;border-color:var(--code-c)}
+  .iso.cowork .layer.solid{border-style:solid;border-color:var(--cowork-c)}
+  .kernel{
+    font-family:var(--mono);font-size:12.5px;padding:8px 10px;border-radius:6px;text-align:center;
+  }
+  .iso.code  .kernel{background:var(--code-bg);color:var(--code-c)}
+  .iso.cowork .kernel{background:var(--cowork-bg);color:var(--cowork-c)}
+  .iso p.cap{font-size:14px;color:var(--ink-soft);margin:14px 0 0;line-height:1.5}
+
+  /* ============ Sections ============ */
+  section{margin-top:56px}
+  h2{
+    font-size:clamp(22px,3.4vw,28px);line-height:1.2;letter-spacing:-.005em;margin:0 0 6px;
+  }
+  .sec-eyebrow{
+    font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);
+    display:block;margin-bottom:10px;
+  }
+  h3{font-size:19px;margin:30px 0 8px}
+  p{margin:14px 0}
+  code{
+    font-family:var(--mono);font-size:.86em;background:var(--hairline2);
+    padding:1.5px 5px;border-radius:4px;
+  }
+  .rule{border:none;border-top:1px solid var(--hairline2);margin:0}
+
+  ul.tight{padding-left:22px;margin:14px 0}
+  ul.tight li{margin:10px 0}
+
+  /* Product-tinted subsection headers */
+  h2 .pill{
+    font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;vertical-align:middle;
+    padding:3px 10px;border-radius:999px;margin-right:10px;position:relative;top:-3px;
+  }
+  .pill.code{color:var(--code-c);background:var(--code-bg)}
+  .pill.cowork{color:var(--cowork-c);background:var(--cowork-bg)}
+
+  /* Callouts */
+  .callout{
+    border-left:3px solid var(--warn);background:var(--warn-bg);
+    padding:14px 18px;border-radius:0 8px 8px 0;margin:22px 0;font-size:15.5px;
+  }
+  .callout .lbl{
+    font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--warn);
+    display:block;margin-bottom:6px;
+  }
+
+  /* ============ Comparison table ============ */
+  .tbl-wrap{overflow-x:auto;margin:26px 0;border:1px solid var(--hairline);border-radius:10px;background:var(--surface)}
+  table{border-collapse:collapse;width:100%;font-family:var(--sans);font-size:14.5px;line-height:1.5}
+  th,td{padding:12px 16px;text-align:left;vertical-align:top;border-bottom:1px solid var(--hairline2)}
+  tr:last-child td{border-bottom:none}
+  thead th{
+    font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--ink-soft);border-bottom:1px solid var(--hairline);
+  }
+  th.code-h{color:var(--code-c)} th.cowork-h{color:var(--cowork-c)}
+  td.dim{color:var(--ink-soft);font-family:var(--mono);font-size:12.5px;white-space:nowrap}
+
+  /* ============ References ============ */
+  ol.refs{padding-left:24px;font-size:15px;line-height:1.6}
+  ol.refs li{margin:10px 0}
+  ol.refs .src{font-family:var(--mono);font-size:12px;color:var(--ink-soft);display:block}
+  sup a{font-family:var(--mono);font-size:.72em;text-decoration:none;color:var(--code-c)}
+
+  footer{
+    margin-top:72px;padding-top:20px;border-top:1px solid var(--hairline);
+    font-family:var(--mono);font-size:12px;color:var(--ink-soft);
+    display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;
+  }
+</style>
+</head>
+<body>
+<div class="wrap"><header>
+<div class="topline"><span class="eyebrow">AI Gist &middot; Security Architecture</span>
+<div class="theme-toggle" role="group" aria-label="Color theme"><button type="button" data-mode="light" aria-pressed="false">Light</button> <button type="button" data-mode="system" aria-pressed="true">System</button> <button type="button" data-mode="dark" aria-pressed="false">Dark</button></div>
+</div>
+<h1>Claude Code vs. Claude Cowork:<br>Sandbox Architectures Compared</h1>
+<p class="subtitle">What each product allows by default on macOS and Windows, how to expand or override the boundaries, and how code execution, web tools, and MCP servers behave differently in each.</p>
+<p class="meta">Compiled July 2026 &middot; Sources: Anthropic docs &amp; engineering posts, third-party security research</p>
+<div class="spectrum" aria-hidden="false">
+<div class="iso code"><span class="tag">Claude Code</span>
+<div class="layer solid"><span class="lbl">Your OS &middot; your user account</span>
+<div class="layer"><span class="lbl">Permission prompts (human-in-the-loop)</span>
+<div class="layer"><span class="lbl">Opt-in OS sandbox &mdash; Bash only</span>
+<div class="kernel">Seatbelt (macOS) &middot; bubblewrap (Linux/WSL2)</div>
+</div>
+</div>
+</div>
+<p class="cap">Runs directly on the host. A privileged process outside the sandbox decides, per command, whether to enforce it.</p>
+</div>
+<div class="iso cowork"><span class="tag">Claude Cowork</span>
+<div class="layer"><span class="lbl">Your OS &mdash; folder grants only</span>
+<div class="layer solid"><span class="lbl">Full virtual machine &middot; sealed by default</span>
+<div class="layer"><span class="lbl">Proxied egress &middot; allowlisted domains</span>
+<div class="kernel">Apple Virtualization (macOS) &middot; HCS / Hyper-V (Windows)</div>
+</div>
+</div>
+</div>
+<p class="cap">Everything executes inside a guest VM. No outer process holds an escape-hatch key; the host is reachable only through explicit grants.</p>
+</div>
+</div>
+</header>
+<section id="core"><span class="sec-eyebrow">01 &middot; Thesis</span>
+<h2>The core architectural difference</h2>
+<p>Claude Code and Claude Cowork sit at opposite ends of the isolation spectrum. Claude Code runs on the user's machine with filesystem, shell, and network access, contained via OS-level sandboxing (Seatbelt on macOS, bubblewrap on Linux) plus trust dialogs where reads are allowed but writes and bash require approval.<sup><a href="#ref-1">[1]</a></sup> Claude Cowork, by contrast, runs a full VM &mdash; Apple's Virtualization framework on macOS, HCS (Host Compute Service, the layer underneath Hyper-V) on Windows.<sup><a href="#ref-1">[1]</a><a href="#ref-9">[9]</a></sup></p>
+<p>The design philosophy differs because the audiences differ. Claude Code targets developers who can read bash, so it uses a human-in-the-loop OS sandbox that allows reads, confines writes to the workspace, and filters network through a proxy. Cowork targets knowledge workers and puts everything inside a sealed VM. Anthropic's engineering retrospective notes the key structural distinction: in Cowork's original full-VM mode, Claude executed as an ordinary Linux user with no awareness it was sandboxed, whereas in Claude Code a privileged process sits outside the sandbox deciding per-command whether to enforce it &mdash; meaning a persuasive injected prompt or a fatigued approval click can get that process to run something un-sandboxed. In the VM, no outer process holds an escape-hatch key.<sup><a href="#ref-1">[1]</a></sup></p>
+</section>
+<section id="claude-code"><span class="sec-eyebrow">02 &middot; Product deep dive</span>
+<h2><span class="pill code">Claude Code</span>Defaults and platform behavior</h2>
+<h3>Default state: sandbox off</h3>
+<p>If you've never run&nbsp;<code>/sandbox</code>, every bash command Claude runs has the same access your terminal does &mdash; the sandbox is off until you turn it on.<sup><a href="#ref-10">[10]</a></sup> The baseline protection is the permission model: by default Claude Code is read-only and asks for permission before making modifications or running commands, auto-allowing only safe commands like <code>echo</code> or <code>cat</code>.<sup><a href="#ref-2">[2]</a></sup></p>
+<h3>With the sandbox enabled (macOS / Linux / WSL2)</h3>
+<p>Defaults become: <strong>read access to the entire computer</strong> except certain denied directories &mdash; note this default still allows reading credential files like <code>~/.aws/credentials</code> and <code>~/.ssh/</code> unless you block them via <code>sandbox.credentials</code> or <code>denyRead</code>. <strong>Writes are blocked outside the current working directory</strong> and session temp directory, including shell config files and system binaries.<sup><a href="#ref-3">[3]</a></sup> Network-wise, internet access is only allowed through a unix domain socket connected to a proxy server running outside the sandbox, filtered by a domain allowlist.<sup><a href="#ref-2">[2]</a></sup> Every child process spawned by a sandboxed command inherits the same restrictions.<sup><a href="#ref-2">[2]</a></sup></p>
+<h3>Platform support</h3>
+<p>On macOS there is nothing to install &mdash; sandboxing uses the built-in Seatbelt framework. On Windows, you run Claude Code inside a WSL2 distribution; WSL1 and native Windows are not supported.<sup><a href="#ref-3">[3]</a></sup> On native Windows, Claude Code today relies entirely on the permission-prompt layer, or on external isolation such as Docker containers or VMs.<sup><a href="#ref-4">[4]</a></sup></p>
+<h3>Expanding or overriding the boundaries</h3>
+<ul class="tight">
+<li><strong>Expanding paths.</strong> Grant write access to additional paths using <code>sandbox.filesystem.allowWrite</code> in settings; custom allowed and denied paths (<code>denyRead</code>, <code>allowRead</code>) are fully configurable at user, project, or managed scope.<sup><a href="#ref-3">[3]</a></sup></li>
+<li><strong>The escape hatch.</strong> When a sandboxed command fails due to restrictions, Claude Code may retry with the <code>dangerouslyDisableSandbox</code> parameter, which prompts the user. Setting <code>allowUnsandboxedCommands: false</code> disables this entirely. Commands listed in <code>excludedCommands</code> always run outside the sandbox &mdash; used for tools like Docker that can't be sandboxed.<sup><a href="#ref-3">[3]</a></sup></li>
+<li><strong>Skipping everything.</strong> The <code>--dangerously-skip-permissions</code> flag bypasses all permission checks and should only be used in isolated environments like containers without internet access.<sup><a href="#ref-4">[4]</a></sup></li>
+<li><strong>Self-protection.</strong> The sandbox automatically denies write access to Claude Code's <code>settings.json</code> files at every scope, so a sandboxed command cannot modify its own policy.<sup><a href="#ref-3">[3]</a></sup></li>
+</ul>
+<h3>Projects and folders</h3>
+<p>"Projects" in Claude Code are simply the working directory: whatever directory you launch <code>claude</code> in becomes the writable workspace. You widen or narrow it via <code>settings.json</code> using <code>sandbox.filesystem</code> paths and permission allow/deny rules &mdash; paths from both sources are merged into the final sandbox configuration.<sup><a href="#ref-3">[3]</a></sup></p>
+</section>
+<section id="cowork"><span class="sec-eyebrow">03 &middot; Product deep dive</span>
+<h2><span class="pill cowork">Claude Cowork</span>Defaults and platform behavior</h2>
+<h3>Architecture</h3>
+<p>On macOS, Cowork runs inside a Linux virtual machine, isolated from the host OS, where the agent can execute code, process files, and run tools without direct access to your system.<sup><a href="#ref-8">[8]</a></sup> On Windows, Cowork wraps Claude Code in a Hyper-V-isolated Ubuntu VM with several layers of protection: Authenticode-gated named-pipe RPC, bubblewrap namespaces, per-session unprivileged users, a seccomp filter, and a domain-restricted egress proxy.<sup><a href="#ref-9">[9]</a></sup></p>
+<p>Cowork also supports <strong>remote sessions</strong> (beta): tasks run in an isolated, temporary environment on Anthropic's servers that can't reach your home or company network and is removed when the session ends. When a task needs a local file, Claude reaches your computer through the Claude Desktop app, only for folders you've connected, and only while the app is open.<sup><a href="#ref-5">[5]</a><a href="#ref-7">[7]</a></sup></p>
+<h3>Default file access: nothing</h3>
+<p>This is the sharpest contrast with Claude Code's "read everything" default. Claude can only read and write files in folders you've explicitly connected &mdash; nothing is accessible by default &mdash; and network access follows the egress settings you've configured.<sup><a href="#ref-6">[6]</a></sup></p>
+<h3>Granting folder access</h3>
+<p>You connect folders through the Cowork interface: Claude prompts when it needs a folder and you approve each one. On macOS the OS adds its own layer &mdash; you may also need to verify Claude Desktop's permissions under System Settings &rarr; Privacy &amp; Security &rarr; Files and Folders. Anthropic's own guidance is to create a dedicated working folder for Claude rather than granting broad access, and to keep backups of important files.<sup><a href="#ref-5">[5]</a></sup></p>
+<p>Permission behavior is mode-dependent. <strong>Auto mode</strong> won't approve certain sensitive actions &mdash; connecting additional folders, deleting files, creating scheduled tasks &mdash; while <strong>Skip all approvals</strong> removes all pausing and checking. Regardless of mode, <strong>Claude always asks before permanently deleting files</strong>.<sup><a href="#ref-6">[6]</a><a href="#ref-5">[5]</a></sup></p>
+<h3>Network defaults</h3>
+<p>All VM traffic is forced through controlled proxies. HTTPS traffic from the VM routes through a MITM proxy on the host using a fresh ephemeral CA generated each boot, and an outer host-side egress proxy filters outbound requests against a domain allowlist.<sup><a href="#ref-8">[8]</a></sup> For remote sessions, the sandbox can't reach private, internal, link-local, or cloud-metadata addresses; all traffic passes through a mandatory proxy the sandbox can't reconfigure or bypass; and "no network access" is the default for Enterprise organizations.<sup><a href="#ref-7">[7]</a></sup> Users expand this via the internet/egress allowlist settings, and Team/Enterprise admins can configure the egress allowlist centrally.<sup><a href="#ref-11">[11]</a></sup></p>
+</section>
+<section id="behavior"><span class="sec-eyebrow">04 &middot; Runtime behavior</span>
+<h2>How code, web search, and MCP behave differently</h2>
+<p>Three asymmetries matter most in practice.</p>
+<h3>1 &middot; What the sandbox actually covers</h3>
+<p>In Claude Code, the built-in sandboxed Bash tool restricts <em>only</em> Bash commands &mdash; the built-in file tools (Read, Edit, Write), MCP servers, and hooks still run directly on your host through the permission system, not the sandbox.<sup><a href="#ref-3">[3]</a><a href="#ref-4">[4]</a></sup> In Cowork, the entire code-execution environment lives inside the VM, so shell commands and scripts are structurally contained. But Cowork has its own exception: <strong>computer use has no sandbox</strong> between Claude and your screen &mdash; it runs on the host, not in the VM, unlike file operations (permission-checked) and code execution (VM-isolated).<sup><a href="#ref-5">[5]</a><a href="#ref-8">[8]</a></sup></p>
+<h3>2 &middot; Web search and fetch bypass egress rules in Cowork</h3>
+<div class="callout"><span class="lbl">Commonly missed</span> Network egress permissions don't apply to the web fetch or web search tools or MCPs, including Claude in Chrome. Web fetch runs server-side and is limited to search results and URLs you've shared.<sup><a href="#ref-5">[5]</a></sup> Your egress allowlist governs code the agent runs &mdash; not the built-in web tools or connectors.</div>
+<p>In Claude Code, WebFetch and WebSearch are governed by permission rules like any other tool, and the sandbox's network rules apply to what bash-level commands like <code>curl</code> can reach.<sup><a href="#ref-3">[3]</a></sup></p>
+<h3>3 &middot; MCP servers</h3>
+<p>In Claude Code locally, MCP servers execute on your host outside the bash sandbox, governed by permission rules rather than OS isolation. The only way to contain them is to put the whole Claude Code process inside a container or VM &mdash; every isolation approach other than the built-in Bash sandbox puts the entire process inside the boundary, so file tools, MCP servers, and hooks are restricted too.<sup><a href="#ref-4">[4]</a></sup></p>
+<p>Cowork follows a different pattern. For remote sessions, connector authorization tokens never enter the sandbox; connector calls are made server-side, and the sandbox holds only session-scoped tokens that expire within hours.<sup><a href="#ref-7">[7]</a></sup> On desktop, local connectors and plugins that include local MCP servers work through the desktop app only &mdash; meaning local MCP servers run on the host, outside the VM boundary, which is why Anthropic's safety guidance stresses caution with unfamiliar MCPs and plugins.<sup><a href="#ref-12">[12]</a><a href="#ref-5">[5]</a></sup></p>
+</section>
+<section id="matrix"><span class="sec-eyebrow">05 &middot; Reference</span>
+<h2>Side-by-side summary</h2>
+<div class="tbl-wrap">
+<table>
+<thead>
+<tr>
+<th scope="col">Dimension</th>
+<th class="code-h" scope="col">Claude Code</th>
+<th class="cowork-h" scope="col">Claude Cowork</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="dim">Isolation model</td>
+<td>Opt-in OS process sandbox (Bash only) + permission prompts</td>
+<td>Full guest VM; sealed by default</td>
+</tr>
+<tr>
+<td class="dim">macOS mechanism</td>
+<td>Seatbelt (sandbox-exec), built in, nothing to install</td>
+<td>Linux VM via Apple Virtualization framework</td>
+</tr>
+<tr>
+<td class="dim">Windows mechanism</td>
+<td>None natively &mdash; run inside WSL2 (bubblewrap) or a container</td>
+<td>Hyper-V/HCS Ubuntu VM, shipped natively</td>
+</tr>
+<tr>
+<td class="dim">File reads (default)</td>
+<td>Entire disk, minus denied paths (credentials readable unless blocked)</td>
+<td>Nothing &mdash; only folders you explicitly connect</td>
+</tr>
+<tr>
+<td class="dim">File writes (default)</td>
+<td>Current working directory + session temp only</td>
+<td>Connected folders only; deletion always prompts</td>
+</tr>
+<tr>
+<td class="dim">Network (default)</td>
+<td>Proxy outside sandbox, domain allowlist; unsandboxed = full access</td>
+<td>Mandatory MITM + egress proxy; Enterprise default is no network</td>
+</tr>
+<tr>
+<td class="dim">Expanding scope</td>
+<td><code>settings.json</code>: allowWrite / denyRead / allowed domains</td>
+<td>Connect folders per prompt; egress allowlist in settings / admin console</td>
+</tr>
+<tr>
+<td class="dim">Escape hatches</td>
+<td><code>dangerouslyDisableSandbox</code>, <code>excludedCommands</code>, <code>--dangerously-skip-permissions</code></td>
+<td>No per-command escape hatch; "Skip all approvals" mode removes prompting, not the VM</td>
+</tr>
+<tr>
+<td class="dim">MCP servers</td>
+<td>Run on host, outside the bash sandbox</td>
+<td>Remote: server-side, tokens never enter sandbox &middot; Local: on host via desktop app</td>
+</tr>
+<tr>
+<td class="dim">Web search / fetch</td>
+<td>Governed by permission rules; bash-level fetches obey sandbox proxy</td>
+<td>Runs server-side; not subject to egress allowlist</td>
+</tr>
+<tr>
+<td class="dim">Uncontained surface</td>
+<td>File tools, MCP, hooks (unless whole process is containerized)</td>
+<td>Computer use &mdash; runs on the host desktop, outside the VM</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>One notable inversion: Windows users arguably get <em>stronger</em> default isolation in Cowork (a native VM) than in native Claude Code (no OS sandbox at all without WSL2).</p>
+</section>
+<section id="caveats"><span class="sec-eyebrow">06 &middot; Limits</span>
+<h2>The honest caveat</h2>
+<p>The boundaries aren't absolute, and Anthropic's own retrospective is candid about it. In one disclosed incident, a malicious file exfiltrated data <em>through an approved domain</em>: allowing <code>api.anthropic.com</code> meant allowing file uploads to arbitrary Anthropic accounts. The fix was a defensive MITM proxy inside the VM that only passes requests carrying the VM's own provisioned session token, rejecting attacker-embedded keys.<sup><a href="#ref-1">[1]</a></sup> The framing worth keeping: an allowlist is a <strong>capability grant, not a destination filter</strong> &mdash; every function reachable through an allowed domain becomes attack surface.<sup><a href="#ref-1">[1]</a></sup></p>
+<p>Separately, VM isolation creates a monitoring gap: host EDR tools can't see inside the guest, and remote sessions run entirely outside your endpoints, so organizations that depend on endpoint visibility should account for this before rollout.<sup><a href="#ref-7">[7]</a></sup></p>
+</section>
+<section id="references"><span class="sec-eyebrow">07 &middot; Sources</span>
+<h2>References</h2>
+<ol class="refs">
+<li id="ref-1"><a href="https://www.anthropic.com/engineering/how-we-contain-claude">How we contain Claude across products</a><span class="src">Anthropic Engineering &middot; May 2026</span></li>
+<li id="ref-2"><a href="https://www.anthropic.com/engineering/claude-code-sandboxing">Making Claude Code more secure and autonomous with sandboxing</a><span class="src">Anthropic Engineering</span></li>
+<li id="ref-3"><a href="https://code.claude.com/docs/en/sandboxing">Configure the sandboxed Bash tool</a><span class="src">Claude Code Docs &middot; code.claude.com</span></li>
+<li id="ref-4"><a href="https://code.claude.com/docs/en/sandbox-environments">Choose a sandbox environment</a><span class="src">Claude Code Docs &middot; code.claude.com</span></li>
+<li id="ref-5"><a href="https://support.claude.com/en/articles/13364135-use-claude-cowork-safely">Use Claude Cowork safely</a><span class="src">Claude Help Center &middot; article 13364135</span></li>
+<li id="ref-6"><a href="https://support.claude.com/en/articles/13345190-get-started-with-claude-cowork">Get started with Claude Cowork</a><span class="src">Claude Help Center &middot; article 13345190</span></li>
+<li id="ref-7"><a href="https://support.claude.com/en/articles/14479288-claude-cowork-architecture-overview">Claude Cowork architecture overview</a><span class="src">Claude Help Center &middot; article 14479288</span></li>
+<li id="ref-8"><a href="https://blog.pluto.security/p/inside-claude-cowork-how-anthropics">Inside Claude Cowork: How Anthropic's Autonomous Agent Actually Works</a><span class="src">Pluto Security &middot; reverse-engineering of the macOS architecture</span></li>
+<li id="ref-9"><a href="https://www.armadin.com/blog-posts/exploiting-root-execution-in-claude-coworks-sandbox">Exploiting Root Execution in Claude Cowork's Sandbox</a><span class="src">Armadin &middot; Windows HCS sandbox research</span></li>
+<li id="ref-10"><a href="https://www.claudecodecamp.com/p/claude-code-sandboxing-how-sandbox-works-and-what-it-doesn-t-protect">Claude Code Sandboxing: How /sandbox Works</a><span class="src">Claude Code Camp &middot; hands-on testing</span></li>
+<li id="ref-11"><a href="https://www.promptarmor.com/resources/implement-claude-cowork-securely">Implement Claude Cowork Securely</a><span class="src">PromptArmor &middot; enterprise configuration guide</span></li>
+<li id="ref-12"><a href="https://support.claude.com/en/articles/15520349-use-claude-cowork-on-web-desktop-and-mobile">Use Claude Cowork on web, desktop, and mobile</a><span class="src">Claude Help Center &middot; article 15520349</span></li>
+</ol>
+</section>
+<footer>ai-gists / AnthropicSandboxes Details reflect documentation as of July 2026 &mdash; verify against current docs before relying on them.</footer></div>
+</body>
+</html>

@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Aggregated, source-verified best practices for evaluating tool-using AI agents, including LLM-as-judge methodology and a two-framework (Claude Agent SDK vs LangChain) comparison design.">
+<title>Writing Evals for AI Agents — Best Practices</title>
+<style>
+  /* ============ Design tokens ============ */
+  :root {
+    --bg: #F7F8F9;
+    --bg-raised: #FFFFFF;
+    --ink: #1B2430;
+    --ink-soft: #4C5A68;
+    --line: #D8DEE4;
+    --accent: #0E6E68;
+    --accent-soft: #E3F0EF;
+    --warn: #B26A00;
+    --warn-soft: #F7EEDF;
+    --verify: #0E6E68;
+    --code-bg: #EEF1F3;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    --sans: -apple-system, "Segoe UI", system-ui, Roboto, sans-serif;
+    --mono: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+  }
+  [data-theme="dark"] {
+    --bg: #10161C;
+    --bg-raised: #171F27;
+    --ink: #D9E1E8;
+    --ink-soft: #93A1AE;
+    --line: #2A343E;
+    --accent: #53B8B0;
+    --accent-soft: #14302E;
+    --warn: #D89A45;
+    --warn-soft: #2E2417;
+    --verify: #53B8B0;
+    --code-bg: #1C252E;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]):not([data-theme="dark"]) {
+      --bg: #10161C;
+      --bg-raised: #171F27;
+      --ink: #D9E1E8;
+      --ink-soft: #93A1AE;
+      --line: #2A343E;
+      --accent: #53B8B0;
+      --accent-soft: #14302E;
+      --warn: #D89A45;
+      --warn-soft: #2E2417;
+      --verify: #53B8B0;
+      --code-bg: #1C252E;
+    }
+  }
+
+  /* ============ Base ============ */
+  * { box-sizing: border-box; }
+  html { background: var(--bg); scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.65 var(--sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 46rem; margin: 0 auto; padding: 3rem 1.25rem 4rem; }
+  h1, h2, h3 { font-family: var(--serif); line-height: 1.2; text-wrap: balance; font-weight: 600; }
+  h1 { font-size: 2.3rem; margin: 0.5rem 0 0.75rem; }
+  h2 { font-size: 1.55rem; margin: 3.2rem 0 0.8rem; padding-top: 1.6rem; border-top: 1px solid var(--line); }
+  h2 .num { color: var(--accent); font-variant-numeric: tabular-nums; margin-right: 0.5rem; }
+  h3 { font-size: 1.12rem; margin: 1.9rem 0 0.5rem; }
+  p, ul, ol { margin: 0 0 1rem; }
+  li { margin-bottom: 0.35rem; }
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .eyebrow {
+    text-transform: uppercase; letter-spacing: 0.14em; font-size: 0.72rem;
+    color: var(--accent); font-weight: 700;
+  }
+  .standfirst { font-size: 1.12rem; color: var(--ink-soft); max-width: 42rem; }
+  .meta { color: var(--ink-soft); font-size: 0.85rem; margin-bottom: 2.5rem; }
+
+  /* ============ Theme toggle ============ */
+  .theme-toggle {
+    position: fixed; top: 0.9rem; right: 0.9rem; z-index: 10;
+    display: flex; gap: 0; border: 1px solid var(--line); border-radius: 999px;
+    background: var(--bg-raised); overflow: hidden; font-size: 0.72rem;
+  }
+  .theme-toggle button {
+    border: 0; background: transparent; color: var(--ink-soft);
+    font: 700 0.72rem var(--sans); letter-spacing: 0.04em;
+    padding: 0.35rem 0.75rem; cursor: pointer;
+  }
+  .theme-toggle button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+
+  /* ============ Components ============ */
+  .toc {
+    background: var(--bg-raised); border: 1px solid var(--line); border-radius: 6px;
+    padding: 1.1rem 1.4rem; margin: 2rem 0; font-size: 0.92rem; columns: 2; column-gap: 2rem;
+  }
+  .toc a { display: block; padding: 0.15rem 0; text-decoration: none; break-inside: avoid; }
+  .toc a:hover { text-decoration: underline; }
+  .toc .num { color: var(--ink-soft); font-variant-numeric: tabular-nums; margin-right: 0.4rem; }
+  @media (max-width: 600px) { .toc { columns: 1; } }
+  code {
+    font-family: var(--mono); font-size: 0.86em;
+    background: var(--code-bg); padding: 0.1em 0.35em; border-radius: 4px;
+  }
+  pre {
+    background: var(--code-bg); border: 1px solid var(--line); border-radius: 6px;
+    padding: 0.9rem 1.1rem; overflow-x: auto; font-size: 0.82rem; line-height: 1.55;
+    margin: 0 0 1.1rem;
+  }
+  pre code { background: none; padding: 0; font-size: 1em; }
+  .scroll { overflow-x: auto; margin: 0 0 1.1rem; }
+  table { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
+  th, td { text-align: left; padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-soft); }
+  td:first-child { white-space: nowrap; }
+  .verified {
+    display: inline-block; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.05em;
+    color: var(--verify); border: 1px solid var(--verify); border-radius: 999px;
+    padding: 0.05rem 0.5rem; vertical-align: 0.15em; margin-left: 0.4rem; white-space: nowrap;
+  }
+  .callout {
+    border-left: 3px solid var(--accent); background: var(--accent-soft);
+    border-radius: 0 6px 6px 0; padding: 0.85rem 1.1rem; margin: 0 0 1.1rem;
+  }
+  .callout.warn { border-left-color: var(--warn); background: var(--warn-soft); }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout .label {
+    display: block; font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.1em; margin-bottom: 0.3rem; color: var(--accent);
+  }
+  .callout.warn .label { color: var(--warn); }
+  .src { font-size: 0.82rem; color: var(--ink-soft); }
+  .kicker { font-weight: 600; }
+  .footnote { font-size: 0.85rem; color: var(--ink-soft); }
+  .checklist li { margin-bottom: 1rem; }
+  .lbl {
+    font-weight: 700; font-size: 0.68rem; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--accent); margin-right: 0.35rem;
+  }
+  .lbl.prevent { color: var(--warn); }
+  .lbl.where { color: var(--ink-soft); }
+  footer {
+    margin-top: 4rem; padding-top: 1.2rem; border-top: 1px solid var(--line);
+    font-size: 0.8rem; color: var(--ink-soft);
+  }
+</style>
+</head>
+<body>
+<div class="theme-toggle" role="group" aria-label="Color theme">
+  <button type="button" data-mode="light" aria-pressed="false">Light</button>
+  <button type="button" data-mode="system" aria-pressed="true">System</button>
+  <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+</div>
+
+<div class="wrap">
+  <span class="eyebrow">Research Report · Deep-Research Verified</span>
+  <h1>Writing Evals for AI Agents</h1>
+  <p class="standfirst">Aggregated best practices for evaluating tool-using agents — and the
+  concrete design behind the <code>agent-evals</code> project, which compares the same
+  research/Q&amp;A agent built on the Claude Agent SDK and on LangChain.</p>
+  <p class="meta">July 12, 2026 · Sources fan-out searched, fetched, and adversarially verified
+  (3 independent skeptic votes per claim; badges show the vote). Claims from standard literature
+  that were not re-verified in this pass are marked as such.</p>
+
+  <nav class="toc" aria-label="Contents">
+    <a href="#s1"><span class="num">1</span>The mental model</a>
+    <a href="#s2"><span class="num">2</span>Outcome vs. trajectory</a>
+    <a href="#s3"><span class="num">3</span>Dataset from zero</a>
+    <a href="#s4"><span class="num">4</span>The grading hierarchy</a>
+    <a href="#s5"><span class="num">5</span>LLM-as-judge, properly</a>
+    <a href="#s6"><span class="num">6</span>Nondeterminism &amp; statistics</a>
+    <a href="#s7"><span class="num">7</span>Fair A/B of two frameworks</a>
+    <a href="#s8"><span class="num">8</span>Pitfalls</a>
+    <a href="#s9"><span class="num">9</span>Tooling landscape</a>
+    <a href="#s10"><span class="num">10</span>Map to the project</a>
+    <a href="#s11"><span class="num">11</span>Sources</a>
+  </nav>
+
+  <h2 id="s1"><span class="num">1</span>The mental model: an eval is four things</h2>
+  <p>An agent eval is not "a benchmark." It is a small system with four parts, and most
+  eval failures are a failure of exactly one of them:</p>
+  <ul>
+    <li><span class="kicker">Task</span> — a question or job with a knowable right answer (or right behavior, e.g. abstaining).</li>
+    <li><span class="kicker">Environment</span> — the tools and state the agent acts in. For evals it should be hermetic: local, deterministic, resettable.</li>
+    <li><span class="kicker">Grader</span> — code checks and/or an LLM judge that turn a transcript into pass/fail (or a score).</li>
+    <li><span class="kicker">Harness</span> — the runner that executes agents × cases × trials, persists every transcript, and computes statistics.</li>
+  </ul>
+  <p>What makes <em>agent</em> evals different from classic single-turn LLM evals: the unit of
+  evaluation is a <em>run</em> (many model calls, tool calls, and intermediate states), not a
+  single completion. That means two extra judgment surfaces — the <em>trajectory</em> (what the
+  agent did) and the <em>end state</em> (what is true afterwards) — plus much higher variance,
+  which forces repeated trials and real statistics (§6).</p>
+
+  <h2 id="s2"><span class="num">2</span>Grade outcomes; observe trajectories</h2>
+  <p>The single most load-bearing principle in the field right now:</p>
+  <div class="callout">
+    <span class="label">Core principle</span>
+    <p>Grade primarily on the <strong>verified end state</strong> — what is actually true in the
+    environment or in the final answer — never on the agent's own claim that it succeeded. And
+    don't hard-code the expected <em>step sequence</em>: agents regularly find valid approaches
+    the eval designer didn't anticipate, so exact-order checks produce brittle evals.
+    <span class="verified" title="3 of 3 adversarial verifiers confirmed against the primary source">verified 3–0</span></p>
+    <p class="src">Anthropic, <em>Demystifying evals for AI agents</em> (Jan 2026).</p>
+  </div>
+  <p>Trajectory evaluation is still valuable — as a <em>complement</em>. Which tool the agent
+  picks, how many calls it burns, whether it consults sources before answering: these behaviors
+  only emerge when a real model runs end-to-end, and they explain <em>why</em> an outcome failed.
+  The practical guidance is to use <strong>flexible trajectory matchers</strong> — unordered,
+  subset, superset — rather than strict order matching, exactly the modes LangChain's
+  <code>agentevals</code> package ships. <span class="verified">verified 3–0 ×5</span></p>
+  <p>In the project this shows up as: the LLM judge grades the final answer against a reference
+  (outcome), while code graders check "expected tools were used," "the KB was consulted at all,"
+  and "call count within budget" (trajectory) — as separate, named signals that never get
+  averaged into mush.</p>
+
+  <h2 id="s3"><span class="num">3</span>Bootstrapping a dataset from zero</h2>
+  <p><strong>Start with 20–50 hand-written tasks.</strong> Anthropic's guidance is explicit:
+  20–50 simple tasks drawn from real (or realistically anticipated) failures is a great start,
+  and the quality bar for each task is the <em>two-expert rule</em> — a good task is one where
+  two domain experts would independently reach the same pass/fail verdict.
+  <span class="verified">verified 3–0</span> If reasonable people could argue about whether an
+  answer passes, the case will generate judge noise forever; sharpen the expected answer until
+  the verdict is obvious.</p>
+  <p><strong>Cover behavior types, not just topics.</strong> The 21-case dataset deliberately spans:</p>
+  <ul>
+    <li><em>single_hop</em> — one lookup; establishes a floor;</li>
+    <li><em>multi_hop</em> — facts that live in two documents; tests planning and synthesis;</li>
+    <li><em>calculation</em> — forces correct tool choice (the <code>calculate</code> tool) and verifiable arithmetic;</li>
+    <li><em>abstention</em> — questions the corpus can't answer. The right behavior is refusing to invent; this is the category that catches hallucination, and most homemade eval suites forget it entirely.</li>
+  </ul>
+  <p><strong>Split capability from regression.</strong> Maintain two suites: capability evals
+  start at low pass rates (a hill to climb as you improve the agent), regression evals sit near
+  100% and alarm on backsliding. When a capability eval saturates — passing every trial for every
+  variant for weeks — it graduates into the regression suite and you write harder cases.
+  <span class="verified">verified 3–0</span></p>
+  <p><strong>Use invented facts.</strong> The corpus describes a fictional company, so a correct
+  answer is <em>proof</em> the agent used the tools — the facts cannot exist in pretraining data.
+  This is the cheapest available defense against contamination, and it makes "answered from
+  memory without touching the KB" a mechanically detectable failure.</p>
+  <h3>LLM-seeded cases: seed, review, promote</h3>
+  <p>Using a strong model to generate candidate cases from your corpus is a legitimate
+  productivity lever — but the human review step is non-negotiable. LLM-generated evaluators and
+  eval assets inherit all the problems of the LLMs they evaluate, and require further human
+  validation. <span class="verified">verified 3–0</span> The project's
+  <code>scripts/seed_dataset.py</code> encodes the safe workflow: generate to
+  <code>candidate_cases.jsonl</code> → human verifies each expected answer against the corpus →
+  only then append to the dataset. Skipping the review makes your eval circular: the generator's
+  mistakes become "ground truth," and a same-family judge will happily agree with them.</p>
+  <p>A dataset-design pattern worth copying (from DeepEval): a case (a "golden") stores only the
+  <em>input and expected results</em>; everything runtime-generated — actual output, tool calls,
+  retrieved context — is populated at evaluation time. That separation is exactly what lets one
+  dataset drive two different agent frameworks. <span class="verified">verified 3–0</span></p>
+
+  <h2 id="s4"><span class="num">4</span>The grading hierarchy: code first, judge second</h2>
+  <div class="callout">
+    <span class="label">Rule of thumb</span>
+    <p>Prefer deterministic, code-based graders wherever a clear rule can be written; clearly
+    defined rules plus an explanation of which rule failed is the best form of verification
+    feedback. Reserve the LLM judge for what code genuinely cannot check.
+    <span class="verified">verified 3–0</span></p>
+  </div>
+  <p>Reasons: code graders are free, instant, perfectly reproducible, and cannot drift. Every
+  check you move from judge to code removes a noise source <em>and</em> a cost line. In practice
+  a healthy stack looks like:</p>
+  <div class="scroll"><table>
+    <tr><th>Layer</th><th>Checks</th><th>Cost</th></tr>
+    <tr><td>1. Code graders</td><td>required facts/numbers present (normalized), expected tools called, KB consulted at all, call count ≤ budget, run completed without error</td><td>free</td></tr>
+    <tr><td>2. Pointwise judge</td><td>semantic correctness vs. reference, groundedness (no invented facts), abstention quality</td><td>1 judge call per trial</td></tr>
+    <tr><td>3. Pairwise judge</td><td>A-vs-B preference on the same question, position-debiased</td><td>2 judge calls per pair; run on demand</td></tr>
+  </table></div>
+  <p>Note what's <em>not</em> here: string-equality on the whole answer (too brittle for free-form
+  text) and embedding similarity (too forgiving — a fluent wrong answer scores high). Substring
+  checks on the load-bearing numbers, with currency/comma normalization, hit the sweet spot for
+  a Q&amp;A task.</p>
+
+  <h2 id="s5"><span class="num">5</span>LLM-as-judge, properly</h2>
+  <h3>5.1 The philosophy</h3>
+  <p>A judge is not an oracle; it is another model with its own failure modes, deployed in a
+  measurement role. Two verified findings anchor everything else:</p>
+  <ul>
+    <li><strong>Judges inherit the failure modes of the models they evaluate</strong> and must be
+    calibrated against human grading before being trusted. <span class="verified">verified 3–0</span></li>
+    <li><strong>Criteria drift is real:</strong> you need criteria to grade outputs, but grading
+    outputs is what teaches you the criteria — some criteria only become visible once you've seen
+    real model outputs. Build the harness expecting rubrics to be revised as you read transcripts;
+    don't treat the first rubric as fixed. <span class="verified">verified 3–0</span>
+    <span class="src">(Shankar et al., <em>Who Validates the Validators?</em>, UIST 2024)</span></li>
+  </ul>
+  <p>The practical calibration loop (the "EvalGen pattern," from the same paper): have a human
+  grade a subset of outputs, then select/tune the judge prompt (or code assertion) that best
+  agrees with the human grades. <span class="verified">verified 3–0</span> Concretely:
+  after the first eval run, read ~20 judge verdicts next to the transcripts, count disagreements
+  with your own judgment, and edit the judge prompt until agreement is high. Only then do the
+  aggregate numbers mean anything. Re-calibrate whenever you change the judge prompt or model —
+  and version both.</p>
+
+  <h3>5.2 Pointwise vs. pairwise — you'll use both, for different jobs</h3>
+  <div class="scroll"><table>
+    <tr><th></th><th>Pointwise (rubric)</th><th>Pairwise (preference)</th></tr>
+    <tr><td>Question</td><td>"Does this answer meet the bar?"</td><td>"Which of these two is better?"</td></tr>
+    <tr><td>Gives you</td><td>An absolute score you can track over time and across versions</td><td>A sensitive A/B signal — easier for judges to compare than to score</td></tr>
+    <tr><td>Weakness</td><td>Score calibration wobbles; needs anchored rubric + reference</td><td>No absolute meaning; position bias; result doesn't transfer to a third system</td></tr>
+    <tr><td>In the harness</td><td>Primary <code>passed</code> verdict per trial</td><td><code>--pairwise</code> flag for the SDK-vs-LangChain head-to-head</td></tr>
+  </table></div>
+
+  <h3>5.3 Known biases and the standard mitigations</h3>
+  <p class="footnote">The bias catalog below is standard literature (MT-Bench / Zheng et al. 2023
+  and follow-ups) — well established, though not independently re-verified in this research pass.</p>
+  <ul>
+    <li><strong>Position bias</strong> — pairwise judges favor one slot (often the first).
+    <em>Mitigation:</em> judge each pair twice with positions swapped; count a winner only when both
+    orderings agree, else record a tie. The project's <code>judge_pair()</code> does exactly this and
+    reports how many verdicts flipped — a built-in bias meter.</li>
+    <li><strong>Verbosity bias</strong> — longer, more polished answers win undeservedly.
+    <em>Mitigation:</em> instruct the judge to grade substance against the reference facts, and say
+    explicitly that length and polish don't count. Reference-anchored grading largely defuses this.</li>
+    <li><strong>Self-preference bias</strong> — models favor their own family's outputs. In this
+    setup both agents run Claude, so it can't tilt A vs. B — but it can inflate absolute scores.
+    <em>Mitigation:</em> keep the judge model independent and configurable; if numbers look
+    suspiciously rosy, re-judge a sample with a different-family model and compare.</li>
+    <li><strong>Sycophancy toward confident tone</strong> — assertive wrong answers pass.
+    <em>Mitigation:</em> the rubric ties <code>passed</code> to enumerated key facts, not to overall
+    impression.</li>
+  </ul>
+
+  <h3>5.4 Judge prompt design — writing the instructions the judge model receives</h3>
+  <p>A disambiguation first, because the phrase reads two ways: this section is about
+  <strong>designing the prompt you give <em>to</em> the judge</strong> — the grading instructions
+  the judge model runs with — not about judging prompts. The judge never grades a prompt; it
+  grades transcripts. (Your agent's own prompt does get evaluated, but only indirectly: you
+  change it, re-run the eval, and compare scores. The eval is how prompt changes get judged;
+  the judge itself only ever sees answers.)</p>
+  <p>Why this deserves its own section: the judge prompt <em>is</em> your measurement instrument.
+  Every weakness in it — a vague rubric, a missing reference, an unparseable output format —
+  becomes noise in every number the eval produces. A judge call is an ordinary LLM call with
+  three parts, and judge prompt design is the craft of getting all three right:</p>
+  <ol>
+    <li><strong>The grading instructions</strong> (system prompt) — who the judge is, the rubric,
+    and an explicit rule for every grade it can hand out;</li>
+    <li><strong>The evidence</strong> (user message) — everything about this one trial: the
+    question, the reference answer and key facts, and the agent's answer plus its tool calls;</li>
+    <li><strong>The output contract</strong> (a JSON schema) — the exact fields the verdict must
+    come back in.</li>
+  </ol>
+  <p>The shape, annotated from the project's <code>judge_run()</code> in
+  <code>graders/llm_judge.py</code>:</p>
+  <pre><code>SYSTEM — grading instructions (the rubric)
+  "You are grading the answer of a research agent..."
+  correctness = "correct" only if every key fact is present and accurate
+  grounded = false if the answer asserts any fact the reference doesn't support
+  if MUST_ABSTAIN: fabricating an answer is an automatic fail
+  passed = correct AND grounded (or an appropriate abstention)
+  "Write your analysis first, then the verdict fields."
+
+USER — the evidence for this one trial
+  QUESTION / REFERENCE ANSWER / KEY FACTS REQUIRED / MUST_ABSTAIN
+  AGENT'S TOOL CALLS   (the trajectory)
+  AGENT'S FINAL ANSWER
+
+OUTPUT — enforced JSON schema (pydantic)
+  { analysis, correctness, grounded, abstained_appropriately, passed }</code></pre>
+  <p>Five recommendations follow. Each is stated the same way: the thing to <em>do</em>, the
+  failure it <em>prevents</em>, and <em>where</em> it lives in the project's code — every bolded
+  item is a desired practice, not a failure mode.</p>
+  <ul class="checklist">
+    <li><strong>Anchor to a reference.</strong><br>
+    <span class="lbl">Do</span> Give the judge the case's expected answer and enumerated key
+    facts, and instruct it to grade strictly against them (here, it's also told the corpus is
+    fictional).<br>
+    <span class="lbl prevent">Prevents</span> The judge grading from its own world knowledge —
+    empty for a fictional corpus, stale for a real one — so the verdict measures the judge's
+    knowledge instead of the agent's answer. Handing over the answer key also converts a hard
+    judgment ("is this answer good?") into an easy one ("does it match the key?"), and judges are
+    far more reliable at comparison than at open-ended assessment.<br>
+    <span class="lbl where">Where</span> <code>judge_run()</code> puts REFERENCE ANSWER and KEY
+    FACTS REQUIRED in the evidence; the instructions open with "grade strictly against the
+    reference."</li>
+    <li><strong>Structured output.</strong><br>
+    <span class="lbl">Do</span> Force the verdict into a JSON schema (pydantic model + the SDK's
+    <code>messages.parse</code>) so every field comes back as one of the allowed values.<br>
+    <span class="lbl prevent">Prevents</span> Prose verdicts ("I'd say this mostly passes,
+    though...") that you parse with regexes — every parse failure or invented label becomes
+    silent grading noise.<br>
+    <span class="lbl where">Where</span> The <code>JudgeVerdict</code> model in
+    <code>llm_judge.py</code>.</li>
+    <li><strong>Analysis before verdict.</strong><br>
+    <span class="lbl">Do</span> Order the schema so the free-text <code>analysis</code> field
+    comes before the grade fields — the model generates output in field order, so this makes it
+    lay out the evidence before committing to grades.<br>
+    <span class="lbl prevent">Prevents</span> A snap verdict followed by a rationalization of it,
+    which is what a verdict-first schema invites.<br>
+    <span class="lbl where">Where</span> <code>analysis</code> is the first field of
+    <code>JudgeVerdict</code>; it's also what you read during calibration (§5.1) to see
+    <em>why</em> the judge graded as it did.</li>
+    <li><strong>Per-dimension fields with an escape hatch.</strong><br>
+    <span class="lbl">Do</span> Grade each dimension in its own field — <code>correctness</code>
+    (3-level, so partial credit exists), <code>grounded</code>,
+    <code>abstained_appropriately</code> — and make inapplicable dimensions nullable (the
+    "Unknown" escape hatch). Structured per-dimension rubrics with an escape hatch and partial
+    credit measurably improve judge reliability. <span class="verified">verified 3–0</span><br>
+    <span class="lbl prevent">Prevents</span> Holistic scores ("7/10") that confound failures —
+    was it wrong, ungrounded, or just wordy? — plus forced grades on dimensions that don't apply
+    (pure noise), and the cliff where a 95%-right answer scores like an empty one.<br>
+    <span class="lbl where">Where</span> The <code>JudgeVerdict</code> fields;
+    <code>abstained_appropriately</code> is nullable.</li>
+    <li><strong>A small, explicit pass rule.</strong><br>
+    <span class="lbl">Do</span> Define <code>passed</code> in the instructions as a stated
+    formula over the dimension grades ("passed = correct AND grounded, or an appropriate
+    abstention") so the judge applies a rule.<br>
+    <span class="lbl prevent">Prevents</span> Impression-based pass/fail that drifts from run to
+    run.<br>
+    <span class="lbl where">Where</span> The "passed = true only if..." line in the judge's
+    system prompt — and because the rule is one line of text, it's versionable, auditable, and
+    exactly the line you edit when calibration (§5.1) shows the judge is too strict or too
+    lenient.</li>
+  </ul>
+  <p>Two refinements to reach for as the suite matures, both extensions of the same idea — make
+  the judge's job smaller and more mechanical: <strong>few-shot graded examples</strong> (paste
+  two or three example answers with their correct verdicts into the instructions; the cheapest
+  big accuracy lever for fussy rubrics) and <strong>one judge call per dimension</strong> (split
+  dimensions into separate calls if grading one seems to bleed into another).</p>
+
+  <h3>5.5 Judge-to-seed vs. judge-to-grade</h3>
+  <p>These are two distinct, both-legitimate roles with different safety rails:</p>
+  <ul>
+    <li><strong>Seeding (generation time):</strong> the model drafts cases/expected answers →
+    <em>human review is the quality gate</em> → reviewed cases become ground truth. The model's
+    judgment is advisory.</li>
+    <li><strong>Grading (evaluation time):</strong> the model applies your rubric to transcripts →
+    <em>calibration against human spot-checks is the quality gate</em> → verdicts become metrics.
+    The model's judgment is the measurement instrument.</li>
+  </ul>
+  <p>The failure mode to avoid is letting the same unreviewed model output serve both roles —
+  generating the answer key and then grading against it. Keep a human checkpoint between the two.</p>
+
+  <h2 id="s6"><span class="num">6</span>Nondeterminism and statistics</h2>
+  <p>Agent runs are nondeterministic — and on current Claude models (Opus 4.7+/Sonnet 5) you
+  cannot even set <code>temperature</code>; the parameter is rejected. Determinism is therefore
+  approximated by <em>repetition plus statistics</em>, not seeds.</p>
+  <p><strong>First, what k is.</strong> k is simply the number of times you re-run each test
+  case — the <code>trials</code> setting in the project's <code>config.json</code> (default 3).
+  "k trials per case" with k=3 means: ask case kb-014 three separate times and record pass/fail
+  each time. There is no magic value; the practical guidance is k=1 for quick iteration
+  (accepting that you can't tell skill from luck), k=3–5 for normal development (enough to see
+  instability), and k=10+ when you need to defend a reliability claim. Cost scales linearly
+  with k.</p>
+  <ul>
+    <li><strong>Run k trials per case from a clean, isolated environment</strong> so failures
+    aren't correlated through shared state. <span class="verified">verified 3–0</span> (The task
+    is stateless-per-run, which gives isolation for free.)</li>
+    <li><strong>pass@k vs. pass^k — two different questions asked of the same k trials.</strong>
+    pass@k is the probability that <em>at least one</em> of the k trials succeeds ("<em>can</em>
+    it do this?"); pass^k is the probability that <em>all k</em> succeed ("does it do this
+    <em>every time</em>?"). <span class="verified">verified 3–0</span> The distinction feels
+    obvious once seen — the names exist because they're standard vocabulary (pass@k from OpenAI's
+    HumanEval code benchmark, pass^k from METR's agent-reliability work), which lets your numbers
+    be compared with published ones. Worked example: a case with a 90% per-trial success rate at
+    k=3 scores pass@3 = 1 − 0.1³ = <strong>99.9%</strong> but pass^3 = 0.9³ =
+    <strong>72.9%</strong> — same agent, same trials, wildly different numbers. Choose by whether
+    a retry exists in real usage: pass@k when someone can pick the good attempt (code filtered by
+    a test suite, a human reviewing drafts); pass^k when the agent acts autonomously and every
+    run must be right — which is why ship decisions should weight pass^k. (Harness detail: the
+    report shows pass@1, the plain average pass rate over all trials, alongside pass^k, the
+    fraction of cases that passed every trial.)</li>
+    <li><strong>Paired bootstrap confidence interval (CI) on the difference.</strong> The
+    question this answers: agent A scores 76%, agent B scores 69% — is that +7-point gap real,
+    or the luck of these particular ~20 questions? Unpacking the name, one word at a time:
+      <ul>
+        <li><em>Confidence interval</em> — instead of the single number (+7), you get the range
+        of gaps that are plausible given your data: "somewhere between X and Y."</li>
+        <li><em>Bootstrap</em> — how that range is computed: simulate re-running the experiment
+        thousands of times by resampling your cases, recomputing the gap each time. The middle
+        95% of the simulated gaps is the 95% CI.</li>
+        <li><em>Paired</em> — each simulated re-run keeps a question's A-score and B-score
+        together, because both agents answered the same questions. A hard question drags both
+        agents down equally, so question difficulty stops being a source of noise.</li>
+      </ul>
+    How to read it: a CI that <em>straddles zero</em> (say, −2 to +16 points) means a zero gap
+    is plausible — the difference is not established; decide on cost/latency instead, or add
+    cases. A CI that <em>excludes zero</em> (say, +3 to +19) means the gap is real at this
+    sample size. (Adding <em>cases</em> narrows the CI faster than adding trials.)</li>
+    <li><strong>Read the discordant (disagreement) cases.</strong> The cases where the two agents
+    disagree — one passes, the other fails — are worth more than any aggregate: they localize the
+    actual behavioral difference. The report lists them by ID so you can pull the transcripts.</li>
+  </ul>
+
+  <h2 id="s7"><span class="num">7</span>Fair A/B comparison of two agent frameworks</h2>
+  <p>The question "which framework is better?" is only meaningful once everything <em>except</em>
+  the framework is held equal. The confounds, in the order they usually bite:</p>
+  <ol>
+    <li><strong>Model.</strong> Same model on both sides isolates the framework effect (the
+    scaffold: prompting harness, loop mechanics, context management). Different models per side
+    measures end-to-end stacks — also valid, but a different experiment. The project's
+    <code>config.json</code> makes this an explicit switch.</li>
+    <li><strong>Tool surface.</strong> The Claude Agent SDK ships built-in tools (WebSearch,
+    WebFetch, file I/O, Bash) while LangChain tools are wired manually — a real asymmetry the
+    design must normalize. <span class="verified">verified 3–0</span> The SDK adapter passes
+    <code>tools=[]</code> to strip every built-in and exposes only the shared MCP tools, so both
+    agents see byte-identical tool names, schemas, and descriptions.</li>
+    <li><strong>System prompt.</strong> Defined once in <code>task.py</code>, injected into both.</li>
+    <li><strong>Environment flakiness.</strong> Hermetic local tools; a network hiccup can
+    otherwise hand either side unearned failures.</li>
+    <li><strong>Grader symmetry.</strong> One shared grading stack, blind to which framework
+    produced the transcript (adapters normalize tool names before grading).</li>
+  </ol>
+  <p>Then report <strong>quality and efficiency side by side</strong>: pass@1, pass^k, tokens,
+  latency, tool calls, and cost per trial. Frameworks that tie on correctness routinely differ
+  2× on tokens or latency — that difference is a finding, not a footnote.</p>
+  <div class="callout warn">
+    <span class="label">Honest caveat</span>
+    <p>What this experiment measures is each framework's <em>scaffold</em> on <em>this task</em>
+    at <em>this config</em>. It does not measure developer experience, ecosystem, observability,
+    or how each framework scales to bigger agents — judge those separately. And note the Agent
+    SDK runs Claude Code's harness with its own system prompt around yours, so "same model" is
+    still not "same prompt tokens." That's precisely the framework effect you're measuring — just
+    name it when you present results.</p>
+  </div>
+
+  <h2 id="s8"><span class="num">8</span>Pitfalls that quietly ruin eval programs</h2>
+  <ul>
+    <li><strong>Eval overfitting / Goodhart.</strong> Iterating your agent prompt against the same
+    21 cases will eventually tune to the cases, not the capability. Hold out a few cases you never
+    look at during development, and refresh capability cases as they saturate (§3).</li>
+    <li><strong>Contamination.</strong> Public benchmark questions leak into training data.
+    Invented-fact corpora, private test sets, and post-cutoff data are the defenses.</li>
+    <li><strong>Judge drift.</strong> Changing the judge model or prompt silently re-scores
+    history. Pin the judge model in config, version the prompt, and re-run a reference batch after
+    any change before comparing new numbers to old ones.</li>
+    <li><strong>Flaky tools.</strong> A tool timeout counts as an agent failure unless you separate
+    infra errors from behavior errors. The records keep <code>error</code> distinct from a failed
+    grade, and hermetic tools minimize the category.</li>
+    <li><strong>Sandboxing.</strong> Agents with Bash/file/web tools must run in isolated
+    environments during evals — both for safety and so trials can't contaminate each other via
+    shared state. This task avoids it by having no side-effectful tools; the moment you add
+    them, add per-trial sandboxes too.</li>
+    <li><strong>Self-verification belongs in the agent too.</strong> Anthropic's
+    gather-context → take-action → <em>verify-work</em> loop: agents that check their own output
+    are more reliable — evals measure quality, but in-agent verification <em>creates</em> it.
+    <span class="verified">verified 3–0</span></li>
+  </ul>
+
+  <h2 id="s9"><span class="num">9</span>Tooling landscape (and why the project is code-first)</h2>
+  <ul>
+    <li><strong>Code-first / build-your-own (the project).</strong> ~600 lines, zero platform
+    dependencies, every judgment inspectable. The right call for learning the fundamentals and for
+    a two-framework bake-off.</li>
+    <li><strong><a href="https://github.com/langchain-ai/openevals"><code>openevals</code></a> +
+    <a href="https://github.com/langchain-ai/agentevals"><code>agentevals</code></a></strong>
+    (LangChain, MIT, <em>work fully without LangSmith</em>): prebuilt LLM-as-judge prompts,
+    exact-match/structured output evaluators, and — the interesting one —
+    <a href="https://docs.langchain.com/langsmith/trajectory-evals">trajectory evaluators</a>
+    with four deterministic match modes (strict/unordered/subset/superset) plus reference-free
+    LLM trajectory judging. They accept OpenAI-style message lists, so both agents' trajectories
+    can be fed to them. A natural next dependency if you outgrow the built-in matchers.
+    <span class="verified">verified 3–0 ×5</span></li>
+    <li><strong><a href="https://deepeval.com/">DeepEval</a> /
+    <a href="https://www.promptfoo.dev/">promptfoo</a></strong> — OSS harnesses with metric
+    libraries and CI integration; DeepEval's
+    <a href="https://deepeval.com/docs/evaluation-datasets">"golden" dataset model</a> matches
+    the project's schema (§3).</li>
+    <li><strong>Hosted platforms</strong>
+    (<a href="https://www.langchain.com/langsmith">LangSmith</a>,
+    <a href="https://www.braintrust.dev/">Braintrust</a>,
+    <a href="https://langfuse.com/">Langfuse</a>,
+    <a href="https://phoenix.arize.com/">Arize Phoenix</a>,
+    <a href="https://weave-docs.wandb.ai/">W&amp;B Weave</a>) — add tracing UIs, dataset
+    versioning, human-annotation queues, and online (production) evaluation. Worth adopting when
+    the bottleneck becomes <em>reviewing</em> transcripts rather than running them.</li>
+  </ul>
+
+  <h2 id="s10"><span class="num">10</span>How each practice maps to the project</h2>
+  <p class="footnote">Project location: <code>~/windows/agent-evals</code></p>
+  <div class="scroll"><table>
+    <tr><th>Practice</th><th>Where it lives</th></tr>
+    <tr><td>20–50 hand-written goldens, behavior categories</td><td><code>data/dataset.jsonl</code> (21 cases, 4 categories)</td></tr>
+    <tr><td>Invented facts / contamination defense</td><td><code>data/corpus/</code> (fictional company)</td></tr>
+    <tr><td>Hermetic deterministic tools</td><td><code>src/agent_evals/task.py</code></td></tr>
+    <tr><td>Identical tool surface + system prompt</td><td><code>task.TOOL_SPECS</code> consumed by both adapters</td></tr>
+    <tr><td>Framework-agnostic run shape</td><td><code>adapters/base.py</code> (<code>AgentRunResult</code>)</td></tr>
+    <tr><td>Built-ins disabled on the SDK side</td><td><code>claude_agent_sdk_adapter.py</code> (<code>tools=[]</code>, MCP-only)</td></tr>
+    <tr><td>Code-before-judge grading</td><td><code>graders/code_graders.py</code></td></tr>
+    <tr><td>Reference-anchored structured judge, analysis-first</td><td><code>graders/llm_judge.py</code> (<code>judge_run</code>)</td></tr>
+    <tr><td>Position-debiased pairwise judging</td><td><code>graders/llm_judge.py</code> (<code>judge_pair</code>)</td></tr>
+    <tr><td>k trials, pass@1 / pass^k, bootstrap CI, discordant cases</td><td><code>metrics.py</code>, <code>report.py</code></td></tr>
+    <tr><td>Resumable runs, transcripts persisted</td><td><code>runner.py</code> (<code>records.jsonl</code>)</td></tr>
+    <tr><td>Seed-then-review dataset expansion</td><td><code>scripts/seed_dataset.py</code></td></tr>
+  </table></div>
+  <p>Suggested first week with it: (1) run <code>--cases kb-001,kb-014 --trials 1</code> per
+  adapter as a sanity pass; (2) full run with 3 trials; (3) read every judge verdict once and
+  tune the judge prompt (§5.1); (4) read the discordant cases; (5) only then trust the numbers.</p>
+
+  <h2 id="s11"><span class="num">11</span>Sources</h2>
+  <p class="footnote">Primary sources cited by the verified findings (each survived 3 independent
+  adversarial verification votes):</p>
+  <ul class="footnote">
+    <li>Anthropic — <a href="https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents">Demystifying evals for AI agents</a> (outcome-first grading, 20–50 tasks, two-expert rule, capability/regression split, pass@k vs pass^k, judge calibration)</li>
+    <li>Anthropic — <a href="https://www.anthropic.com/engineering/building-agents-with-the-claude-agent-sdk">Building agents with the Claude Agent SDK</a> (code-graders-first, gather→act→verify loop)</li>
+    <li>Claude Agent SDK docs — <a href="https://code.claude.com/docs/en/agent-sdk/overview">overview</a>, <a href="https://code.claude.com/docs/en/agent-sdk/hooks">hooks</a> (built-in tools asymmetry; PreToolUse/PostToolUse trajectory capture)</li>
+    <li>Shankar et al. — <a href="https://arxiv.org/abs/2404.12272">Who Validates the Validators?</a> (UIST 2024: judges inherit model failures; criteria drift; EvalGen calibration pattern)</li>
+    <li>LangChain — <a href="https://github.com/langchain-ai/agentevals">agentevals</a>, <a href="https://github.com/langchain-ai/openevals">openevals</a>, <a href="https://docs.langchain.com/langsmith/trajectory-evals">trajectory evals docs</a>, <a href="https://www.langchain.com/blog/evaluating-llms-with-openevals">announcement post</a></li>
+    <li>DeepEval — <a href="https://deepeval.com/docs/evaluation-datasets">evaluation datasets ("goldens")</a></li>
+  </ul>
+  <p class="footnote">Marked as standard literature (not re-verified in this pass): Zheng et al. 2023
+  (<a href="https://arxiv.org/abs/2306.05685">MT-Bench / Judging LLM-as-a-Judge</a>) for the
+  position/verbosity/self-preference bias catalog; Liu et al. 2023
+  (<a href="https://arxiv.org/abs/2303.16634">G-Eval</a>) for rubric-and-chain-of-thought judge design.</p>
+
+  <footer>ai-gists / AgentEvals · Generated July 12, 2026 · Details reflect documentation and research as of this date — verify against current sources before relying on them.</footer>
+</div>
+
+<script>
+(function () {
+  var KEY = "agent-evals-theme";
+  var root = document.documentElement;
+  var buttons = document.querySelectorAll(".theme-toggle button");
+
+  function apply(mode) {
+    if (mode === "light" || mode === "dark") {
+      root.setAttribute("data-theme", mode);
+    } else {
+      root.removeAttribute("data-theme"); // system: let prefers-color-scheme decide
+      mode = "system";
+    }
+    buttons.forEach(function (b) {
+      b.setAttribute("aria-pressed", String(b.dataset.mode === mode));
+    });
+  }
+
+  buttons.forEach(function (b) {
+    b.addEventListener("click", function () {
+      var mode = b.dataset.mode;
+      try { localStorage.setItem(KEY, mode); } catch (e) {}
+      apply(mode);
+    });
+  });
+
+  var saved = null;
+  try { saved = localStorage.getItem(KEY); } catch (e) {}
+  apply(saved || "system");
+})();
+</script>
+</body>
+</html>
